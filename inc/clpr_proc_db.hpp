@@ -135,9 +135,20 @@ namespace clpr_d{
 		public :
 
 		~clpr_proc_db(){};
+
+
+		/**
+		 * Construct the database, a collection of uid_blobs
+		 * @param 
+		 */
 		clpr_proc_db();
 
-		/// take a blob and add it to the container
+
+		/**
+		 * Take a uid_blob and add in to the db
+		 * @param uid_blob input 
+		 * @param string& (hashed) index
+		 */	
 		void insert(uid_blob& in, string &i);
 
 		///get the size of the map
@@ -145,17 +156,22 @@ namespace clpr_d{
 
 		/// release data
 		void clean_by_time();
-		
+
 		/// release data
 		void clean_by_size();
 
 		/// update write time
 		void update_write_time();
-		
+
 		/// read write time
 		uint64_t read_write_time();
 
-		///return a blob by label/index
+		/**
+		 * Get a blob by hashed index
+		 * @param string& i index
+		 * @param uint64_t& label
+		 *
+		 */
 		uid_blob get(string &i, uint64_t &label);
 
 		///send all out to stream
@@ -172,11 +188,6 @@ namespace clpr_d{
 		
 		/// dump to file, ordered by max_dsk
 		void print_by_max_dsk(ofstream &file);
-
-
-
-		///get blobs in a range
-		//clpr_proc_db  find_mem_range(float lower, float upper);
 
 	};
 

@@ -30,7 +30,7 @@ namespace clpr_d{
 	// insert; const elements so delete first if exists
 	// FIXME this is crappy, probably should use smrt ptrs
 	void clpr_proc_db::insert(uid_blob &in, string &i){
-	
+
 		_mutex_blobs.lock();
 		_index_it=_set.get<uid_blob_label>().find(i);
 		if (_set.get<uid_blob_label>().end() != _index_it){
@@ -98,7 +98,7 @@ namespace clpr_d{
 			if (k>0)
 				file << _max_mem_it->get_header() << endl;
 
-				k++;
+			k++;
 		}
 
 		_mutex_blobs.unlock();
@@ -113,14 +113,14 @@ namespace clpr_d{
 		file << ctime(&current_time) << endl;
 
 		int k=0;
-		
+
 		for(_max_cpu_it=_set.get<max_cpu>().end(); _max_cpu_it != _set.get<max_cpu>().begin(); _max_cpu_it--){
 
 			if (k> CLPR_LOGGER_ENTRIES)
 				break;
 
 			if (k>0)
-			file << _max_cpu_it -> get_header() << endl;
+				file << _max_cpu_it -> get_header() << endl;
 
 			k++;
 		}
@@ -144,7 +144,7 @@ namespace clpr_d{
 				break;
 
 			if (k>0)
-			file << _max_fds_it -> get_header();
+				file << _max_fds_it -> get_header();
 
 			k++;
 		}
@@ -167,7 +167,7 @@ namespace clpr_d{
 				break;
 
 			if (k>0)
-			file << _max_dsk_it -> get_header();
+				file << _max_dsk_it -> get_header();
 
 			k++;
 		}
@@ -199,7 +199,7 @@ namespace clpr_d{
 	void clpr_proc_db::clean_by_time(){
 		_mutex_blobs.lock();
 		uint64_t t = read_write_time();
-	for (	_label_it=_set.get<global_label>().begin(); _label_it != _set.get<global_label>().begin(); _label_it++){
+		for (	_label_it=_set.get<global_label>().begin(); _label_it != _set.get<global_label>().begin(); _label_it++){
 
 
 			if ((t > _label_it->get_time()) && ((abs(t-_label_it->get_time()) / 3600) > CLPR_HOURS_BTWN_WRITES))

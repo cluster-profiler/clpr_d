@@ -39,6 +39,11 @@ namespace clpr_d{
 
 			db_pointer db_;
 		public :
+			/**
+			 * Construct the archiver, which will listen on port 80 
+                         * and write out db when queried.
+                         * @param db_pointer db input database
+			 */
 			archiver(db_pointer& db);
 			~archiver(){};
 

@@ -75,10 +75,21 @@ namespace clpr_d{
 
 		public:
 
-			/// construct
+
+			/**
+			 * Build a uid_blob with a unique string and integer label
+			 * @param string& in (what will be hash index in db)
+			 * @param uint64_t& label integer 
+			 */	
 			uid_blob(string &in, uint64_t &label);
 
 			/// update
+
+			/**
+			 * Update a uid_blob from input tokens and hostname
+			 * @param string hostname
+			 * @param vector<string> tokens input data
+			 */	
 			void set(string host_info,vector<string> tokens);
 			/// return the header as a string
 			string get_header() const;

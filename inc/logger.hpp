@@ -40,8 +40,12 @@ namespace clpr_d{
 			/// main db
 			db_pointer db_;
 		public :
-			
-			/// 
+
+
+			/**
+			 * Write a log file periodically with statistics; @see key_defines.h
+			 * @param db_pointer & db database
+			 */	 
 			logger(db_pointer &db);
 			/// bye bye birdie
 			~logger(){};
