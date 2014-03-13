@@ -9,10 +9,13 @@ namespace clpr_d{
 		while(1){
 
 			ifstream pipe_in(CLPR_INPUT_PIPE);
-			struct stat st;
+			
+			//FIXME
+			//struct stat st;
 
-			if (!(S_ISFIFO(st.st_mode)))
-				std::invalid_argument("bad or non-existant fifo");
+			//fstat(pipe_in, &st);
+			//if (!(S_ISFIFO(st.st_mode)))
+			//	std::invalid_argument("bad or non-existant fifo");
 
 			string in;
 
