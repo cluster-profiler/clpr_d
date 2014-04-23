@@ -1,9 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" id="node3" href="$uid__blob_8hpp.html" title="inc/uid_blob.hpp" alt="" coords="291,83,405,112"/>
-<area shape="rect" id="node15" href="$reader_8hpp.html" title="inc/reader.hpp" alt="" coords="424,237,528,267"/>
-<area shape="rect" id="node5" href="$clpr__proc__db_8hpp.html" title="inc/clpr_proc_db.hpp" alt="" coords="271,160,412,189"/>
-<area shape="rect" id="node7" href="$tcp__server_8hpp.html" title="inc/tcp_server.hpp" alt="" coords="5,237,133,267"/>
-<area shape="rect" id="node11" href="$logger_8hpp.html" title="inc/logger.hpp" alt="" coords="157,237,259,267"/>
-<area shape="rect" id="node13" href="$manager_8hpp.html" title="inc/manager.hpp" alt="" coords="283,237,400,267"/>
-<area shape="rect" id="node9" href="$archiver_8hpp.html" title="inc/archiver.hpp" alt="" coords="12,315,127,344"/>
-</map>
