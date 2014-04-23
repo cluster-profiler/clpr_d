@@ -41,7 +41,7 @@ namespace clpr_d{
 					if (tokens.size()>20){
 		
 						index = get_uid_blob_label(tokens);
-						uid_blob blob = db.get(index,global_label);
+						uid_blob blob = db.get(tokens,index,global_label);
 						blob.set(host_info,tokens);
 						db.insert(blob,index);
 

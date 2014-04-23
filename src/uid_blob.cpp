@@ -5,7 +5,7 @@ namespace clpr_d{
 	void uid_blob::set(string host_info,vector<string> tokens){
 
 		history_key key;
-		key.command="";
+		key.command=" ";
 
 		for (int i=26; i<tokens.size(); i++){
 			key.command			+= tokens[i];
@@ -19,7 +19,7 @@ namespace clpr_d{
 
 
 		vector<pid_blob> tmp = _history[key];
-	
+
 
 		tmp.push_back(value);
 		_history[key] = tmp;
@@ -42,6 +42,112 @@ namespace clpr_d{
 
 	}
 
+	// something approaching json format
+	ostream& operator<<(ostream &out, const uid_blob& in){
+
+
+		out << "{" << endl;
+		out << "\"id\":\"" << in._label << "\"," << endl;
+		out << "\"stime\":\"" << in._start_time << "\"," << endl;
+		out << "\"uid\":\"" << in._uid << "\"," << endl;
+		out << "\"max_mem\":\"" << in._max_mem << "\"," << endl;
+		out << "\"min_mem\":\"" << in._min_mem << "\"," << endl;
+		out << "\"max_disk\":\"" << in._max_disk << "\"," << endl;
+		out << "\"min_disk\":\"" << in._min_disk << "\"," << endl;
+		out << "\"max_fds\":\"" << in._max_fds << "\"," << endl;
+		out << "\"min_fds\":\"" << in._min_fds << "\"," << endl;
+		out << "\"max_cpu\":\"" << in._max_cpu << "\"," << endl;
+		out << "\"min_cpu\":\"" << in._min_cpu << "\"," << endl;
+		out << "\"total_procs\":\"" << in._total_procs << "\"," << endl;
+
+
+		out << "\"pgroup\":[" << endl;
+		BOOST_FOREACH( HASH_MAP::value_type v, in._history ){
+
+			history_key tmp = v.first;
+
+			out << "{\"pid\":\"" << tmp.pid << "\"," << endl;
+			out << "\"command\":\"" << tmp.command << "\"," << endl;
+			out << "\"host\":\"" << tmp.hostname << "\"," << endl;
+
+			vector<pid_blob> tmp_vals = v.second;
+
+			out << "\"time\":[";
+			for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+				out << it->time << ",";
+			}
+
+			out << "]," << endl;
+			
+			out << "\"user\":[";
+			for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+				out << it->user << ",";
+			}
+
+			out << "]," << endl;
+			
+			out << "\"\% cpu\":[";
+			for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+				out << it->perc_cpu << ",";
+			}
+
+			out << "]," << endl;
+			
+			out << "\"majflt_s\":[";
+			for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+				out << it->majflt_s << ",";
+			}
+
+			out << "]," << endl;
+			
+			out << "\"vsz\":[";
+			for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+				out << it->vsz << ",";
+			}
+
+			out << "]," << endl;
+			
+			out << "\"kd_rd_s\":[";
+			for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+				out << it->kb_rd_s << ",";
+			}
+
+			out << "]," << endl;
+			
+			out << "\"kb_wr_s\":[";
+			for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+				out << it->kb_wr_s << ",";
+			}
+
+			out << "]," << endl;
+			
+			out << "\"cswch_s\":[";
+			for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+				out << it->cswch_s << ",";
+			}
+
+			out << "]," << endl;
+
+			out << "\"fds\":[";
+			for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+				out << it->fds << ",";
+			}
+
+			out << "]" << endl;
+
+			out << "}," << endl;
+
+
+		}
+		out << "]" << endl;
+		out << "}" << endl;
+
+		return out;
+
+	}
+
+
+#if 0
 	ostream& operator<<(ostream &out, const uid_blob& in){
 
 		out << "## " << in._label << "," << in._hash_index << "," << in._max_mem << "," << in._min_mem << "," << in._max_disk << "," << in._min_disk;
@@ -68,6 +174,7 @@ namespace clpr_d{
 
 	}
 
+#endif
 	string uid_blob::get_header() const{
 
 		stringstream ss;
@@ -78,19 +185,25 @@ namespace clpr_d{
 
 	}
 
-	uid_blob::uid_blob(string &in, uint64_t &label):
+	uid_blob::uid_blob(vector<string>& tokens, string &in, uint64_t &label):
 		_hash_index(in),
 		_label(label),
-		_max_mem(FLT_MIN),
-		_min_mem(FLT_MAX),
-		_max_disk(FLT_MIN),
-		_min_disk(FLT_MAX),
-		_max_fds(FLT_MIN),
-		_min_fds(FLT_MAX),
-		_max_cpu(FLT_MIN),
-		_min_cpu(FLT_MAX),
+		_max_mem(0.0),
+		_min_mem(0.0),
+		_max_disk(0.0),
+		_min_disk(0.0),
+		_max_fds(0.0),
+		_min_fds(0.0),
+		_max_cpu(0.0),
+		_min_cpu(0.0),
 		_total_procs(0)
-	{update_time();};
+	{
+		update_time();
+		_start_time 	= get_start_time(tokens);
+		_uid 		= get_uid(tokens);
+
+
+	};
 
 	void uid_blob::update_time(){
 

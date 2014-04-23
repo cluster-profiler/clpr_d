@@ -1,0 +1,110 @@
+\hypertarget{classclpr__d_1_1clpr__proc__db}{\section{clpr\-\_\-d\-:\-:clpr\-\_\-proc\-\_\-db \-Class \-Reference}
+\label{classclpr__d_1_1clpr__proc__db}\index{clpr\-\_\-d\-::clpr\-\_\-proc\-\_\-db@{clpr\-\_\-d\-::clpr\-\_\-proc\-\_\-db}}
+}
+
+
+a container for process data, allowing multiple search/sort  
+
+
+
+
+{\ttfamily \#include $<$clpr\-\_\-proc\-\_\-db.\-hpp$>$}
+
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classclpr__d_1_1clpr__proc__db_a8ac91f21724df1d1c8ca71c3312d9235}{clpr\-\_\-proc\-\_\-db} ()
+\item 
+void \hyperlink{classclpr__d_1_1clpr__proc__db_a555bd8ecd0e56a10c49bda23b49ae77b}{insert} (\hyperlink{classclpr__d_1_1uid__blob}{uid\-\_\-blob} \&in, string \&i)
+\item 
+\hypertarget{classclpr__d_1_1clpr__proc__db_aa72ac216507744c43a1aae5e5f136f4e}{int \hyperlink{classclpr__d_1_1clpr__proc__db_aa72ac216507744c43a1aae5e5f136f4e}{size} ()}\label{classclpr__d_1_1clpr__proc__db_aa72ac216507744c43a1aae5e5f136f4e}
+
+\begin{DoxyCompactList}\small\item\em get the size of the map \end{DoxyCompactList}\item 
+\hypertarget{classclpr__d_1_1clpr__proc__db_a39e05f12e204d5c471ff33f1564d61d3}{void \hyperlink{classclpr__d_1_1clpr__proc__db_a39e05f12e204d5c471ff33f1564d61d3}{clean\-\_\-by\-\_\-time} ()}\label{classclpr__d_1_1clpr__proc__db_a39e05f12e204d5c471ff33f1564d61d3}
+
+\begin{DoxyCompactList}\small\item\em release data \end{DoxyCompactList}\item 
+\hypertarget{classclpr__d_1_1clpr__proc__db_a2201fec79ea3fd42fb40635d1b53fd49}{void \hyperlink{classclpr__d_1_1clpr__proc__db_a2201fec79ea3fd42fb40635d1b53fd49}{clean\-\_\-by\-\_\-size} ()}\label{classclpr__d_1_1clpr__proc__db_a2201fec79ea3fd42fb40635d1b53fd49}
+
+\begin{DoxyCompactList}\small\item\em release data \end{DoxyCompactList}\item 
+\hypertarget{classclpr__d_1_1clpr__proc__db_af989898ada47a2ec687b1611dcec9ba5}{void \hyperlink{classclpr__d_1_1clpr__proc__db_af989898ada47a2ec687b1611dcec9ba5}{update\-\_\-write\-\_\-time} ()}\label{classclpr__d_1_1clpr__proc__db_af989898ada47a2ec687b1611dcec9ba5}
+
+\begin{DoxyCompactList}\small\item\em update write time \end{DoxyCompactList}\item 
+\hypertarget{classclpr__d_1_1clpr__proc__db_a394652d9eb60812ce8baf8ffa29079a8}{uint64\-\_\-t \hyperlink{classclpr__d_1_1clpr__proc__db_a394652d9eb60812ce8baf8ffa29079a8}{read\-\_\-write\-\_\-time} ()}\label{classclpr__d_1_1clpr__proc__db_a394652d9eb60812ce8baf8ffa29079a8}
+
+\begin{DoxyCompactList}\small\item\em read write time \end{DoxyCompactList}\item 
+\hyperlink{classclpr__d_1_1uid__blob}{uid\-\_\-blob} \hyperlink{classclpr__d_1_1clpr__proc__db_a99af42dd710f14c59e8cbf4d563d9f6b}{get} (string \&i, uint64\-\_\-t \&label)
+\item 
+\hypertarget{classclpr__d_1_1clpr__proc__db_a904fc6ec03df8d1cd469ab57f56de640}{void \hyperlink{classclpr__d_1_1clpr__proc__db_a904fc6ec03df8d1cd469ab57f56de640}{print\-\_\-by\-\_\-max\-\_\-mem} (ofstream \&file)}\label{classclpr__d_1_1clpr__proc__db_a904fc6ec03df8d1cd469ab57f56de640}
+
+\begin{DoxyCompactList}\small\item\em dump to file, ordered by \hyperlink{structclpr__d_1_1max__mem}{max\-\_\-mem} \end{DoxyCompactList}\item 
+\hypertarget{classclpr__d_1_1clpr__proc__db_a0af605d1c06a99cfded556b316b4ca26}{void \hyperlink{classclpr__d_1_1clpr__proc__db_a0af605d1c06a99cfded556b316b4ca26}{print\-\_\-by\-\_\-max\-\_\-cpu} (ofstream \&file)}\label{classclpr__d_1_1clpr__proc__db_a0af605d1c06a99cfded556b316b4ca26}
+
+\begin{DoxyCompactList}\small\item\em dump to file, ordered by \hyperlink{structclpr__d_1_1max__cpu}{max\-\_\-cpu} \end{DoxyCompactList}\item 
+\hypertarget{classclpr__d_1_1clpr__proc__db_a7678d6eb26578d65d3d512a949008e2f}{void \hyperlink{classclpr__d_1_1clpr__proc__db_a7678d6eb26578d65d3d512a949008e2f}{print\-\_\-by\-\_\-max\-\_\-fds} (ofstream \&file)}\label{classclpr__d_1_1clpr__proc__db_a7678d6eb26578d65d3d512a949008e2f}
+
+\begin{DoxyCompactList}\small\item\em dump to file, ordered by \hyperlink{structclpr__d_1_1max__fds}{max\-\_\-fds} \end{DoxyCompactList}\item 
+\hypertarget{classclpr__d_1_1clpr__proc__db_a11e322fde790bf5a3ea0dde3e3f7463c}{void \hyperlink{classclpr__d_1_1clpr__proc__db_a11e322fde790bf5a3ea0dde3e3f7463c}{print\-\_\-by\-\_\-max\-\_\-dsk} (ofstream \&file)}\label{classclpr__d_1_1clpr__proc__db_a11e322fde790bf5a3ea0dde3e3f7463c}
+
+\begin{DoxyCompactList}\small\item\em dump to file, ordered by max\-\_\-dsk \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{\-Friends}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classclpr__d_1_1clpr__proc__db_ac26069a3ed3de059eaaf62695e361ced}{ostream \& \hyperlink{classclpr__d_1_1clpr__proc__db_ac26069a3ed3de059eaaf62695e361ced}{operator$<$$<$} (ostream \&out, \hyperlink{classclpr__d_1_1clpr__proc__db}{clpr\-\_\-proc\-\_\-db} \&in)}\label{classclpr__d_1_1clpr__proc__db_ac26069a3ed3de059eaaf62695e361ced}
+
+\begin{DoxyCompactList}\small\item\em send all out to stream \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+a container for process data, allowing multiple search/sort 
+
+\subsection{\-Constructor \& \-Destructor \-Documentation}
+\hypertarget{classclpr__d_1_1clpr__proc__db_a8ac91f21724df1d1c8ca71c3312d9235}{\index{clpr\-\_\-d\-::clpr\-\_\-proc\-\_\-db@{clpr\-\_\-d\-::clpr\-\_\-proc\-\_\-db}!clpr\-\_\-proc\-\_\-db@{clpr\-\_\-proc\-\_\-db}}
+\index{clpr\-\_\-proc\-\_\-db@{clpr\-\_\-proc\-\_\-db}!clpr_d::clpr_proc_db@{clpr\-\_\-d\-::clpr\-\_\-proc\-\_\-db}}
+\subsubsection[{clpr\-\_\-proc\-\_\-db}]{\setlength{\rightskip}{0pt plus 5cm}{\bf clpr\-\_\-d\-::clpr\-\_\-proc\-\_\-db\-::clpr\-\_\-proc\-\_\-db} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classclpr__d_1_1clpr__proc__db_a8ac91f21724df1d1c8ca71c3312d9235}
+\-Construct the database, a collection of uid\-\_\-blobs 
+\begin{DoxyParams}{\-Parameters}
+{\em } & \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{\-Member \-Function \-Documentation}
+\hypertarget{classclpr__d_1_1clpr__proc__db_a99af42dd710f14c59e8cbf4d563d9f6b}{\index{clpr\-\_\-d\-::clpr\-\_\-proc\-\_\-db@{clpr\-\_\-d\-::clpr\-\_\-proc\-\_\-db}!get@{get}}
+\index{get@{get}!clpr_d::clpr_proc_db@{clpr\-\_\-d\-::clpr\-\_\-proc\-\_\-db}}
+\subsubsection[{get}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uid\-\_\-blob} {\bf clpr\-\_\-d\-::clpr\-\_\-proc\-\_\-db\-::get} (
+\begin{DoxyParamCaption}
+\item[{string \&}]{i, }
+\item[{uint64\-\_\-t \&}]{label}
+\end{DoxyParamCaption}
+)}}\label{classclpr__d_1_1clpr__proc__db_a99af42dd710f14c59e8cbf4d563d9f6b}
+\-Get a blob by hashed index 
+\begin{DoxyParams}{\-Parameters}
+{\em string\&} & i index \\
+\hline
+{\em uint64\-\_\-t\&} & label \\
+\hline
+\end{DoxyParams}
+\hypertarget{classclpr__d_1_1clpr__proc__db_a555bd8ecd0e56a10c49bda23b49ae77b}{\index{clpr\-\_\-d\-::clpr\-\_\-proc\-\_\-db@{clpr\-\_\-d\-::clpr\-\_\-proc\-\_\-db}!insert@{insert}}
+\index{insert@{insert}!clpr_d::clpr_proc_db@{clpr\-\_\-d\-::clpr\-\_\-proc\-\_\-db}}
+\subsubsection[{insert}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf clpr\-\_\-d\-::clpr\-\_\-proc\-\_\-db\-::insert} (
+\begin{DoxyParamCaption}
+\item[{{\bf uid\-\_\-blob} \&}]{in, }
+\item[{string \&}]{i}
+\end{DoxyParamCaption}
+)}}\label{classclpr__d_1_1clpr__proc__db_a555bd8ecd0e56a10c49bda23b49ae77b}
+\-Take a \hyperlink{classclpr__d_1_1uid__blob}{uid\-\_\-blob} and add in to the db 
+\begin{DoxyParams}{\-Parameters}
+{\em \hyperlink{classclpr__d_1_1uid__blob}{uid\-\_\-blob}} & input \\
+\hline
+{\em string\&} & (hashed) index \\
+\hline
+\end{DoxyParams}
+
+
+\-The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+inc/\hyperlink{clpr__proc__db_8hpp}{clpr\-\_\-proc\-\_\-db.\-hpp}\end{DoxyCompactItemize}

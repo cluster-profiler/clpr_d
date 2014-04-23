@@ -172,7 +172,7 @@ namespace clpr_d{
 		 * @param uint64_t& label
 		 *
 		 */
-		uid_blob get(string &i, uint64_t &label);
+		uid_blob get(vector<string>& tokens, string &i, uint64_t &label);
 
 		///send all out to stream
 		friend ostream& operator<<(ostream &out, clpr_proc_db& in);

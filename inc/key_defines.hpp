@@ -192,8 +192,8 @@ namespace clpr_d{
 	typedef struct{
 		size_t operator()(const history_key &in ) const
 		{
-			return std::hash<string>()(in.command) ^ \
-				std::hash<string>()(in.pid) ^ std::hash<string>()(in.hostname);
+			return boost::hash<string>()(in.command) ^ \
+				boost::hash<string>()(in.pid) ^ boost::hash<string>()(in.hostname);
 		};
 
 	} key_hash;
@@ -251,12 +251,14 @@ namespace clpr_d{
 BOOST_FUSION_ADAPT_STRUCT(clpr_d::pid_blob, 
 		(int,time)
 		(float,perc_cpu)
+		(float,minflt_s)
 		(float,majflt_s)
 		(float,vsz)
 		(float,kb_rd_s)
 		(float,kb_wr_s)
 		(float,cswch_s)
 		(float,nvcswh_s)
+		(float,threads)
 		(float,fds)
 		);
 

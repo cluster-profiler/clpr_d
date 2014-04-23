@@ -36,7 +36,10 @@
 
 namespace clpr_d{
 
-	
+	/// whoami
+	string get_uid(vector<string>& input);
+	/// when did this guy/gal start
+	string get_start_time(vector<string>& input);
 	/// return the unique index for db push/pop
 	string get_uid_blob_label(vector<string> &input);
 	/// return the pid blob for this input line

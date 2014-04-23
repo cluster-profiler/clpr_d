@@ -4,13 +4,8 @@
 
 namespace clpr_d{
 
+	string get_start_time(vector<string>& input){
 
-
-	string get_uid_blob_label(vector<string>& input){
-
-
-		// when this group of pid's started
-		// lose the seconds in the hope of grouping more procs together
 		string temp = input[3];
 		temp[6]='0';
 		temp[7]='0';
@@ -27,8 +22,47 @@ namespace clpr_d{
 		ret		+= temp;
 		ret 		+= " ";
 		ret		+= input[4];
-		ret 		+= " ";
-		ret		+= input[6];
+	
+		return temp;
+		
+
+	}
+
+	string get_uid(vector<string>& input){
+
+
+		return input[6];
+
+	}
+
+
+	string get_uid_blob_label(vector<string>& input){
+
+		string ret 	= get_start_time(input);
+		ret		+= " ";
+		ret 		+= get_uid(input);
+		
+
+		// when this group of pid's started
+		// lose the seconds in the hope of grouping more procs together
+		//string temp = input[3];
+		//temp[6]='0';
+		//temp[7]='0';
+
+
+		//string ret;
+
+		//ret		= input[0];
+		//ret 		+= " ";
+		//ret	 	+= input[1];
+		//ret 		+= " ";
+		//ret	 	+= input[2];
+		//ret 		+= " ";
+		//ret		+= temp;
+		//ret 		+= " ";
+		//ret		+= input[4];
+		//ret 		+= " ";
+		//ret		+= input[6];
 
 		return ret;
 	}

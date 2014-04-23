@@ -10,7 +10,7 @@ namespace clpr_d{
 	}
 
 	// grab a blob if it exists; if not, return a new one
-	uid_blob clpr_proc_db::get(string& i, uint64_t &label){
+	uid_blob clpr_proc_db::get(vector<string>& tokens, string& i, uint64_t &label){
 		_mutex_blobs.lock();
 		_index_it=_set.get<uid_blob_label>().find(i);
 
@@ -22,7 +22,7 @@ namespace clpr_d{
 		}
 		_mutex_blobs.unlock();
 		label++;
-		return uid_blob(i,label);
+		return uid_blob(tokens,i,label);
 
 	}
 

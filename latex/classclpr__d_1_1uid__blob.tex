@@ -1,0 +1,88 @@
+\hypertarget{classclpr__d_1_1uid__blob}{\section{clpr\-\_\-d\-:\-:uid\-\_\-blob \-Class \-Reference}
+\label{classclpr__d_1_1uid__blob}\index{clpr\-\_\-d\-::uid\-\_\-blob@{clpr\-\_\-d\-::uid\-\_\-blob}}
+}
+
+
+an aggregator of pidstat data, clustered by start date/time and uid  
+
+
+
+
+{\ttfamily \#include $<$uid\-\_\-blob.\-hpp$>$}
+
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classclpr__d_1_1uid__blob_a5b4351c88ea3a746b729e3582c8e963f}{uid\-\_\-blob} (string \&in, uint64\-\_\-t \&label)
+\item 
+void \hyperlink{classclpr__d_1_1uid__blob_a9a18a8c14ea1fff4c0773a98b2dcb797}{set} (string host\-\_\-info, vector$<$ string $>$ tokens)
+\begin{DoxyCompactList}\small\item\em update \end{DoxyCompactList}\item 
+\hypertarget{classclpr__d_1_1uid__blob_a035e471fc7c8c48ad1bfe2677f34a017}{string \hyperlink{classclpr__d_1_1uid__blob_a035e471fc7c8c48ad1bfe2677f34a017}{get\-\_\-header} () const }\label{classclpr__d_1_1uid__blob_a035e471fc7c8c48ad1bfe2677f34a017}
+
+\begin{DoxyCompactList}\small\item\em return the header as a string \end{DoxyCompactList}\item 
+\hypertarget{classclpr__d_1_1uid__blob_abb25f04e073d67e6db3ba7146415805a}{\hyperlink{classclpr__d_1_1uid__blob_abb25f04e073d67e6db3ba7146415805a}{$\sim$uid\-\_\-blob} ()}\label{classclpr__d_1_1uid__blob_abb25f04e073d67e6db3ba7146415805a}
+
+\begin{DoxyCompactList}\small\item\em bye bye \end{DoxyCompactList}\item 
+\hypertarget{classclpr__d_1_1uid__blob_a0f99f0f7dcaca41d3960edb99f2718a8}{void \hyperlink{classclpr__d_1_1uid__blob_a0f99f0f7dcaca41d3960edb99f2718a8}{update\-\_\-time} ()}\label{classclpr__d_1_1uid__blob_a0f99f0f7dcaca41d3960edb99f2718a8}
+
+\begin{DoxyCompactList}\small\item\em timestamp this thing \end{DoxyCompactList}\item 
+\hypertarget{classclpr__d_1_1uid__blob_a3c3372c909e313db27486d8db507af1c}{uint64\-\_\-t \hyperlink{classclpr__d_1_1uid__blob_a3c3372c909e313db27486d8db507af1c}{get\-\_\-time} () const }\label{classclpr__d_1_1uid__blob_a3c3372c909e313db27486d8db507af1c}
+
+\begin{DoxyCompactList}\small\item\em get the time \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{\-Friends}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classclpr__d_1_1uid__blob_ad6499d69c3cae76f9f721a7af2680e28}{class {\bfseries clpr\-\_\-proc\-\_\-db}}\label{classclpr__d_1_1uid__blob_ad6499d69c3cae76f9f721a7af2680e28}
+
+\item 
+\hypertarget{classclpr__d_1_1uid__blob_ad764a22525c0dba0e41099a7a89512e1}{ostream \& \hyperlink{classclpr__d_1_1uid__blob_ad764a22525c0dba0e41099a7a89512e1}{operator$<$$<$} (ostream \&out, const \hyperlink{classclpr__d_1_1uid__blob}{uid\-\_\-blob} \&in)}\label{classclpr__d_1_1uid__blob_ad764a22525c0dba0e41099a7a89512e1}
+
+\begin{DoxyCompactList}\small\item\em format the stream operator \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+an aggregator of pidstat data, clustered by start date/time and uid 
+
+\subsection{\-Constructor \& \-Destructor \-Documentation}
+\hypertarget{classclpr__d_1_1uid__blob_a5b4351c88ea3a746b729e3582c8e963f}{\index{clpr\-\_\-d\-::uid\-\_\-blob@{clpr\-\_\-d\-::uid\-\_\-blob}!uid\-\_\-blob@{uid\-\_\-blob}}
+\index{uid\-\_\-blob@{uid\-\_\-blob}!clpr_d::uid_blob@{clpr\-\_\-d\-::uid\-\_\-blob}}
+\subsubsection[{uid\-\_\-blob}]{\setlength{\rightskip}{0pt plus 5cm}{\bf clpr\-\_\-d\-::uid\-\_\-blob\-::uid\-\_\-blob} (
+\begin{DoxyParamCaption}
+\item[{string \&}]{in, }
+\item[{uint64\-\_\-t \&}]{label}
+\end{DoxyParamCaption}
+)}}\label{classclpr__d_1_1uid__blob_a5b4351c88ea3a746b729e3582c8e963f}
+\-Build a \hyperlink{classclpr__d_1_1uid__blob}{uid\-\_\-blob} with a unique string and integer label 
+\begin{DoxyParams}{\-Parameters}
+{\em string\&} & in (what will be hash index in db) \\
+\hline
+{\em uint64\-\_\-t\&} & label integer \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{\-Member \-Function \-Documentation}
+\hypertarget{classclpr__d_1_1uid__blob_a9a18a8c14ea1fff4c0773a98b2dcb797}{\index{clpr\-\_\-d\-::uid\-\_\-blob@{clpr\-\_\-d\-::uid\-\_\-blob}!set@{set}}
+\index{set@{set}!clpr_d::uid_blob@{clpr\-\_\-d\-::uid\-\_\-blob}}
+\subsubsection[{set}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf clpr\-\_\-d\-::uid\-\_\-blob\-::set} (
+\begin{DoxyParamCaption}
+\item[{string}]{host\-\_\-info, }
+\item[{vector$<$ string $>$}]{tokens}
+\end{DoxyParamCaption}
+)}}\label{classclpr__d_1_1uid__blob_a9a18a8c14ea1fff4c0773a98b2dcb797}
+
+
+update 
+
+\-Update a \hyperlink{classclpr__d_1_1uid__blob}{uid\-\_\-blob} from input tokens and hostname 
+\begin{DoxyParams}{\-Parameters}
+{\em string} & hostname \\
+\hline
+{\em vector$<$string$>$} & tokens input data \\
+\hline
+\end{DoxyParams}
+
+
+\-The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+inc/\hyperlink{uid__blob_8hpp}{uid\-\_\-blob.\-hpp}\end{DoxyCompactItemize}

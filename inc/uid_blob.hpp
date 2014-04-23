@@ -52,6 +52,8 @@ namespace clpr_d{
 			uint64_t _label;
 			/// last time this was touched
 			uint64_t _time;
+			string _uid;
+			string _start_time;
 
 			///
 			float _max_mem;
@@ -78,10 +80,11 @@ namespace clpr_d{
 
 			/**
 			 * Build a uid_blob with a unique string and integer label
+			 * @param vector<string>& tokens 
 			 * @param string& in (what will be hash index in db)
 			 * @param uint64_t& label integer 
 			 */	
-			uid_blob(string &in, uint64_t &label);
+			uid_blob(vector<string>& tokens, string &in, uint64_t &label);
 
 			/// update
 
