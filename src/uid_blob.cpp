@@ -148,6 +148,7 @@ namespace clpr_d{
 
 
 #if 0
+	// original format
 	ostream& operator<<(ostream &out, const uid_blob& in){
 
 		out << "## " << in._label << "," << in._hash_index << "," << in._max_mem << "," << in._min_mem << "," << in._max_disk << "," << in._min_disk;
