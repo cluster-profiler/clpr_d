@@ -45,8 +45,45 @@ namespace clpr_d{
 	// something approaching json format
 	ostream& operator<<(ostream &out, const uid_blob& in){
 
+		// CSV format for the output
+		// Data is denormalized 
+		// Data out:
+		// uid_blob_id, start time, max mem, min mem, max disk, min disk, max fds, min fds, max cpu, min cpu, total processes, ...
+		// ... 
 
-		out << "{" << endl;
+		BOOST_FOREACH( HASH_MAP::value_type v, in.history ) {	
+
+			history_key tmp = v.first;
+			vector<pid_blob> tmp_vals = v.second;
+
+			for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+				// UID Blob info
+				out << "\"" << in._label << "\",\"";
+				out << in._start_time << "\",\"";
+				out << in._uid << "\",\"";
+				out << in._max_mem << "\",\"";
+				out << in._min_mem << "\",\"";
+				out << in._max_disk << "\",\""
+				out << in._min_disk << "\",\"";
+				out << in._max_fds << "\",\"";
+				out << in._min_fds << "\",\"";
+				out << in._max_cpu << "\",\"";
+				out << in._min_cpu << "\",\"";
+				out << in._total_procs << "\",\"";
+
+				// Process blob info
+				out << tmp.pid << "\",\"";
+				out << tmp.command << "\",\";
+				out << tmp.hostname << "\",\"";
+
+				// Content at time t
+				boost::fusion::for_each(*it, out << arg1 << "\",\"");
+				out << endl;
+			}	
+		}	
+
+
+#if 0
 		out << "\"id\":\"" << in._label << "\"," << endl;
 		out << "\"stime\":\"" << in._start_time << "\"," << endl;
 		out << "\"uid\":\"" << in._uid << "\"," << endl;
@@ -141,10 +178,14 @@ namespace clpr_d{
 		}
 		out << "]" << endl;
 		out << "}" << endl;
+#endif
+
 
 		return out;
 
 	}
+
+
 
 
 #if 0
