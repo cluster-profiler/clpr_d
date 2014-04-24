@@ -73,7 +73,7 @@ namespace clpr_d{
 
 				// Process blob info
 				out << tmp.pid << "\",\"";
-				out << tmp.command << "\",\";
+				out << tmp.command << "\",\"";
 				out << tmp.hostname << "\",\"";
 
 				// Content at time t
