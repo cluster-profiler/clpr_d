@@ -5,11 +5,11 @@ namespace clpr_d{
 	void uid_blob::set(string host_info,vector<string> tokens){
 
 		history_key key;
-		key.command=" ";
+		key.command="";
 
 		for (int i=26; i<tokens.size(); i++){
 			key.command			+= tokens[i];
-			key.command			+= " ";
+			key.command			+= "";
 		}
 
 		key.hostname		+= host_info;
@@ -58,6 +58,8 @@ namespace clpr_d{
 
 			for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
 				// UID Blob info
+				// Unique hash: label, pid, startime, user id, time stamp
+				out << "\"" << in._label << tmp.pid << in._start_time << in._uid << it->time << "\",";
 				out << "\"" << in._label << "\",\"";
 				out << in._start_time << "\",\"";
 				out << in._uid << "\",\"";
