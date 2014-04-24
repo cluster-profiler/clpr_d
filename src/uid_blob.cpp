@@ -63,7 +63,7 @@ namespace clpr_d{
 				out << in._uid << "\",\"";
 				out << in._max_mem << "\",\"";
 				out << in._min_mem << "\",\"";
-				out << in._max_disk << "\",\""
+				out << in._max_disk << "\",\"";
 				out << in._min_disk << "\",\"";
 				out << in._max_fds << "\",\"";
 				out << in._min_fds << "\",\"";
