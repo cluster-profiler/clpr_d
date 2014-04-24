@@ -51,7 +51,7 @@ namespace clpr_d{
 		// uid_blob_id, start time, max mem, min mem, max disk, min disk, max fds, min fds, max cpu, min cpu, total processes, ...
 		// ... 
 
-		BOOST_FOREACH( HASH_MAP::value_type v, in.history ) {	
+		BOOST_FOREACH( HASH_MAP::value_type v, in._history ) {	
 
 			history_key tmp = v.first;
 			vector<pid_blob> tmp_vals = v.second;
