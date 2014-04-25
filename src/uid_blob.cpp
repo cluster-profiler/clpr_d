@@ -5,11 +5,21 @@ namespace clpr_d{
 	void uid_blob::set(string host_info,vector<string> tokens){
 
 		history_key key;
+		char specChars[] = "\""
+
+		// Do not add blank space before command
 		key.command="";
 
 		for (int i=26; i<tokens.size(); i++){
+
+			// Find double quote character, replace with single character
+			std::replace( tokens[i].begin(), tokens[i].end(), '\"', '\'');	
+
 			key.command			+= tokens[i];
-			key.command			+= "";
+
+			// Do not add blank space at the end of the command, but add space between parts of the command
+			if( i != tokens.size() -1 )	
+				key.command			+= " ";
 		}
 
 		key.hostname		+= host_info;
@@ -50,7 +60,6 @@ namespace clpr_d{
 		// Data out:
 		// uid_blob_id, start time, max mem, min mem, max disk, min disk, max fds, min fds, max cpu, min cpu, total processes, ...
 		// ... 
-
 		BOOST_FOREACH( HASH_MAP::value_type v, in._history ) {	
 
 			history_key tmp = v.first;
