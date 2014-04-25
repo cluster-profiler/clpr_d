@@ -118,7 +118,7 @@ namespace clpr_d{
 	/// open file descriptors
 #define fds_pos 25
 
-
+	enum { TIME_POS = 5, PID_POS = 7, USER_POS = 8, SYSTEM_POS = 9, PCPU_POS = 11, CORE_CPU_POS = 12, MINFLTS_POS = 13, MAJFLTS_POS = 14, VSZ_POS = 15, RSS_POS = 16, MEM_POS = 17, KB_RD_S_POS = 18, KB_WR_S_POS = 19, KB_CCWR_S_POS = 20, IODELAY_POS = 21, CSWCH_S_POS = 22, NVCSWCH_S_POS = 23, NTH_POS = 24, FDS_POS = 24, CMD_POS = 26 };
 
 
 

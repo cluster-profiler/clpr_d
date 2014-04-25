@@ -5,15 +5,22 @@ namespace clpr_d{
 	void uid_blob::set(string host_info,vector<string> tokens){
 
 		history_key key;
-		char specChars[] = "\""
+		char specChars[] = "\n\t";
 
 		// Do not add blank space before command
 		key.command="";
 
-		for (int i=26; i<tokens.size(); i++){
+		for (int i=CMD_POS; i<tokens.size(); i++){
 
 			// Find double quote character, replace with single character
 			std::replace( tokens[i].begin(), tokens[i].end(), '\"', '\'');	
+			//std::replace( tokens[i].begin(), tokens[i].end(), ',', '.');	
+
+			// Remove other special characters
+			for (unsigned int j = 0; j < strlen(specChars); ++j)
+				tokens[i].erase (std::remove(tokens[i].begin(), tokens[i].end(), specChars[j]), tokens[i].end());
+
+			// Find carriage return, tabs
 
 			key.command			+= tokens[i];
 
@@ -23,7 +30,7 @@ namespace clpr_d{
 		}
 
 		key.hostname		+= host_info;
-		key.pid			+= tokens[7];
+		key.pid			+= tokens[PID_POS];
 
 		pid_blob value = get_pid_blob(tokens);
 
