@@ -4,7 +4,7 @@
  * @version 1.0
  *
  * @section LICENSE
- * Copyright 2014 William J. Brouwer
+ * Copyright 2014 William J. Brouwer, Pierre-Yves Taunay
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
