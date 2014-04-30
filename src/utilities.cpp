@@ -1,3 +1,7 @@
+#include <ctime>
+#include <iostream>
+#include <boost/lexical_cast.hpp>
+
 #include "utilities.hpp"
 
 
@@ -6,6 +10,26 @@ namespace clpr_d{
 
 	string get_start_time(vector<string>& input){
 
+		// First five fields of pidstat:
+		// weekday month day hour year
+		// Mon Apr 28 15:08:01 2014
+		// 0 1 2 3 4
+		string tmp="";
+		for(int i = 1; i<=4; i++)
+			tmp += input[i];
+
+
+		// Convert to UNIX time since epoch
+		struct tm tm;
+		time_t epoch;
+		if( strptime(const_cast<char*>(tmp.c_str()), "%b%d%H:%M:%S%Y", &tm) != NULL ) 
+			epoch = mktime(&tm);
+		else
+			std::cerr << "Error converting time to epoch" << std::endl;
+		
+		string ret = boost::lexical_cast<std::string>(epoch);
+
+#if 0
 		string temp = input[3];
 		temp[6]='0';
 		temp[7]='0';
@@ -23,6 +47,8 @@ namespace clpr_d{
 		ret 		+= " ";
 		ret		+= input[4];
 	
+#endif
+
 		return ret;
 		
 
