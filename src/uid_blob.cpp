@@ -20,8 +20,6 @@ namespace clpr_d{
 			for (unsigned int j = 0; j < strlen(specChars); ++j)
 				tokens[i].erase (std::remove(tokens[i].begin(), tokens[i].end(), specChars[j]), tokens[i].end());
 
-			// Find carriage return, tabs
-
 			key.command			+= tokens[i];
 
 			// Do not add blank space at the end of the command, but add space between parts of the command
