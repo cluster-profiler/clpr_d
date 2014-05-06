@@ -57,7 +57,7 @@ int main(void) {
 	// close the std streams
 	close(STDIN_FILENO);
 	//close(STDOUT_FILENO);
-	//close(STDERR_FILENO);
+	close(STDERR_FILENO);
 
 	// main db
 	clpr_proc_db db;

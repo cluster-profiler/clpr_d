@@ -84,6 +84,10 @@ namespace clpr_d{
 						break;
 					}
 
+
+				if (test_for_alpha)
+					cerr << "whoa; uid_blob with index " << in._label << " has an ill-formed pid : " << tmp.pid << endl; 
+
 				if (!test_for_alpha){
 
 					// UID Blob info
