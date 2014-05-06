@@ -60,6 +60,8 @@ namespace clpr_d{
 	// something approaching json format
 	ostream& operator<<(ostream &out, const uid_blob& in){
 
+		string kill_me="abcdefghijklmnopqrstuvwxyz";
+
 		// CSV format for the output
 		// Data is denormalized 
 		// Data out:
@@ -71,30 +73,45 @@ namespace clpr_d{
 			vector<pid_blob> tmp_vals = v.second;
 
 			for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
-				// UID Blob info
-				// Unique hash: label, pid, startime, user id, time stamp
-				out << "\"" << in._label << tmp.pid << in._start_time << in._uid << it->time << "\",";
-				out << "\"" << in._label << "\",\"";
-				out << in._start_time << "\",\"";
-				out << in._uid << "\",\"";
-				out << in._max_mem << "\",\"";
-				out << in._min_mem << "\",\"";
-				out << in._max_disk << "\",\"";
-				out << in._min_disk << "\",\"";
-				out << in._max_fds << "\",\"";
-				out << in._min_fds << "\",\"";
-				out << in._max_cpu << "\",\"";
-				out << in._min_cpu << "\",\"";
-				out << in._total_procs << "\",\"";
 
-				// Process blob info
-				out << tmp.pid << "\",\"";
-				out << tmp.command << "\",\"";
-				out << tmp.hostname << "\",\"";
 
-				// Content at time t
-				boost::fusion::for_each(*it, out << arg1 << "\",\"");
-				out << endl;
+				// if there are alphas in pid, something screwed up, probably not with pidstat, but with the data gathering process
+				bool test_for_alpha=false;
+
+				for (auto& x: kill_me) 
+					if (tmp.pid.find(x) < tmp.pid.size()){
+						test_for_alpha=true;
+						break;
+					}
+
+				if (!test_for_alpha){
+
+					// UID Blob info
+					// Unique hash: label, pid, startime, user id, time stamp
+					out << "\"" << in._label << tmp.pid << in._start_time << in._uid << it->time << "\",";
+					out << "\"" << in._label << "\",\"";
+					out << in._start_time << "\",\"";
+					out << in._uid << "\",\"";
+					out << in._max_mem << "\",\"";
+					out << in._min_mem << "\",\"";
+					out << in._max_disk << "\",\"";
+					out << in._min_disk << "\",\"";
+					out << in._max_fds << "\",\"";
+					out << in._min_fds << "\",\"";
+					out << in._max_cpu << "\",\"";
+					out << in._min_cpu << "\",\"";
+					out << in._total_procs << "\",\"";
+
+					// Process blob info
+					out << tmp.pid << "\",\"";
+					out << tmp.command << "\",\"";
+					out << tmp.hostname << "\",\"";
+
+					// Content at time t
+					boost::fusion::for_each(*it, out << arg1 << "\",\"");
+					out << endl;
+
+				}
 			}	
 		}	
 
