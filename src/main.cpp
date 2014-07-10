@@ -28,13 +28,16 @@
 
 #include <iostream>
 #include <fstream>
+#include <exception>
 
 #include "reader.hpp"
 #include "logger.hpp"
 #include "archiver.hpp"
 #include "manager.hpp"
 #include "clpr_proc_db.hpp"
+
 #include "clpr_config.hpp"
+#include "clpr_log.hpp"
 
 using namespace boost;
 namespace po = boost::program_options;
@@ -53,21 +56,28 @@ int main(int argc, char *argv[]) {
 	pid = fork();
 	// Can't fork - fork error
 	if ( pid < 0 ) 
-		exit(EXIT_FAILURE);
+		return EXIT_FAILURE;
 	// Otherwise, parent exits	
 	if ( pid > 0 ) 
-		exit(EXIT_SUCCESS);
+		return EXIT_SUCCESS;
 
 	//// 2. Set permissions
 	umask(0);
 
 	//// 3. Open any logs
-		
+	clpr_d::p_log p_log_file;
+	try {
+		p_log_file = clpr_d::p_log( new clpr_d::clpr_log(CLPR_LOG_PATH));
+	} 
+	catch (std::exception& e) {
+		std::cout << "ERROR " << e.what() << std::endl;	
+		return EXIT_FAILURE;
+	}	
 	
 	//// 4. Get new session ID       
 	sid = setsid();
 	if ( sid < 0 ) 
-		exit(EXIT_FAILURE);
+		return EXIT_FAILURE;
 
 
 	//// 5. Change to a safe working directory
@@ -80,15 +90,28 @@ int main(int argc, char *argv[]) {
 
 	//// 7. Actual daemon code
 	
-	// Check for configuration file, and parse it
+	/// Check for configuration file, and parse it
 	std::ifstream config_file(CLPR_CONF_PATH, ios::in);
+	std::string msg;
+	clpr_d::p_conf p_config_file;
+
+	// try opening the file
 	if (config_file.is_open()) {
-		std::cout << "INFO Found configuration file ! Parsing..." << std::endl;
-		clpr_d::p_conf p_config_file( new clpr_d::clpr_config(config_file) );
+		msg = "Found configuration file";
+		std::string clpr_conf_path(CLPR_CONF_PATH, strnlen(CLPR_CONF_PATH,511)); 
+		msg += clpr_conf_path;
+		msg += " !  Parsing...";
+
+		p_log_file->write(CLPR_LOG_INFO, msg);
+
+		p_config_file = clpr_d::p_conf( new clpr_d::clpr_config(config_file,p_log_file) );
+
+		msg = "Closing configuration file " + clpr_conf_path;
+		p_log_file->write(CLPR_LOG_INFO, msg);
 		config_file.close();
 	} else {
-		std::cout << "ERROR Can not find configuration file" << std::endl;
-		exit(EXIT_FAILURE);
+		p_log_file->write(CLPR_LOG_ERROR,"Can not find or open configuration file");
+		return EXIT_FAILURE;
 	}	
 
 	/*

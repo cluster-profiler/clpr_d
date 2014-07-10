@@ -1,10 +1,32 @@
 #include <ctime>
 #include <iostream>
+#include <string>
+#include <sys/stat.h>
+
 #include <boost/lexical_cast.hpp>
 
 #include "utilities.hpp"
 
 namespace clpr_d{
+
+// Function: file_exists 
+/**
+  Check if a file exists
+  @param[in] filename - the name of the file to check
+
+  @return    true if the file exists, else false
+
+*/
+bool file_exists(const std::string& filename)
+{
+	struct stat buf;
+	if (stat(filename.c_str(), &buf) != -1)
+	{
+		return true;
+	}
+	return false;
+}
+
 	string get_start_time(vector<string>& input){
 
 		// First five fields of pidstat:

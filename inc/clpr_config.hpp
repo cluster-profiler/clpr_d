@@ -4,6 +4,7 @@
 #include <istream>
 #include <string>
 
+#include "clpr_log.hpp"
 
 // Path to the configuration file
 #define CLPR_CONF_PATH "/gpfs/work/p/pzt5044/Github/clpr_d/clprd.xml"
@@ -16,8 +17,10 @@ class clpr_config {
 		// Path to the FIFO
 		std::string input_pipe;
 
+		// Dependency injection -- smart pointer for the log file
+		clpr_d::p_log p_log_file;
+
 		// Logging
-		std::string log_path;
 		int log_level;
 		int log_wait;
 		int log_max_entries;	
@@ -27,7 +30,7 @@ class clpr_config {
 		
 	public:
 		// Construct this object from the config file
-		clpr_config(const std::istream& config_file);
+		clpr_config(const std::istream& config_file, const clpr_d::p_log& p_log_file);
 		~clpr_config();
 
 }; // End of class clpr_config

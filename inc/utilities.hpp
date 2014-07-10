@@ -37,6 +37,8 @@
 
 namespace clpr_d{
 
+	/// Check if a file exists
+	bool file_exists(const std::string& filename);
 	/// Whoami
 	string get_uid(const vector<string>& input);
 	/// When did I start
