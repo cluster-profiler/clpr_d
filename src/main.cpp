@@ -4,7 +4,7 @@
  * @version 1.0
  *
  * @section LICENSE
- * Copyright 2014 William J. Brouwer
+ * Copyright 2014 William J. Brouwer, Pierre-Yves Taunay
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,42 +23,75 @@
  *
  */
 
+#include <boost/thread/thread.hpp>
+#include <boost/program_options.hpp>
+
+#include <iostream>
+#include <fstream>
+
 #include "reader.hpp"
 #include "logger.hpp"
 #include "archiver.hpp"
 #include "manager.hpp"
-
 #include "clpr_proc_db.hpp"
+#include "clpr_config.hpp"
 
-#include <boost/thread/thread.hpp>
-
-using namespace clpr_d;
 using namespace boost;
+namespace po = boost::program_options;
 
-int main(void) {
+int main(int argc, char *argv[]) {
 
+	//// Start up a daemon
 	pid_t pid, sid;
 
+	// If we are already a daemon, just exit
+	if( getppid() == 1 ) {
+		return EXIT_SUCCESS;
+	}	
 
-	if ((pid=fork()) < 0) 
+	//// 1. Fork from parent process
+	pid = fork();
+	// Can't fork - fork error
+	if ( pid < 0 ) 
 		exit(EXIT_FAILURE);
-
-	if (pid > 0) 
+	// Otherwise, parent exits	
+	if ( pid > 0 ) 
 		exit(EXIT_SUCCESS);
 
-	//
+	//// 2. Set permissions
 	umask(0);
 
-	//the child process       
-	if ((sid=setsid()) < 0) 
+	//// 3. Open any logs
+		
+	
+	//// 4. Get new session ID       
+	sid = setsid();
+	if ( sid < 0 ) 
 		exit(EXIT_FAILURE);
 
 
-	// close the std streams
+	//// 5. Change to a safe working directory
+
+
+	//// 6. Close the standard file descriptors	
 	close(STDIN_FILENO);
 	//close(STDOUT_FILENO);
 	close(STDERR_FILENO);
 
+	//// 7. Actual daemon code
+	
+	// Check for configuration file, and parse it
+	std::ifstream config_file(CLPR_CONF_PATH, ios::in);
+	if (config_file.is_open()) {
+		std::cout << "INFO Found configuration file ! Parsing..." << std::endl;
+		clpr_d::p_conf p_config_file( new clpr_d::clpr_config(config_file) );
+		config_file.close();
+	} else {
+		std::cout << "ERROR Can not find configuration file" << std::endl;
+		exit(EXIT_FAILURE);
+	}	
+
+	/*
 	// main db
 	clpr_proc_db db;
 	// a shared pointer to same
@@ -78,4 +111,5 @@ int main(void) {
 
 	//
 	exit(EXIT_FAILURE);
+	*/
 }

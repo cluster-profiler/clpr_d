@@ -4,10 +4,7 @@
 
 #include "utilities.hpp"
 
-
-
 namespace clpr_d{
-
 	string get_start_time(vector<string>& input){
 
 		// First five fields of pidstat:
@@ -54,7 +51,7 @@ namespace clpr_d{
 
 	}
 
-	string get_uid(vector<string>& input){
+	string get_uid(const vector<string>& input){
 
 
 		return input[6];
@@ -62,7 +59,7 @@ namespace clpr_d{
 	}
 
 
-	string get_uid_blob_label(vector<string>& input){
+	string get_grp_proc_label(vector<string>& input){
 
 		string ret 	= get_start_time(input);
 		ret		+= " ";
@@ -94,20 +91,20 @@ namespace clpr_d{
 	}
 
 
-	pid_blob get_pid_blob(vector<string>& input){
+	pid_data get_pid_data(vector<string>& input){
 
-		pid_blob ret;
+		pid_data ret;
 
 		// timestamp
 		ret.time 	= atof(input[time_pos].c_str());
 		// percent cpu on app
-		ret.user 	= atof(input[user_pos].c_str());
+		ret.p_usr 	= atof(input[user_pos].c_str());
 		// percent cpu on system stuff
-		ret.system 	= atof(input[system_pos].c_str());
+		ret.p_sys 	= atof(input[system_pos].c_str());
 		//
-		ret.perc_cpu 	= atof(input[perc_cpu_pos].c_str());
+		ret.p_cpu 	= atof(input[perc_cpu_pos].c_str());
 		// the core we are running
-		ret.core_cpu 	= atof(input[core_cpu_pos].c_str());
+		ret.cpu_num 	= atof(input[core_cpu_pos].c_str());
 		// the page faults not requring disk
 		ret.minflt_s 	= atof(input[minflt_s_pos].c_str());
 		// the page faults requiring disk
@@ -117,7 +114,7 @@ namespace clpr_d{
 		// resident mem, non-swapped
 		ret.rss		= atof(input[rss_pos].c_str());
 		//
-		ret.mem		= atof(input[mem_pos].c_str());
+		ret.p_mem		= atof(input[mem_pos].c_str());
 		// kb read disk
 		ret.kb_rd_s	= atof(input[kb_rd_s_pos].c_str());
 		//

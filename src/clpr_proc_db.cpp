@@ -10,32 +10,32 @@ namespace clpr_d{
 	}
 
 	// grab a blob if it exists; if not, return a new one
-	uid_blob clpr_proc_db::get(vector<string>& tokens, string& i, uint64_t &label){
+	grp_proc clpr_proc_db::get(vector<string>& tokens, string& i, uint64_t &label){
 		_mutex_blobs.lock();
-		_index_it=_set.get<uid_blob_label>().find(i);
+		_index_it=_set.get<grp_proc_label>().find(i);
 
 
-		if (_set.get<uid_blob_label>().end() != _index_it){
+		if (_set.get<grp_proc_label>().end() != _index_it){
 			_mutex_blobs.unlock();
 			return *_index_it;
 
 		}
 		_mutex_blobs.unlock();
 		label++;
-		return uid_blob(tokens,i,label);
+		return grp_proc(tokens,i,label);
 
 	}
 
 
 	// insert; const elements so delete first if exists
 	// FIXME this is crappy, probably should use smrt ptrs
-	void clpr_proc_db::insert(uid_blob &in, string &i){
+	void clpr_proc_db::insert(grp_proc &in, string &i){
 
 		_mutex_blobs.lock();
-		_index_it=_set.get<uid_blob_label>().find(i);
-		if (_set.get<uid_blob_label>().end() != _index_it){
+		_index_it=_set.get<grp_proc_label>().find(i);
+		if (_set.get<grp_proc_label>().end() != _index_it){
 
-			_set.get<uid_blob_label>().erase(_index_it);
+			_set.get<grp_proc_label>().erase(_index_it);
 			_set.insert(in);
 
 			_mutex_blobs.unlock();	
@@ -72,6 +72,7 @@ namespace clpr_d{
 		//while(in._set.size()==0){
 		//	in._ready.wait(lock);
 		//}
+		/*
 		in._mutex_blobs.lock();
 		for (in._label_it=in._set.get<global_label>().begin(); \
 				in._label_it != in._set.get<global_label>().end(); in._label_it++)
@@ -79,6 +80,7 @@ namespace clpr_d{
 		in._mutex_blobs.unlock();
 		//lock.unlock();
 		//in._ready.notify_all();
+		*/
 		return out;
 	}
 	// print by max_mem
@@ -190,8 +192,6 @@ namespace clpr_d{
 			k++;
 		}
 		_mutex_blobs.unlock();
-
-
 	}
 
 

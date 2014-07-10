@@ -27,11 +27,14 @@
  */
 
 
-#ifndef __CLPR_DB_HPP
-#define __CLPR_DB_HPP
+#ifndef _CLPR_DB_
+#define _CLPR_DB_
+
 #ifndef NDEBUG
+
 #define BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING
 #define BOOST_MULTI_INDEX_ENABLE_SAFE_MODE
+
 #endif
 
 
@@ -54,7 +57,7 @@
 
 
 #include "key_defines.hpp"
-#include "uid_blob.hpp"
+#include "grp_proc.hpp"
 
 using namespace std;
 using namespace boost;
@@ -65,36 +68,36 @@ namespace clpr_d{
 
 
 	///a container for process data, allowing multiple search/sort
-	class clpr_proc_db{
+	class clpr_proc_db {
 
 
 		typedef multi_index_container<
-			uid_blob,
+			grp_proc,
 			indexed_by<
 				hashed_unique<
-				tag<uid_blob_label>,BOOST_MULTI_INDEX_MEMBER(uid_blob,string,_hash_index)>,
-			ordered_unique<
-				tag<global_label>,BOOST_MULTI_INDEX_MEMBER(uid_blob,uint64_t,_label)>,
-			ordered_non_unique<
-				tag<max_mem>,BOOST_MULTI_INDEX_MEMBER(uid_blob,float,_max_mem)>,
-			ordered_non_unique<
-				tag<min_mem>,BOOST_MULTI_INDEX_MEMBER(uid_blob,float,_min_mem)>,
-			ordered_non_unique<
-				tag<max_disk>,BOOST_MULTI_INDEX_MEMBER(uid_blob,float,_max_disk)>,
-			ordered_non_unique<
-				tag<min_disk>,BOOST_MULTI_INDEX_MEMBER(uid_blob,float,_min_disk)>,
-			ordered_non_unique<	
-				tag<max_fds>, BOOST_MULTI_INDEX_MEMBER(uid_blob,float,_max_fds)>,
-			ordered_non_unique<
-				tag<min_fds>, BOOST_MULTI_INDEX_MEMBER(uid_blob,float,_min_fds)>,
-			ordered_non_unique<
-				tag<max_cpu>, BOOST_MULTI_INDEX_MEMBER(uid_blob,float,_max_cpu)>,
-			ordered_non_unique<
-				tag<min_cpu>, BOOST_MULTI_INDEX_MEMBER(uid_blob,float,_min_cpu)> >
+					tag<grp_proc_label>,BOOST_MULTI_INDEX_MEMBER(grp_proc,string,hash_index)>,
+				ordered_unique<
+					tag<global_label>,BOOST_MULTI_INDEX_MEMBER(grp_proc,uint64_t,label)>,
+				ordered_non_unique<
+					tag<max_mem>,BOOST_MULTI_INDEX_MEMBER(grp_proc,float,max_mem)>,
+				ordered_non_unique<
+					tag<min_mem>,BOOST_MULTI_INDEX_MEMBER(grp_proc,float,min_mem)>,
+				ordered_non_unique<
+					tag<max_disk>,BOOST_MULTI_INDEX_MEMBER(grp_proc,float,max_disk)>,
+				ordered_non_unique<
+					tag<min_disk>,BOOST_MULTI_INDEX_MEMBER(grp_proc,float,min_disk)>,
+				ordered_non_unique<	
+					tag<max_fds>, BOOST_MULTI_INDEX_MEMBER(grp_proc,float,max_fds)>,
+				ordered_non_unique<
+					tag<min_fds>, BOOST_MULTI_INDEX_MEMBER(grp_proc,float,min_fds)>,
+				ordered_non_unique<
+					tag<max_cpu>, BOOST_MULTI_INDEX_MEMBER(grp_proc,float,max_cpu)>,
+				ordered_non_unique<
+					tag<min_cpu>, BOOST_MULTI_INDEX_MEMBER(grp_proc,float,min_cpu)> >
 				> blob_proc_db;
 
 		/// iterators
-		typedef blob_proc_db::index<uid_blob_label>::type::iterator ind_it;
+		typedef blob_proc_db::index<grp_proc_label>::type::iterator ind_it;
 		typedef blob_proc_db::index<global_label>::type::iterator lab_it;
 		typedef blob_proc_db::index<min_mem>::type::iterator mmin_it;
 		typedef blob_proc_db::index<max_mem>::type::iterator mmax_it;
@@ -138,18 +141,18 @@ namespace clpr_d{
 
 
 		/**
-		 * Construct the database, a collection of uid_blobs
+		 * Construct the database, a collection of grp_procs
 		 * @param 
 		 */
 		clpr_proc_db();
 
 
 		/**
-		 * Take a uid_blob and add in to the db
-		 * @param uid_blob input 
+		 * Take a grp_proc and add in to the db
+		 * @param grp_proc input 
 		 * @param string& (hashed) index
 		 */	
-		void insert(uid_blob& in, string &i);
+		void insert(grp_proc& in, string &i);
 
 		///get the size of the map
 		int size();
@@ -172,7 +175,7 @@ namespace clpr_d{
 		 * @param uint64_t& label
 		 *
 		 */
-		uid_blob get(vector<string>& tokens, string &i, uint64_t &label);
+		grp_proc get(vector<string>& tokens, string &i, uint64_t &label);
 
 		///send all out to stream
 		friend ostream& operator<<(ostream &out, clpr_proc_db& in);

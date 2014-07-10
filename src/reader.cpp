@@ -26,6 +26,8 @@ namespace clpr_d{
 			while (getline(pipe_in,in)){
 
 				istringstream iss(in);
+
+				// C++11 uniform initialization
 				vector<string> tokens{istream_iterator<string>{iss},
 					istream_iterator<string>{}};
 
@@ -40,9 +42,9 @@ namespace clpr_d{
 					}
 					if (tokens.size()>20){
 		
-						index = get_uid_blob_label(tokens);
-						uid_blob blob = db.get(tokens,index,global_label);
-						blob.set(host_info,tokens);
+						index = get_grp_proc_label(tokens);
+						grp_proc blob = db.get(tokens,index,global_label);
+						blob.update(host_info,tokens);
 						db.insert(blob,index);
 
 					} //else {

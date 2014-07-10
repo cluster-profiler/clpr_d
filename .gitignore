@@ -11,3 +11,10 @@
 *.lai
 *.la
 *.a
+
+# Documentation
+html/
+latex/
+log/
+bin/
+obj/

@@ -4,9 +4,9 @@ OBJECTS     := $(sort $(patsubst src/%, obj/%.o, $(SOURCES)))
 DEPENDS     := $(sort $(patsubst src/%, obj/%.d, $(SOURCES)))
 
 # 
-CPPFLAGS    += -I./inc 
-LDFLAGS     += -lboost_thread -lboost_system -lpthread 
-LDFLAGS	    += 
+CPPFLAGS    += -I./inc -I/usr/global/boost/boost_1_54_0
+LDFLAGS     += -lboost_thread -lboost_system -lboost_program_options -lpthread 
+LDFLAGS	    += -L/usr/global/boost/boost_1_54_0/stage/lib
 
 CXX         := g++ -Wall -g --std=c++0x
 

@@ -1,6 +1,7 @@
 /**
  * @file key_defines.hpp
  * @author  Bill Brouwer <whiskeyjulietb@gmail.com>
+ * @author  Pierre-Yves Taunay <py.taunay@psu.edu>
  * @version 1.0
  *
  * @section LICENSE
@@ -24,8 +25,9 @@
  */
 
 
-#ifndef _KEY_DEFINES
-#define _KEY_DEFINES
+#ifndef _KEY_DEFINES_
+#define _KEY_DEFINES_
+
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/foreach.hpp>
@@ -49,9 +51,13 @@
 #include <map>
 
 
+#include "pid_data.hpp"
+
 using namespace std;
 using namespace boost;
-namespace clpr_d{
+
+namespace clpr_d {
+
 
 	/// named pipe to read
 #define CLPR_INPUT_PIPE "clpr_input"
@@ -63,7 +69,7 @@ namespace clpr_d{
 #define CLPR_LOGGER_ENTRIES 10
 	/// sleep time btwn db management tasks in mins
 #define CLPR_MANAGER_WAIT 121
-	/// maximum acceptable hours between writes of uid_blobs,
+	/// maximum acceptable hours between writes of grp_procs,
 	/// for cleaning purposes in manager thread
 #define CLPR_HOURS_BTWN_WRITES 4
 
@@ -121,8 +127,6 @@ namespace clpr_d{
 	enum { TIME_POS = 5, PID_POS = 7, USER_POS = 8, SYSTEM_POS = 9, PCPU_POS = 11, CORE_CPU_POS = 12, MINFLTS_POS = 13, MAJFLTS_POS = 14, VSZ_POS = 15, RSS_POS = 16, MEM_POS = 17, KB_RD_S_POS = 18, KB_WR_S_POS = 19, KB_CCWR_S_POS = 20, IODELAY_POS = 21, CSWCH_S_POS = 22, NVCSWCH_S_POS = 23, NTH_POS = 24, FDS_POS = 24, CMD_POS = 26 };
 
 
-
-
 	/// forward dec
 	class tcp_connection;
 
@@ -130,7 +134,7 @@ namespace clpr_d{
 	class clpr_proc_db;
 
 	/// for... well you get it
-	class uid_blob;
+	class grp_proc;
 
 	///
 	typedef boost::shared_ptr<tcp_connection> tcp_pointer;
@@ -139,77 +143,7 @@ namespace clpr_d{
 	typedef boost::shared_ptr<clpr_proc_db> db_pointer;
 
 	///
-	typedef boost::shared_ptr<uid_blob> uid_blob_pointer;
-
-
-	/// essentially a row in pidstat output
-	typedef struct {
-		/// timestamp
-		int time;
-		/// percent cpu on app
-		float user;
-		/// percent cpu on system stuff
-		float system;
-		///
-		float perc_cpu;
-		/// the core we are running
-		float core_cpu;
-		/// the page faults not requring disk
-		float minflt_s;
-		/// the page faults requiring disk
-		float majflt_s;
-		/// virtual memory size bytes
-		float vsz;
-		/// resident mem, non-swapped
-		float rss;
-		///
-		float mem;
-		/// kb read disk
-		float kb_rd_s;
-		///
-		float kb_wr_s;
-		/// canceled writes
-		float kb_ccwr_s;
-		///
-		float iodelay;
-		/// context switches
-		float cswch_s;
-		/// non-voluntary
-		float nvcswh_s;
-		/// threads in my group
-		float threads;
-		/// open file descriptors
-		float fds;
-	} pid_blob;
-
-	/// key for history unordered_map in uid_blob
-	typedef struct{
-		string command;
-		string pid;
-		string hostname;
-	} history_key;
-
-	/// hash for history unordered_map in uid_blob
-	typedef struct{
-		size_t operator()(const history_key &in ) const
-		{
-			return boost::hash<string>()(in.command) ^ \
-				boost::hash<string>()(in.pid) ^ boost::hash<string>()(in.hostname);
-		};
-
-	} key_hash;
-
-
-	/// equality operator for history unordered_map in uid_blob
-	typedef struct{
-		bool operator()(const history_key& l, const history_key& r) const
-		{
-			return (l.command.compare(r.command) == 0) \
-							      && (l.pid.compare(r.pid)==0) && \
-							      (l.hostname.compare(r.hostname)==0);
-		};
-
-	} key_eq;
+	typedef boost::shared_ptr<grp_proc> grp_proc_pointer;
 
 	/// convenience label for the database
 	struct global_label{};
@@ -232,11 +166,8 @@ namespace clpr_d{
 	/// convenience label for the database
 	struct min_cpu{};
 	/// convenience label for the database
-	struct uid_blob_label{};
+	struct grp_proc_label{};
 
-	///
-	typedef unordered_map<history_key,vector<pid_blob>,key_hash,key_eq > HASH_MAP;
-	//typedef unordered_map<string,vector<pid_blob> > HASH_MAP;
 
 	/// fake delete a smart pointer to stack object
 	struct null_deletor{
@@ -249,7 +180,7 @@ namespace clpr_d{
 
 };
 /// must be in global namespace
-BOOST_FUSION_ADAPT_STRUCT(clpr_d::pid_blob, 
+BOOST_FUSION_ADAPT_STRUCT(clpr_d::pid_data, 
 		(int,time)
 		(float,perc_cpu)
 		(float,minflt_s)

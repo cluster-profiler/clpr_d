@@ -31,19 +31,20 @@
 
 
 #include "key_defines.hpp"
+#include "pid_data.hpp"
 
 
 
 namespace clpr_d{
 
-	/// whoami
-	string get_uid(vector<string>& input);
-	/// when did this guy/gal start
+	/// Whoami
+	string get_uid(const vector<string>& input);
+	/// When did I start
 	string get_start_time(vector<string>& input);
-	/// return the unique index for db push/pop
-	string get_uid_blob_label(vector<string> &input);
-	/// return the pid blob for this input line
-	pid_blob get_pid_blob(vector<string> &input);
+	/// Return the unique index for db push/pop
+	string get_grp_proc_label(vector<string> &input);
+	/// Return the pid blob for this input line
+	pid_data get_pid_data(vector<string> &input);
 }
 
 #endif

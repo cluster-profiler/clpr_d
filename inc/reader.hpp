@@ -32,7 +32,7 @@
 #include "clpr_proc_db.hpp"
 #include "utilities.hpp"
 
-namespace clpr_d{
+namespace clpr_d {
 
 	/// a class for reading pidstat data from a named pipe
 	class reader{
