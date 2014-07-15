@@ -34,17 +34,20 @@
 #include "logger.hpp"
 #include "archiver.hpp"
 #include "manager.hpp"
-#include "clpr_proc_db.hpp"
+#include "clpr_db.hpp"
 
-#include "clpr_config.hpp"
+#include "clpr_conf.hpp"
 #include "clpr_log.hpp"
+#include "fifo_reader.hpp"
 
 using namespace boost;
 namespace po = boost::program_options;
 
 int main(int argc, char *argv[]) {
 
-	//// Start up a daemon
+	////////////////////////////////////
+	///////////  Start up a daemon
+	////////////////////////////////////
 	pid_t pid, sid;
 
 	// If we are already a daemon, just exit
@@ -68,8 +71,7 @@ int main(int argc, char *argv[]) {
 	clpr_d::p_log p_log_file;
 	try {
 		p_log_file = clpr_d::p_log( new clpr_d::clpr_log(CLPR_LOG_PATH));
-	} 
-	catch (std::exception& e) {
+	} catch (std::exception& e) {
 		std::cout << "ERROR " << e.what() << std::endl;	
 		return EXIT_FAILURE;
 	}	
@@ -79,24 +81,27 @@ int main(int argc, char *argv[]) {
 	if ( sid < 0 ) 
 		return EXIT_FAILURE;
 
-
 	//// 5. Change to a safe working directory
 
 
 	//// 6. Close the standard file descriptors	
 	close(STDIN_FILENO);
-	//close(STDOUT_FILENO);
+	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
-
-	//// 7. Actual daemon code
+ 
+	////////////////////////////////////
+	/////////// Actual daemon code
+	////////////////////////////////////
 	
-	/// Check for configuration file, and parse it
-	std::ifstream config_file(CLPR_CONF_PATH, ios::in);
+	//// Check for configuration file, and parse it
+	std::ifstream conf_file(CLPR_CONF_PATH, ios::in);
 	std::string msg;
-	clpr_d::p_conf p_config_file;
+	clpr_d::p_conf p_conf_file;
 
-	// try opening the file
-	if (config_file.is_open()) {
+	// Try opening the config file
+	if (conf_file.is_open()) {
+
+		// Found the config file; get the path, then pass it to logger
 		msg = "Found configuration file";
 		std::string clpr_conf_path(CLPR_CONF_PATH, strnlen(CLPR_CONF_PATH,511)); 
 		msg += clpr_conf_path;
@@ -104,35 +109,46 @@ int main(int argc, char *argv[]) {
 
 		p_log_file->write(CLPR_LOG_INFO, msg);
 
-		p_config_file = clpr_d::p_conf( new clpr_d::clpr_config(config_file,p_log_file) );
+		// Set the config object
+		p_conf_file = clpr_d::p_conf( new clpr_d::clpr_conf(conf_file,p_log_file) );
+		// Now, add the config file to the log file
+		p_log_file->set_debug(p_conf_file);
 
+		// Log the closing of the log file
 		msg = "Closing configuration file " + clpr_conf_path;
 		p_log_file->write(CLPR_LOG_INFO, msg);
-		config_file.close();
+		conf_file.close();
+
 	} else {
 		p_log_file->write(CLPR_LOG_ERROR,"Can not find or open configuration file");
 		return EXIT_FAILURE;
 	}	
 
-	/*
-	// main db
-	clpr_proc_db db;
-	// a shared pointer to same
-	db_pointer dbs(&db,null_deletor());
-	//kickof threads
+	//// Start the database
+	// Main db -- shared pointer
+	clpr_d::db_ptr p_clpr_db;
+	p_clpr_db = clpr_d::db_ptr(new clpr_d::clpr_db(p_log_file, p_conf_file));
+
+
+	//// Start the reader
+	clpr_d::fifo_reader reader(CLPR_FIFO_PATH,p_log_file);	
+	reader.read(p_clpr_db);
+
+
+	//// Worker threads
 	// extra paranthesis for most vexing parse(?)
-	thread write_log((logger(dbs)));
-	thread write_socket((archiver(dbs)));
-	thread manage_db((manager(dbs)));
+	
+	// 1. Logger
+	// boost::thread write_log((logger(dbs)));
+	// 2. Listener
+	//boost::thread write_socket((archiver(dbs)));
+	//boost::thread manage_db((manager(dbs)));
 
-	//
-	reader parse_input(db);
+	//reader parse_input(db);
 
-	write_log.join();
-	write_socket.join();
-	manage_db.join();
+	//write_log.join();
+	//write_socket.join();
+	//manage_db.join();
 
-	//
-	exit(EXIT_FAILURE);
-	*/
+	return EXIT_SUCCESS;
 }

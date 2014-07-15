@@ -18,3 +18,13 @@ latex/
 log/
 bin/
 obj/
+
+# Testing
+foo
+
+# Old source files
+src/old
+
+# Socket (for now)
+inc/socket
+src/socket

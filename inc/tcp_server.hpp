@@ -30,7 +30,7 @@
 #ifndef _TCP_SERVER_HPP
 #define _TCP_SERVER_HPP
 
-#include "clpr_proc_db.hpp"
+#include "clpr_db.hpp"
 #include "key_defines.hpp"
 
 
@@ -61,7 +61,7 @@ namespace clpr_d{
 			tcp::socket socket_;
 	};
 
-	/// serve up clpr_proc_db ostream using tcp/ipv4/port 80
+	/// serve up clpr_db ostream using tcp/ipv4/port 80
 	class tcp_server
 	{
 		public:

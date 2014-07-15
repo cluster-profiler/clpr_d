@@ -5,6 +5,7 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include "pid_data.hpp"
 #include "utilities.hpp"
 
 namespace clpr_d{
@@ -81,7 +82,7 @@ bool file_exists(const std::string& filename)
 	}
 
 
-	string get_grp_proc_label(vector<string>& input){
+	string get_process_grp_label(vector<string>& input){
 
 		string ret 	= get_start_time(input);
 		ret		+= " ";
@@ -113,46 +114,47 @@ bool file_exists(const std::string& filename)
 	}
 
 
-	pid_data get_pid_data(vector<string>& input){
+	// pid_data is simple data; assignment operator will work here
+	pid_data get_pid_data(const std::vector<std::string>& input){
 
 		pid_data ret;
 
 		// timestamp
-		ret.time 	= atof(input[time_pos].c_str());
+		ret.time 	= std::stof(input[TIME_POS]);
 		// percent cpu on app
-		ret.p_usr 	= atof(input[user_pos].c_str());
+		ret.p_usr 	= std::stof(input[USER_POS]);
 		// percent cpu on system stuff
-		ret.p_sys 	= atof(input[system_pos].c_str());
+		ret.p_sys 	= std::stof(input[SYSTEM_POS]);
 		//
-		ret.p_cpu 	= atof(input[perc_cpu_pos].c_str());
+		ret.p_cpu 	= std::stof(input[PCPU_POS]);
 		// the core we are running
-		ret.cpu_num 	= atof(input[core_cpu_pos].c_str());
+		ret.cpu_num 	= std::stof(input[CORE_CPU_POS]);
 		// the page faults not requring disk
-		ret.minflt_s 	= atof(input[minflt_s_pos].c_str());
+		ret.minflt_s 	= std::stof(input[MINFLT_S_POS]);
 		// the page faults requiring disk
-		ret.majflt_s	= atof(input[majflt_s_pos].c_str());
+		ret.majflt_s	= std::stof(input[MAJFLT_S_POS]);
 		// virtual memory size bytes
-		ret.vsz		= atof(input[vsz_pos].c_str());
+		ret.vsz		= std::stof(input[VSZ_POS]);
 		// resident mem, non-swapped
-		ret.rss		= atof(input[rss_pos].c_str());
+		ret.rss		= std::stof(input[RSS_POS]);
 		//
-		ret.p_mem		= atof(input[mem_pos].c_str());
+		ret.p_mem	= std::stof(input[MEM_POS]);
 		// kb read disk
-		ret.kb_rd_s	= atof(input[kb_rd_s_pos].c_str());
+		ret.kb_rd_s	= std::stof(input[KB_RD_S_POS]);
 		//
-		ret.kb_wr_s   	= atof(input[kb_wr_s_pos].c_str());
+		ret.kb_wr_s   	= std::stof(input[KB_WR_S_POS]);
 		// canceled writes
-		ret.kb_ccwr_s	= atof(input[kb_ccwr_s_pos].c_str());
+		ret.kb_ccwr_s	= std::stof(input[KB_CCWR_S_POS]);
 		//
-		ret.iodelay	= atof(input[iodelay_pos].c_str());
+		ret.iodelay	= std::stof(input[IODELAY_POS]);
 		// context switches
-		ret.cswch_s	= atof(input[cswch_s_pos].c_str());
+		ret.cswch_s	= std::stof(input[CSWCH_S_POS]);
 		// non-voluntary
-		ret.nvcswh_s 	= atof(input[nvcswh_s_pos].c_str());
+		ret.nvcswh_s 	= std::stof(input[NVCSWCH_S_POS]);
 		// threads in my group
-		ret.threads	= atof(input[threads_pos].c_str());
+		ret.threads	= std::stof(input[NTH_POS]);
 		// open file descriptors
-		ret.fds		= atof(input[fds_pos].c_str());
+		ret.fds		= std::stof(input[FDS_POS]);
 
 
 		return ret;

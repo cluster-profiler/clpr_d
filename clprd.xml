@@ -15,12 +15,18 @@
 
 <conf>
 	<version>0.2</version>
+
 	<input_pipe path="/gpfs/work/p/pzt5044/Github/clpr_d/bin/clpr_fifo"/>
+
 	<log>
 		<!-- log_path path="/gpfs/work/p/pzt5044/Github/clpr_d/bin/clpr_d.log"/ -->
-		<log_level> 0 </log_level>
+		<log_level> 1 </log_level>
 		<log_max_entries> 10 </log_max_entries>
 	</log>
+
+	<network>
+		<port>59010</port> 
+	</network>
 
 	<db_max_entries> 32768 </db_max_entries>
 

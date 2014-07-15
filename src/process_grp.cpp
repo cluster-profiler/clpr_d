@@ -1,10 +1,10 @@
-#include "grp_proc.hpp"
+#include "process_grp.hpp"
 
 namespace clpr_d {
 
 // Constructor
-grp_proc::grp_proc(const vector<string>& tokens, const string& in, const uint64_t& label):
-	hash_index(in),
+process_grp::process_grp(const vector<string>& tokens, const string& idx, const uint64_t& label, const clpr_d::p_log& p_log_file):
+	hash_index(idx),
 	label(label),
 	max_mem(0.0),
 	min_mem(0.0),
@@ -19,24 +19,30 @@ grp_proc::grp_proc(const vector<string>& tokens, const string& in, const uint64_
 	update_time();
 
 //	start_time 	= get_start_time(tokens);
+	this->p_log_file = p_log_file;
+	this->p_log_file->write(CLPR_LOG_DEBUG,"Calling process_grp constructor");
 
 	uid 		= get_uid(tokens);
 //	gid 		= get_gid(tokens);
-};
+}
 
-void grp_proc::update_time(){
-
+// Destructor
+process_grp::~process_grp() {
+	this->p_log_file->write(CLPR_LOG_DEBUG,"Calling process_grp destructor");
+}	
+	
+// Time setter
+void process_grp::update_time(){
 	tstamp = (uint64_t) time(NULL);
-
 }
 
 // Time getter
-uint64_t const& grp_proc::get_time() const{
-
+uint64_t const& process_grp::get_time() const{
 	return tstamp;
 }
 
-string grp_proc::get_header() const{
+// Get the header
+string process_grp::get_header() const{
 
 	stringstream ss;
 
@@ -46,46 +52,75 @@ string grp_proc::get_header() const{
 
 }
 
-// TODO: Sanitize fields; report fields that are fucked up 
-void grp_proc::update(const string& host_info, vector<string> &tokens){
 
+// Pushing back a row of pidstat in a process_grp
+// TODO: check that the tokens are valid
+void process_grp::push_back(const std::string& host_info, const std::vector<std::string> &tokens){
+
+	//// For logging
+	std::string msg;
+
+	// Copy data from original tokens 
+	std::vector<std::string> tmp_tokens;
+	std::copy(tokens.begin(), tokens.end(), tmp_tokens.begin());
+
+	//// Log the line to sanitize
+	p_log_file->write(CLPR_LOG_DEBUG,"Sanitizing parsed pidstat line");
+	for(auto it = tmp_tokens.begin(); it != tmp_tokens.end(); ++it) {	
+		p_log_file->write(CLPR_LOG_DEBUG,*it);
+	}
+
+	//// Sanitizing the command (can contain return, tabs, etc.)
 	history_key key;
 	char spec_chars[] = "\n\t";
 
 	// Do not add blank space before command
 	key.command = "";
 
+	
+
 	// Parse the command (can be contained in multiple tokens)
-	for (int i=CMD_POS; i<tokens.size(); ++i)
+	// Loop over each part of the command, and erase double quote chars and special characters
+	for(auto it = tmp_tokens.begin() + CMD_POS; it != tmp_tokens.end(); ++it) 
 	{
+
 		// Find double quote character, replace with single character
-		std::replace( tokens[i].begin(), tokens[i].end(), '\"', '\'');	
+		std::replace( it->begin(), it->end(), '\"', '\'');	
 
 		// Remove other special characters
 		for (unsigned int j = 0; j < strlen(spec_chars); ++j)
-			tokens[i].erase (std::remove(tokens[i].begin(), tokens[i].end(), spec_chars[j]), tokens[i].end());
+			it->erase (std::remove(it->begin(), it->end(), spec_chars[j]), it->end());
 
-		key.command += tokens[i];
-
+		key.command += *it;
 		// Do not add blank space at the end of the command, but add space between parts of the command
-		if( i != tokens.size() -1 )	
+		if( it != tmp_tokens.end()-1 )	
 			key.command			+= " ";
-	}
+	}		
 
+	
+	//// TODO: Sanitize other fields
+
+
+	//// Log the sanitized pidstat line 
+	p_log_file->write(CLPR_LOG_DEBUG,"Sanitized line");
+	for(auto it = tmp_tokens.begin(); it != tmp_tokens.end(); ++it) 
+	{
+		p_log_file->write(CLPR_LOG_DEBUG,*it);
+	}	
+	
+	//// Get hostname and PID
 	// Store the hostname and the PID for that particular entry
 	key.hostname 	+= host_info;
-	key.pid		+= tokens[PID_POS];
+	key.pid		+= tmp_tokens[PID_POS];
 
-	pid_data value = get_pid_data(tokens);
+	//// Store data of pidstat, then add it to the history
+	pid_data value = get_pid_data(tmp_tokens);
 
-	vector<pid_data> tmp = history[key];
-
-	tmp.push_back(value);
-	history[key] = tmp;
+	history[key].push_back(value);
 
 	total_process = history.size();
 
-	// Update statistics
+	//// Update statistics
 	if (max_mem < value.p_mem) 			max_mem = value.p_mem;
 	if (min_mem > value.p_mem) 			min_mem = value.p_mem;
 	if (max_disk < (value.kb_rd_s+value.kb_wr_s)) 	max_disk= value.kb_rd_s+value.kb_wr_s;
@@ -101,16 +136,37 @@ void grp_proc::update(const string& host_info, vector<string> &tokens){
 
 }
 
+//// Getters	
+std::string process_grp::get_hash_index() const {return hash_index;}	
+uint64_t process_grp::get_label() const{return label;}
+float process_grp::get_max_mem() const{return max_mem;}
+float process_grp::get_min_mem() const{return min_mem;}
+
+float process_grp::get_max_disk() const{return max_disk;}
+float process_grp::get_min_disk() const{return min_disk;}
+
+float process_grp::get_max_fds() const{return max_fds;}
+float process_grp::get_min_fds() const{return min_fds;}
+
+float process_grp::get_max_cpu() const{return max_cpu;}
+float process_grp::get_min_cpu() const{return min_cpu;}
+
+
+
+
+
+
+
 /*
 // something approaching json format
-ostream& operator<<(ostream &out, const grp_proc& in){
+ostream& operator<<(ostream &out, const process_grp& in){
 
 	string kill_me="abcdefghijklmnopqrstuvwxyz";
 
 	// CSV format for the output
 	// Data is denormalized 
 	// Data out:
-	// grp_proc_id, start time, max mem, min mem, max disk, min disk, max fds, min fds, max cpu, min cpu, total processes, ...
+	// process_grp_id, start time, max mem, min mem, max disk, min disk, max fds, min fds, max cpu, min cpu, total processes, ...
 	// ... 
 	BOOST_FOREACH( HASH_MAP::value_type v, in._history ) {	
 
@@ -131,7 +187,7 @@ ostream& operator<<(ostream &out, const grp_proc& in){
 
 
 			if (test_for_alpha)
-				cerr << "whoa; grp_proc with index " << in._label << " has an ill-formed pid : " << tmp.pid << endl; 
+				cerr << "whoa; process_grp with index " << in._label << " has an ill-formed pid : " << tmp.pid << endl; 
 
 			if (!test_for_alpha){
 
@@ -272,7 +328,7 @@ ostream& operator<<(ostream &out, const grp_proc& in){
 
 #if 0
 // original format
-ostream& operator<<(ostream &out, const grp_proc& in){
+ostream& operator<<(ostream &out, const process_grp& in){
 
 	out << "## " << in._label << "," << in._hash_index << "," << in._max_mem << "," << in._min_mem << "," << in._max_disk << "," << in._min_disk;
 	out << "," << in._max_fds << "," << in._min_fds << "," << in._max_cpu << "," << in._min_cpu << "," << in._total_procs << endl;
@@ -302,4 +358,5 @@ ostream& operator<<(ostream &out, const grp_proc& in){
 
 
 */
+
 }; // End of namespace clpr_d

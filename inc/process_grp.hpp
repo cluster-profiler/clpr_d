@@ -1,5 +1,5 @@
 /**
- * @file grp_proc.hpp
+ * @file process_grp.hpp
  * @author Bill Brouwer <whiskeyjulietb@gmail.com>
  * @author Pierre-Yves Taunay <py.taunay@psu.edu>
  * @version 0.2
@@ -30,6 +30,9 @@
 
 #include <boost/spirit/include/phoenix.hpp>
 
+#include "clpr_log.hpp"
+#include "pid_data.hpp"
+
 #include "utilities.hpp"
 
 using namespace boost;
@@ -40,14 +43,14 @@ namespace clpr_d {
 //////////////////////////////////////////
 ////////////// TYPEDEFS //////////////////
 //////////////////////////////////////////
-// Key for history unordered_map in grp_proc
+// Key for history unordered_map in process_grp
 typedef struct{
 	string command;
 	string pid;
 	string hostname;
 } history_key;
 
-// Hash for history unordered_map in grp_proc
+// Hash for history unordered_map in process_grp
 typedef struct{
 	size_t operator()(const history_key &in ) const
 	{
@@ -57,7 +60,7 @@ typedef struct{
 
 } key_hash;
 
-/// Equality operator for history unordered_map in grp_proc
+/// Equality operator for history unordered_map in process_grp
 typedef struct{
 	bool operator()(const history_key& l, const history_key& r) const
 	{
@@ -81,7 +84,7 @@ typedef unordered_map<history_key,
 /// An aggregator of pidstat data, i.e. a group of processes
 // v0.1: Clustered by start date/time and uid
 // v0.2: Clustered by group ID (GID), and user ID
-class grp_proc {
+class process_grp {
 
 	private:
 		// History of the aggregated processes
@@ -120,29 +123,31 @@ class grp_proc {
 		// Total number of processes
 		int total_process;
 
+		// Log file
+		clpr_d::p_log p_log_file;
 
 	public:
 		/**
-		 * Build a group of processes grp_proc with a unique string and integer label
+		 * Build a group of processes process_grp with a unique string and integer label
 		 * @param vector<string>& tokens 
 		 * @param string& in (what will be hash index in db)
 		 * @param uint64_t& label integer 
 		 */	
-		grp_proc(const vector<string>& tokens, const string& in,const uint64_t& label);
+		process_grp(const vector<string>& tokens, const string& in,const uint64_t& label, const clpr_d::p_log& p_log_file);
 
+		/// bye bye
+		~process_grp();
+
+		void push_back(const string& host_info, const vector<string> &tokens);
 		// Update
 		/**
-		 * Update a grp_proc from input tokens and hostname
+		 * Update a process_grp from input tokens and hostname
 		 * @param string hostname
 		 * @param vector<string> tokens input data
 		 */	
-		void update(const string& host_info,vector<string>& tokens);
+//		void update(const string& host_info,vector<string>& tokens);
 		/// return the header as a string
 		string get_header() const;
-		/// 
-		grp_proc(){};
-		/// bye bye
-		~grp_proc(){};
 
 		/// timestamp this thing
 		void update_time();
@@ -150,12 +155,31 @@ class grp_proc {
 		/// get the time	
 		uint64_t const& get_time() const;
 
+		//// Getters
+		std::string get_hash_index() const;
+		uint64_t get_label() const;
+		float get_max_mem() const;
+		float get_min_mem() const;
+
+		float get_max_disk() const;
+		float get_min_disk() const;
+
+		float get_max_fds() const;
+		float get_min_fds() const;
+		
+		float get_max_cpu() const;
+		float get_min_cpu() const;
+
+
+
 
 		/// format the stream operator		
-		friend ostream& operator<<(ostream &out, const grp_proc& in);
+		friend ostream& operator<<(ostream &out, const process_grp& in);
 
-		friend class clpr_proc_db;
+//		friend class clpr_db;
 };
+
+typedef boost::shared_ptr<process_grp> p_pgrp;
 
 }; // End of namespace clpr_d
 

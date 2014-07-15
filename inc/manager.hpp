@@ -28,7 +28,7 @@
 #ifndef _MANAGER_HPP
 #define _MANAGER_HPP
 
-#include "clpr_proc_db.hpp"
+#include "clpr_db.hpp"
 #include <boost/thread/thread.hpp>
 
 namespace clpr_d{

@@ -25,32 +25,33 @@
 
 
 
-#ifndef _ARCHIVER_HPP
-#define _ARCHIVER_HPP
 
-#include "tcp_server.hpp"
-
-namespace clpr_d{
-
-	/// Archiving class; write a socket thru boost::asio
-	class archiver{
-		
-		private:
-
-			db_pointer db_;
-		public :
-			/**
-			 * Construct the archiver, which will listen on some port 
-                         * and write out the db when queried.
-                         * @param db_pointer db input database
-			 */
-			archiver(db_pointer& db);
-			~archiver(){};
-
-			void operator()();
-
-		
-	};
-};
-
-#endif
+//#ifndef _ARCHIVER_
+//#define _ARCHIVER_
+//
+//#include "tcp_server.hpp"
+//
+//namespace clpr_d {
+//
+//	/// Archiving class; write a socket thru boost::asio
+//	class clpr_server {
+//		
+//		private:
+//
+//			db_pointer db_;
+//		public :
+//			/**
+//			 * Construct the archiver, which will listen on some port 
+//                         * and write out the db when queried.
+//                         * @param db_pointer db input database
+//			 */
+//			archiver(db_pointer& db);
+//			~archiver(){};
+//
+//			void operator()();
+//
+//		
+//	};
+//}; // End of namespace clpr_d
+//
+//#endif

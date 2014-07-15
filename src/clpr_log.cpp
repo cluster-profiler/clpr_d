@@ -8,7 +8,7 @@
 
 #include "clpr_log.hpp"
 #include "utilities.hpp"
-#include "mv_exception.hpp"
+#include "exceptions/mv_exception.hpp"
 
 using namespace boost::posix_time;
 
@@ -59,10 +59,6 @@ clpr_log::~clpr_log() {
 
 
 void clpr_log::write(const int& severity, const std::string& msg) {
-	// Get the time stamp of that log message
-  	time_facet *facet = new time_facet("%d-%b-%Y %H:%M:%S");
-    	this->log_file.imbue(locale(this->log_file.getloc(), facet));
-     	this->log_file << second_clock::local_time() << " ";
 
 	std::string type;
 	switch(severity) {
@@ -86,8 +82,24 @@ void clpr_log::write(const int& severity, const std::string& msg) {
 			break;
 	}		
 	
-	this->log_file << type << msg << std::endl; 
+	// Get the time stamp of that log message
+  	time_facet *facet = new time_facet("%d-%b-%Y %H:%M:%S");
+    	this->log_file.imbue(locale(this->log_file.getloc(), facet));
+
+	// Log the line if the severity is not DEBUG, or if the severity is DEBUG and DEBUG is turned on
+	if( (severity != CLPR_LOG_DEBUG) || (severity == CLPR_LOG_DEBUG && this->is_debug) ) { 
+	     	this->log_file << second_clock::local_time() << " " << type << msg << std::endl; 
+	}	
+
 } // End of clpr_log::write
 
+void clpr_log::set_debug(const clpr_d::p_conf& p_conf_file) {
+	if( p_conf_file->is_debug() ) {
+		this->is_debug = true;
+	} else {
+		this->is_debug = false;
+	}	
+} // End of clpr_log::set_debug
 
 } // End of namespace clpr_d
+

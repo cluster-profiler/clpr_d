@@ -8,10 +8,14 @@
 
 // Path to the configuration file
 #define CLPR_CONF_PATH "/gpfs/work/p/pzt5044/Github/clpr_d/clprd.xml"
+#define CLPR_DEBUG_ON 1
 
 namespace clpr_d {
 
-class clpr_config { 
+class clpr_log;
+typedef boost::shared_ptr<clpr_log> p_log;
+
+class clpr_conf { 
 
 	private:
 		// Path to the FIFO
@@ -30,12 +34,18 @@ class clpr_config {
 		
 	public:
 		// Construct this object from the config file
-		clpr_config(const std::istream& config_file, const clpr_d::p_log& p_log_file);
-		~clpr_config();
+		clpr_conf(const std::istream& conf_file, const clpr_d::p_log& p_log_file);
+		~clpr_conf();
+
+		bool is_debug();	
+
+		// Getters
+		int const& get_db_max_entries() const; 
+
 
 }; // End of class clpr_config
 
-typedef boost::shared_ptr<clpr_config> p_conf;
+typedef boost::shared_ptr<clpr_conf> p_conf;
 
 }; // End of namespace clprd_d
 

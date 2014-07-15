@@ -23,13 +23,10 @@
  * a logger class
  */
 
+#ifndef _LOGGER_
+#define _LOGGER_
 
-
-#ifndef _LOGGER_HPP
-#define _LOGGER_HPP
-
-#include "clpr_proc_db.hpp"
-#include <boost/thread/thread.hpp>
+#include "clpr_db.hpp"
 
 namespace clpr_d{
 
@@ -40,8 +37,6 @@ namespace clpr_d{
 			/// main db
 			db_pointer db_;
 		public :
-
-
 			/**
 			 * Write a log file periodically with statistics; @see key_defines.h
 			 * @param db_pointer & db database
@@ -51,9 +46,6 @@ namespace clpr_d{
 			~logger(){};
 			/// run
 			void operator()();
-
-
-		
 	};
 };
 

@@ -29,7 +29,7 @@
 #define _READER
 
 #include <boost/thread/thread.hpp>
-#include "clpr_proc_db.hpp"
+#include "clpr_db.hpp"
 #include "utilities.hpp"
 
 namespace clpr_d {
@@ -40,7 +40,7 @@ namespace clpr_d {
 		private:
 
 		public :
-			reader(clpr_proc_db &input);
+			reader(clpr_db &input);
 			~reader(){};
 
 

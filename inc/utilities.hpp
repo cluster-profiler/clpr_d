@@ -29,6 +29,7 @@
 #ifndef _UTILITIES
 #define _UTILITIES
 
+#include <string>
 
 #include "key_defines.hpp"
 #include "pid_data.hpp"
@@ -46,7 +47,7 @@ namespace clpr_d{
 	/// Return the unique index for db push/pop
 	string get_grp_proc_label(vector<string> &input);
 	/// Return the pid blob for this input line
-	pid_data get_pid_data(vector<string> &input);
+	pid_data get_pid_data(const std::vector<std::string> &input);
 }
 
 #endif
