@@ -33,19 +33,20 @@ namespace clpr_d{
 	/// a logging class; write a file somewhere with stats
 	class logger{
 		
-		private:
-			/// main db
-			db_pointer db_;
-		public :
-			/**
-			 * Write a log file periodically with statistics; @see key_defines.h
-			 * @param db_pointer & db database
-			 */	 
-			logger(db_pointer &db);
-			/// bye bye birdie
-			~logger(){};
-			/// run
-			void operator()();
+		
+	//	private:
+	//		/// main db
+	//		db_pointer db_;
+	//	public :
+	//		/**
+	//		 * Write a log file periodically with statistics; @see key_defines.h
+	//		 * @param db_pointer & db database
+	//		 */	 
+	//		logger(db_pointer &db);
+	//		/// bye bye birdie
+	//		~logger(){};
+	//		/// run
+	//		void operator()();
 	};
 };
 

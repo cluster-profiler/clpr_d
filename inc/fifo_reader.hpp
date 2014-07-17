@@ -8,6 +8,7 @@
 #include "clpr_db.hpp"
 
 #define CLPR_FIFO_PATH "/gpfs/work/p/pzt5044/Github/clpr_d/bin/input"
+#define CLPR_NUM_TOKENS_PER_LINE_MIN 27
 
 namespace clpr_d {
 
@@ -19,6 +20,8 @@ class fifo_reader {
 
 		void read(clpr_d::db_ptr p_db);
 
+		bool check_tokens(const std::vector<std::string>& tokens);
+
 
 	private:
 		std::ifstream fifo;
@@ -28,7 +31,6 @@ class fifo_reader {
 		
 
 }; // End of fifo_reader
-
 
 } // End of namespace clpr_d
 

@@ -97,8 +97,10 @@ struct min_cpu{};
 struct process_grp_label{};
 
 
+
 // A container for process data, allowing multiple search/sort
 class clpr_db {
+
 
 	typedef multi_index_container<
 		boost::shared_ptr<process_grp>,

@@ -82,6 +82,7 @@ void clpr_log::write(const int& severity, const std::string& msg) {
 			break;
 	}		
 	
+	/*
 	// Get the time stamp of that log message
   	time_facet *facet = new time_facet("%d-%b-%Y %H:%M:%S");
     	this->log_file.imbue(locale(this->log_file.getloc(), facet));
@@ -89,6 +90,19 @@ void clpr_log::write(const int& severity, const std::string& msg) {
 	// Log the line if the severity is not DEBUG, or if the severity is DEBUG and DEBUG is turned on
 	if( (severity != CLPR_LOG_DEBUG) || (severity == CLPR_LOG_DEBUG && this->is_debug) ) { 
 	     	this->log_file << second_clock::local_time() << " " << type << msg << std::endl; 
+	}	
+	*/
+
+	// Get time stamp
+	std::time_t rawtime;
+	std::tm* timeinfo;
+	char buffer [80];
+	std::time(&rawtime);
+	timeinfo = std::localtime(&rawtime);
+	std::strftime(buffer,80,"%d %m %Y %H %M %S",timeinfo);
+	// Log the line if the severity is not DEBUG, or if the severity is DEBUG and DEBUG is turned on
+	if( (severity != CLPR_LOG_DEBUG) || (severity == CLPR_LOG_DEBUG && this->is_debug) ) { 
+	     	this->log_file << buffer << " " << type << msg << std::endl; 
 	}	
 
 } // End of clpr_log::write

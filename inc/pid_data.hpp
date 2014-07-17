@@ -26,9 +26,67 @@
 #ifndef _PID_DATA_
 #define _PID_DATA_
 
+#include <string>
+
+#include <boost/shared_ptr.hpp>
+
 namespace clpr_d {
 
 enum { TIME_POS = 5, PID_POS = 7, USER_POS = 8, SYSTEM_POS = 9, PCPU_POS = 11, CORE_CPU_POS = 12, MINFLT_S_POS = 13, MAJFLT_S_POS = 14, VSZ_POS = 15, RSS_POS = 16, MEM_POS = 17, KB_RD_S_POS = 18, KB_WR_S_POS = 19, KB_CCWR_S_POS = 20, IODELAY_POS = 21, CSWCH_S_POS = 22, NVCSWCH_S_POS = 23, NTH_POS = 24, FDS_POS = 25, CMD_POS = 26 };
+
+/*
+class pid_data {
+	public:
+		pid_data(const std::string& proc_path);
+		~pid_data();
+
+	private:
+		long int time;
+		std::string hostname;
+		std::string birthdate;
+		std::string user_id;
+
+		int pid;
+		int ppid;
+		int pgid;
+		int sid;
+
+		std::string tty;
+
+		float p_user;
+		float p_system;
+		float p_guest;
+		float p_cpu;
+
+		int core_number;
+
+		float minflt_s;
+		float majflt_s;
+
+		long int vsz;
+		long int rss;
+
+		float p_mem;
+
+		float kb_rd_s;
+		float kb_wr_s;
+		float kb_ccwr_s;
+
+		int iodelay;
+
+		float cswch_s;
+		float nvcswch_s;
+
+		int nth;
+		int fd;
+
+		std::string wchan;
+		std::string cmd;
+		std::string environ;
+
+}; // End of class pid_data
+*/
+
 
 /// Essentially a row in pidstat output
 typedef struct {
@@ -92,6 +150,8 @@ typedef struct {
 	
 } pid_data; 
 
-}; // End of namespace
+typedef boost::shared_ptr<pid_data> pid_data_ptr;
+
+} // End of namespace
 
 #endif

@@ -3,7 +3,7 @@
 namespace clpr_d {
 
 // Constructor
-process_grp::process_grp(const vector<string>& tokens, const string& idx, const uint64_t& label, const clpr_d::p_log& p_log_file):
+process_grp::process_grp(const std::vector<std::string>& tokens, const std::string& idx, const uint64_t& label, const clpr_d::p_log& p_log_file):
 	hash_index(idx),
 	label(label),
 	max_mem(0.0),
@@ -22,7 +22,7 @@ process_grp::process_grp(const vector<string>& tokens, const string& idx, const 
 	this->p_log_file = p_log_file;
 	this->p_log_file->write(CLPR_LOG_DEBUG,"Calling process_grp constructor");
 
-	uid 		= get_uid(tokens);
+//	uid 		= get_uid(tokens);
 //	gid 		= get_gid(tokens);
 }
 
@@ -42,9 +42,9 @@ uint64_t const& process_grp::get_time() const{
 }
 
 // Get the header
-string process_grp::get_header() const{
+std::string process_grp::get_header() const{
 
-	stringstream ss;
+	std::stringstream ss;
 
 	ss << "## " << label << "," << hash_index << "," << max_mem << "," << min_mem << "," << max_disk << "," << min_disk;
 	ss << "," << max_fds << "," << min_fds << "," << max_cpu << "," << min_cpu << "," << total_process;
@@ -114,8 +114,9 @@ void process_grp::push_back(const std::string& host_info, const std::vector<std:
 	key.pid		+= tmp_tokens[PID_POS];
 
 	//// Store data of pidstat, then add it to the history
-	pid_data value = get_pid_data(tmp_tokens);
+//	pid_data value = get_pid_data(tmp_tokens);
 
+	pid_data value;
 	history[key].push_back(value);
 
 	total_process = history.size();
@@ -161,7 +162,7 @@ float process_grp::get_min_cpu() const{return min_cpu;}
 // something approaching json format
 ostream& operator<<(ostream &out, const process_grp& in){
 
-	string kill_me="abcdefghijklmnopqrstuvwxyz";
+	std::string kill_me="abcdefghijklmnopqrstuvwxyz";
 
 	// CSV format for the output
 	// Data is denormalized 
@@ -171,9 +172,9 @@ ostream& operator<<(ostream &out, const process_grp& in){
 	BOOST_FOREACH( HASH_MAP::value_type v, in._history ) {	
 
 		history_key tmp = v.first;
-		vector<pid_blob> tmp_vals = v.second;
+		std::vector<pid_blob> tmp_vals = v.second;
 
-		for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+		for (std::vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
 
 
 			// if there are alphas in pid, something screwed up, probably not with pidstat, but with the data gathering process
@@ -245,66 +246,66 @@ ostream& operator<<(ostream &out, const process_grp& in){
 		out << "\"command\":\"" << tmp.command << "\"," << endl;
 		out << "\"host\":\"" << tmp.hostname << "\"," << endl;
 
-		vector<pid_blob> tmp_vals = v.second;
+		std::vector<pid_blob> tmp_vals = v.second;
 
 		out << "\"time\":[";
-		for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+		for (std::vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
 			out << it->time << ",";
 		}
 
 		out << "]," << endl;
 		
 		out << "\"user\":[";
-		for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+		for (std::vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
 			out << it->user << ",";
 		}
 
 		out << "]," << endl;
 		
 		out << "\"\% cpu\":[";
-		for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+		for (std::vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
 			out << it->perc_cpu << ",";
 		}
 
 		out << "]," << endl;
 		
 		out << "\"majflt_s\":[";
-		for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+		for (std::vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
 			out << it->majflt_s << ",";
 		}
 
 		out << "]," << endl;
 		
 		out << "\"vsz\":[";
-		for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+		for (std::vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
 			out << it->vsz << ",";
 		}
 
 		out << "]," << endl;
 		
 		out << "\"kd_rd_s\":[";
-		for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+		for (std::vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
 			out << it->kb_rd_s << ",";
 		}
 
 		out << "]," << endl;
 		
 		out << "\"kb_wr_s\":[";
-		for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+		for (std::vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
 			out << it->kb_wr_s << ",";
 		}
 
 		out << "]," << endl;
 		
 		out << "\"cswch_s\":[";
-		for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+		for (std::vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
 			out << it->cswch_s << ",";
 		}
 
 		out << "]," << endl;
 
 		out << "\"fds\":[";
-		for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+		for (std::vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
 			out << it->fds << ",";
 		}
 
@@ -340,9 +341,9 @@ ostream& operator<<(ostream &out, const process_grp& in){
 
 		out << "## " << tmp.command << "," << tmp.hostname << "," << tmp.pid << endl;
 
-		vector<pid_blob> tmp_vals = v.second;
+		std::vector<pid_blob> tmp_vals = v.second;
 
-		for (vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
+		for (std::vector<pid_blob>::iterator it = tmp_vals.begin(); it != tmp_vals.end(); it++){
 			boost::fusion::for_each(*it, out << arg1 << ",");
 			out << endl;
 		}

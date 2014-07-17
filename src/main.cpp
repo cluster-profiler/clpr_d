@@ -30,15 +30,16 @@
 #include <fstream>
 #include <exception>
 
-#include "reader.hpp"
-#include "logger.hpp"
-#include "archiver.hpp"
-#include "manager.hpp"
+//#include "reader.hpp"
+//#include "archiver.hpp"
+//#include "manager.hpp"
+
 #include "clpr_db.hpp"
 
 #include "clpr_conf.hpp"
 #include "clpr_log.hpp"
-#include "fifo_reader.hpp"
+//#include "fifo_reader.hpp"
+#include "proc_reader.hpp"
 
 using namespace boost;
 namespace po = boost::program_options;
@@ -55,6 +56,7 @@ int main(int argc, char *argv[]) {
 		return EXIT_SUCCESS;
 	}	
 
+/*
 	//// 1. Fork from parent process
 	pid = fork();
 	// Can't fork - fork error
@@ -63,7 +65,7 @@ int main(int argc, char *argv[]) {
 	// Otherwise, parent exits	
 	if ( pid > 0 ) 
 		return EXIT_SUCCESS;
-
+*/
 	//// 2. Set permissions
 	umask(0);
 
@@ -77,17 +79,18 @@ int main(int argc, char *argv[]) {
 	}	
 	
 	//// 4. Get new session ID       
+	/*
 	sid = setsid();
 	if ( sid < 0 ) 
 		return EXIT_FAILURE;
-
+	*/
 	//// 5. Change to a safe working directory
 
 
 	//// 6. Close the standard file descriptors	
-	close(STDIN_FILENO);
-	close(STDOUT_FILENO);
-	close(STDERR_FILENO);
+	//close(STDIN_FILENO);
+	// close(STDOUT_FILENO); // Leave it open for debugging purposes
+	//close(STDERR_FILENO);
  
 	////////////////////////////////////
 	/////////// Actual daemon code
@@ -117,6 +120,7 @@ int main(int argc, char *argv[]) {
 		// Log the closing of the log file
 		msg = "Closing configuration file " + clpr_conf_path;
 		p_log_file->write(CLPR_LOG_INFO, msg);
+
 		conf_file.close();
 
 	} else {
@@ -131,7 +135,7 @@ int main(int argc, char *argv[]) {
 
 
 	//// Start the reader
-	clpr_d::fifo_reader reader(CLPR_FIFO_PATH,p_log_file);	
+	clpr_d::proc_reader reader(p_log_file);	
 	reader.read(p_clpr_db);
 
 
@@ -150,5 +154,6 @@ int main(int argc, char *argv[]) {
 	//write_socket.join();
 	//manage_db.join();
 
-	return EXIT_SUCCESS;
+//	exit(EXIT_SUCCESS);
+	return 0;
 }

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <sys/stat.h>
+#include <pwd.h>
 
 #include <boost/lexical_cast.hpp>
 
@@ -82,6 +83,7 @@ bool file_exists(const std::string& filename)
 	}
 
 
+/*
 	string get_process_grp_label(vector<string>& input){
 
 		string ret 	= get_start_time(input);
@@ -112,7 +114,20 @@ bool file_exists(const std::string& filename)
 
 		return ret;
 	}
+*/
+	std::string get_process_grp_label(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus) {
+		std::string ret;
 
+		struct passwd *pwd;
+		pwd = getpwuid(pstatus.uid);
+		
+		std::string uid_str(pwd->pw_name);
+
+		ret = uid_str + " " + std::to_string(pstat.pgid);
+		//ret = std::to_string(pstatus.uid) + " " + std::to_string(pstat.pgid);
+
+		return ret;
+	}	
 
 	// pid_data is simple data; assignment operator will work here
 	pid_data get_pid_data(const std::vector<std::string>& input){

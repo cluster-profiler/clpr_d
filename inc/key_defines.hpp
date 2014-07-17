@@ -130,19 +130,19 @@ namespace clpr_d {
 	class tcp_connection;
 
 	/// forward dec
-	class clpr_db;
+	//class clpr_db;
 
 	/// for... well you get it
-	class grp_proc;
+	//class grp_proc;
 
 	///
 	typedef boost::shared_ptr<tcp_connection> tcp_pointer;
 
 	///
-	typedef boost::shared_ptr<clpr_db> db_pointer;
+	//typedef boost::shared_ptr<clpr_db> db_pointer;
 
 	///
-	typedef boost::shared_ptr<grp_proc> grp_proc_pointer;
+	//typedef boost::shared_ptr<grp_proc> grp_proc_pointer;
 
 	/// fake delete a smart pointer to stack object
 	struct null_deletor{

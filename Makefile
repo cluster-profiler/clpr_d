@@ -5,11 +5,11 @@ DEPENDS     := $(sort $(patsubst src/%, obj/%.d, $(SOURCES)))
 
 # 
 CPPFLAGS    += -I./inc -I/usr/global/boost/boost_1_54_0
-LDFLAGS     += -lboost_thread -lboost_system -lboost_date_time -lboost_program_options -lpthread 
+LDFLAGS     += -lboost_thread -lboost_system -lboost_date_time -lboost_program_options -lboost_regex -lboost_filesystem -lpthread 
 LDFLAGS	    += -L/usr/global/boost/boost_1_54_0/stage/lib
 
 #CXX         := g++ -Wall -g --std=c++0x
-CXX         := g++ -g --std=c++0x
+CXX         := g++ -g -Wall --std=c++0x
 
 bin/clpr_d: $(OBJECTS)
 	$(CXX) -o $@ $^ $(LDFLAGS)

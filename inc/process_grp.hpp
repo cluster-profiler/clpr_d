@@ -28,12 +28,16 @@
 #ifndef _GRP_PROC_ 
 #define _GRP_PROC_ 
 
+#include <string>
+#include <vector>
+#include <iostream>
+
 #include <boost/spirit/include/phoenix.hpp>
+#include <boost/functional/hash.hpp>
+#include <boost/unordered_map.hpp>
 
 #include "clpr_log.hpp"
 #include "pid_data.hpp"
-
-#include "utilities.hpp"
 
 using namespace boost;
 using boost::phoenix::arg_names::arg1;
@@ -45,17 +49,17 @@ namespace clpr_d {
 //////////////////////////////////////////
 // Key for history unordered_map in process_grp
 typedef struct{
-	string command;
-	string pid;
-	string hostname;
+	std::string command;
+	std::string pid;
+	std::string hostname;
 } history_key;
 
 // Hash for history unordered_map in process_grp
 typedef struct{
 	size_t operator()(const history_key &in ) const
 	{
-		return boost::hash<string>()(in.command) ^ \
-			boost::hash<string>()(in.pid) ^ boost::hash<string>()(in.hostname);
+		return boost::hash<std::string>()(in.command) ^ \
+			boost::hash<std::string>()(in.pid) ^ boost::hash<std::string>()(in.hostname);
 	};
 
 } key_hash;
@@ -73,7 +77,7 @@ typedef struct{
 
 // Hash map for the aggregator of PIDs
 typedef unordered_map<history_key,
-			vector<pid_data>,
+			std::vector<pid_data>,
 			key_hash,
 			key_eq > HASH_MAP;
 
@@ -91,16 +95,16 @@ class process_grp {
 		HASH_MAP history;
 
 		//
-		string hash_index;
+		std::string hash_index;
 		// A global label, sort of
 		uint64_t label;
 		// Last time this was touched
 		uint64_t tstamp;
 
 		// Aggregator index
-		string uid;
-		string start_time;
-		string gid;
+		std::string uid;
+		std::string start_time;
+		std::string gid;
 
 		/// Some overall data for the group
 		//
@@ -128,26 +132,26 @@ class process_grp {
 
 	public:
 		/**
-		 * Build a group of processes process_grp with a unique string and integer label
-		 * @param vector<string>& tokens 
-		 * @param string& in (what will be hash index in db)
+		 * Build a group of processes process_grp with a unique std::string and integer label
+		 * @param std::vector<std::string>& tokens 
+		 * @param std::string& in (what will be hash index in db)
 		 * @param uint64_t& label integer 
 		 */	
-		process_grp(const vector<string>& tokens, const string& in,const uint64_t& label, const clpr_d::p_log& p_log_file);
+		process_grp(const std::vector<std::string>& tokens, const std::string& in,const uint64_t& label, const clpr_d::p_log& p_log_file);
 
 		/// bye bye
 		~process_grp();
 
-		void push_back(const string& host_info, const vector<string> &tokens);
+		void push_back(const std::string& host_info, const std::vector<std::string> &tokens);
 		// Update
 		/**
 		 * Update a process_grp from input tokens and hostname
-		 * @param string hostname
-		 * @param vector<string> tokens input data
+		 * @param std::string hostname
+		 * @param std::vector<std::string> tokens input data
 		 */	
-//		void update(const string& host_info,vector<string>& tokens);
-		/// return the header as a string
-		string get_header() const;
+//		void update(const std::string& host_info,std::vector<std::string>& tokens);
+		/// return the header as a std::string
+		std::string get_header() const;
 
 		/// timestamp this thing
 		void update_time();
@@ -174,10 +178,10 @@ class process_grp {
 
 
 		/// format the stream operator		
-		friend ostream& operator<<(ostream &out, const process_grp& in);
+		friend std::ostream& operator<<(std::ostream &out, const process_grp& in);
 
 //		friend class clpr_db;
-};
+}; // End of class process_grp
 
 typedef boost::shared_ptr<process_grp> p_pgrp;
 

@@ -24,8 +24,6 @@
  */
 
 
-
-
 #ifndef _UTILITIES
 #define _UTILITIES
 
@@ -33,10 +31,13 @@
 
 #include "key_defines.hpp"
 #include "pid_data.hpp"
+#include "proc_reader.hpp"
 
-
-
-namespace clpr_d{
+namespace clpr_d {
+	/// Forward declaration
+	class proc_stat;
+	class proc_status;
+	class proc_io;
 
 	/// Check if a file exists
 	bool file_exists(const std::string& filename);
@@ -44,8 +45,11 @@ namespace clpr_d{
 	string get_uid(const vector<string>& input);
 	/// When did I start
 	string get_start_time(vector<string>& input);
+
 	/// Return the unique index for db push/pop
-	string get_grp_proc_label(vector<string> &input);
+	//string get_grp_proc_label(vector<string> &input);
+	std::string get_process_grp_label(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus); 
+
 	/// Return the pid blob for this input line
 	pid_data get_pid_data(const std::vector<std::string> &input);
 }
