@@ -227,6 +227,9 @@ class clpr_db {
 //		void insert(process_grp& in, string &i);
 
 
+		bool is_present(const std::string& idx); 
+		void insert(clpr_d::process_grp_ptr pgrp_ptr); 
+		clpr_d::process_grp_ptr find(const std::string& pgrp_idx); 
 
 /*
 		///get the size of the map

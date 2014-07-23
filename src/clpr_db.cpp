@@ -22,6 +22,32 @@ namespace clpr_d {
 	} // End of clpr_db destructor	
 
 
+	//// clpr_db::is_present
+	// Finds if an index "idx" for a process group is already in the database
+	bool clpr_db::is_present(const std::string& idx) {
+		index_it = db_content.get<process_grp_label>().find(idx);
+
+		if( index_it == db_content.get<process_grp_label>().end() ) {
+			return false;
+		} 
+		
+		return true;
+	} // End clpr_db::is_present	
+
+	
+	void clpr_db::insert(clpr_d::process_grp_ptr pgrp_ptr) {
+		db_content.insert(pgrp_ptr);
+	}
+
+	clpr_d::process_grp_ptr clpr_db::find(const std::string& pgrp_idx) {
+		// Find the process group corresponding to pgrp_idx
+		index_it = db_content.get<process_grp_label>().find(pgrp_idx);
+
+		return *index_it;
+	}
+
+
+/*
 	// Update the process group indexed by pgrp_indx. If it does not exist, create it
 	// TODO: Try/catch and logging
 	void clpr_db::update(const vector<std::string>& tokens, const std::string& pgrp_idx, const std::string& host_info, uint64_t& label) {
@@ -45,7 +71,7 @@ namespace clpr_d {
 			p_log_file->write(CLPR_LOG_DEBUG, msg);
 
 			// Create a new ptr to process grp
-			p_pgrp pgrp_insert(new process_grp(tokens,pgrp_idx,label,p_log_file));
+			process_grp_ptr pgrp_insert(new process_grp(tokens,pgrp_idx,label,p_log_file));
 
 
 			// Insert data in process grp
@@ -68,6 +94,7 @@ namespace clpr_d {
 		p_log_file->write(CLPR_LOG_DEBUG,"Unlocking database");	
 
 	} // End of clpr_db::update			
+*/	
 
 
 

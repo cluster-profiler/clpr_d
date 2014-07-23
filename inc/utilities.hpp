@@ -49,6 +49,7 @@ namespace clpr_d {
 	/// Return the unique index for db push/pop
 	//string get_grp_proc_label(vector<string> &input);
 	std::string get_process_grp_label(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus); 
+	std::size_t get_process_label(const clpr_d::proc_stat& pstat);
 
 	/// Return the pid blob for this input line
 	pid_data get_pid_data(const std::vector<std::string> &input);

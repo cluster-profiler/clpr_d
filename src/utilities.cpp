@@ -5,6 +5,7 @@
 #include <pwd.h>
 
 #include <boost/lexical_cast.hpp>
+#include <boost/functional/hash.hpp>
 
 #include "pid_data.hpp"
 #include "utilities.hpp"
@@ -28,6 +29,26 @@ bool file_exists(const std::string& filename)
 	}
 	return false;
 }
+
+//std::size_t get_process_label(const std::string& cmd, const int& pid, const uint64_t& start_time) {
+std::size_t get_process_label(const clpr_d::proc_stat& pstat) {
+	return (boost::hash<std::string>()(pstat.comm) ^\
+		boost::hash<std::string>()(std::to_string(pstat.pid)) ^\
+		boost::hash<std::string>()(std::to_string(pstat.starttime)) );
+}		
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	string get_start_time(vector<string>& input){
 
@@ -127,7 +148,7 @@ bool file_exists(const std::string& filename)
 		//ret = std::to_string(pstatus.uid) + " " + std::to_string(pstat.pgid);
 
 		return ret;
-	}	
+	} // End of get_process_grp_label
 
 	// pid_data is simple data; assignment operator will work here
 	pid_data get_pid_data(const std::vector<std::string>& input){

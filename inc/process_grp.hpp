@@ -37,7 +37,9 @@
 #include <boost/unordered_map.hpp>
 
 #include "clpr_log.hpp"
+#include "proc_structures.hpp"
 #include "pid_data.hpp"
+#include "process.hpp"
 
 using namespace boost;
 using boost::phoenix::arg_names::arg1;
@@ -50,34 +52,34 @@ namespace clpr_d {
 // Key for history unordered_map in process_grp
 typedef struct{
 	std::string command;
-	std::string pid;
-	std::string hostname;
-} history_key;
+	int pid;
+	uint64_t starttime;
+} process_key;
 
 // Hash for history unordered_map in process_grp
 typedef struct{
-	size_t operator()(const history_key &in ) const
+	size_t operator()(const process_key &in ) const
 	{
 		return boost::hash<std::string>()(in.command) ^ \
-			boost::hash<std::string>()(in.pid) ^ boost::hash<std::string>()(in.hostname);
+			boost::hash<std::string>()(std::to_string(in.pid)) ^ boost::hash<std::string>()(std::to_string(in.starttime));
 	};
 
 } key_hash;
 
 /// Equality operator for history unordered_map in process_grp
 typedef struct{
-	bool operator()(const history_key& l, const history_key& r) const
+	bool operator()(const process_key& l, const process_key& r) const
 	{
 		return (l.command.compare(r.command) == 0) \
-						      && (l.pid.compare(r.pid)==0) && \
-						      (l.hostname.compare(r.hostname)==0);
+						      && ((std::to_string(l.pid)).compare(std::to_string(r.pid))==0) && \
+						      (std::to_string(l.starttime).compare(std::to_string(r.starttime))==0);
 	};
 
 } key_eq;
 
 // Hash map for the aggregator of PIDs
-typedef unordered_map<history_key,
-			std::vector<pid_data>,
+typedef unordered_map<process_key,
+			std::vector<clpr_d::process_ptr>,
 			key_hash,
 			key_eq > HASH_MAP;
 
@@ -91,21 +93,25 @@ typedef unordered_map<history_key,
 class process_grp {
 
 	private:
-		// History of the aggregated processes
-		HASH_MAP history;
+		//// Mutable data
+		uint64_t tstamp; // Last time this was touched
+		HASH_MAP process_list; // List of processes and their history
+		int total_process; // Total number of processes in that group
 
-		//
-		std::string hash_index;
+		//// Immutable data for lifetime of process_grp
+		int pgid; // Group id
+		int sid; // Session id
+		std::string uid; // User id
+		std::string hash_index; // Corresponding index
+
 		// A global label, sort of
 		uint64_t label;
-		// Last time this was touched
-		uint64_t tstamp;
 
 		// Aggregator index
-		std::string uid;
-		std::string start_time;
-		std::string gid;
+	//	std::string start_time;
+	//	std::string gid;
 
+/*
 		/// Some overall data for the group
 		//
 		float max_mem;
@@ -123,12 +129,10 @@ class process_grp {
 		float max_cpu;
 		//
 		float min_cpu;
-
-		// Total number of processes
-		int total_process;
+*/
 
 		// Log file
-		clpr_d::p_log p_log_file;
+		// clpr_d::p_log p_log_file;
 
 	public:
 		/**
@@ -137,10 +141,16 @@ class process_grp {
 		 * @param std::string& in (what will be hash index in db)
 		 * @param uint64_t& label integer 
 		 */	
-		process_grp(const std::vector<std::string>& tokens, const std::string& in,const uint64_t& label, const clpr_d::p_log& p_log_file);
+		//process_grp(const std::vector<std::string>& tokens, const std::string& in,const uint64_t& label, const clpr_d::p_log& p_log_file);
+
+		process_grp(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus); 
+
 
 		/// bye bye
-		~process_grp();
+		// ~process_grp();
+		bool is_present(const std::size_t& idx); 
+		void insert(std::size_t& idx, clpr_d::process_ptr pproc_insert); 
+		clpr_d::process_ptr find(const std::size_t& idx); 
 
 		void push_back(const std::string& host_info, const std::vector<std::string> &tokens);
 		// Update
@@ -175,15 +185,13 @@ class process_grp {
 		float get_min_cpu() const;
 
 
-
-
 		/// format the stream operator		
 		friend std::ostream& operator<<(std::ostream &out, const process_grp& in);
 
 //		friend class clpr_db;
 }; // End of class process_grp
 
-typedef boost::shared_ptr<process_grp> p_pgrp;
+typedef boost::shared_ptr<process_grp> process_grp_ptr;
 
 }; // End of namespace clpr_d
 

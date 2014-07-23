@@ -9,7 +9,7 @@ LDFLAGS     += -lboost_thread -lboost_system -lboost_date_time -lboost_program_o
 LDFLAGS	    += -L/usr/global/boost/boost_1_54_0/stage/lib
 
 #CXX         := g++ -Wall -g --std=c++0x
-CXX         := g++ -g -Wall --std=c++0x
+CXX         := g++ -g --std=c++0x
 
 bin/clpr_d: $(OBJECTS)
 	$(CXX) -o $@ $^ $(LDFLAGS)

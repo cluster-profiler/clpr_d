@@ -1,7 +1,47 @@
+#include <utility>
+
 #include "process_grp.hpp"
 
 namespace clpr_d {
 
+
+//// Constructor
+process_grp::process_grp(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus) {
+
+	// PGID, SID
+	pgid = pstat.pgid;
+	sid = pstat.sid;
+
+	// Get uid
+	struct passwd *pwd;
+	pwd = getpwduid(pstatus.uid);
+
+	uid = pwd->pw_name;
+
+	// Hash
+	hash_index = uid + " " + std::to_string(pgid);
+}
+
+// TODO: Add is_present here. Might require to reorganize the HASH_MAP from process_grp
+bool process_grp::is_present(const std::size_t& idx) {
+	if (process_list.find(idx) == process_list.end()) {
+		return false;
+	}
+
+	return true;
+}
+
+void process_grp::insert(std::size_t& idx, clpr_d::process_ptr pproc_insert) {
+	// Some C++11
+	this->process_list.insert({idx,pproc_insert});
+}
+
+clpr_d::process_ptr find(const std::size_t& idx) {
+	return *(process_list.find(idx));
+}	
+
+
+/*
 // Constructor
 process_grp::process_grp(const std::vector<std::string>& tokens, const std::string& idx, const uint64_t& label, const clpr_d::p_log& p_log_file):
 	hash_index(idx),
@@ -26,10 +66,14 @@ process_grp::process_grp(const std::vector<std::string>& tokens, const std::stri
 //	gid 		= get_gid(tokens);
 }
 
+*/
+
 // Destructor
+/*
 process_grp::~process_grp() {
 	this->p_log_file->write(CLPR_LOG_DEBUG,"Calling process_grp destructor");
 }	
+*/
 	
 // Time setter
 void process_grp::update_time(){

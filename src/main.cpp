@@ -23,12 +23,13 @@
  *
  */
 
-#include <boost/thread/thread.hpp>
-#include <boost/program_options.hpp>
 
 #include <iostream>
 #include <fstream>
 #include <exception>
+
+#include <boost/thread/thread.hpp>
+#include <boost/program_options.hpp>
 
 //#include "reader.hpp"
 //#include "archiver.hpp"
