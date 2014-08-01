@@ -40,7 +40,6 @@
 #include "proc_structures.hpp"
 #include "pid_data.hpp"
 #include "process.hpp"
-#include "clpr_db.hpp"
 
 using namespace boost;
 using boost::phoenix::arg_names::arg1;
@@ -197,8 +196,7 @@ class process_grp {
 		/// format the stream operator		
 		// friend std::ostream& operator<<(std::ostream &out, const process_grp& in);
 		//friend std::ifstream& operator<<(std::ifstream &out, process_grp& in);
-		//friend std::ifstream& operator<<(std::ifstream &out, boost::shared_ptr<process_grp>& in);
-		friend std::ifstream& operator<<(std::ifstream &out, clpr_db::lab_it& in); 
+		friend std::ostream& operator<<(std::ostream &out, boost::shared_ptr<process_grp>& in);
 
 //		friend class clpr_db;
 }; // End of class process_grp

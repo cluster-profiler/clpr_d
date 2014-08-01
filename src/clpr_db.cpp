@@ -1,4 +1,9 @@
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/utsname.h>
+
 #include "clpr_db.hpp"
+
 
 namespace clpr_d {
 
@@ -47,9 +52,7 @@ namespace clpr_d {
 	}
 
 	// Write the stream op
-	//std::ostream& operator<<(std::ostream &out, clpr_db& in) {
-	//std::ifstream& operator<<(std::ifstream &out, clpr_db& in) {
-	std::ifstream& operator<<(std::ifstream &out, boost::shared_ptr<clpr_db>& in) {
+	std::ostream& operator<<(std::ostream &out, boost::shared_ptr<clpr_db>& in) {
 
 		//boost::mutex::scoped_lock lock(in.mutex_pgrp);
 		//while(in._set.size()==0){
@@ -58,14 +61,22 @@ namespace clpr_d {
 		
 		
 		//in.mutex_pgrp.lock();
+		struct utsname uname_data;
+		uname(&uname_data);
+		std::string hostname(uname_data.sysname);
 
 		// Iterate over all of the process groups
 		for( in->label_it = in->db_content.get<global_label>().begin(); \
 			in->label_it != in->db_content.get<global_label>().end(); \
-			++in->label_it) {
-				out << in->label_it << endl;
+			++(in->label_it)) {
+				out << *(in->label_it) << endl;
 		}		
 
+//		for( auto it = in.db_content.get<global_label>().begin(); \
+//			it != in.db_content.get<global_label>().end(); \
+//			++(it)) {
+				//out << *it << endl;
+//		}		
 		//in.mutex_pgrp.unlock();
 		//lock.unlock();
 		//in.ready.notify_all();

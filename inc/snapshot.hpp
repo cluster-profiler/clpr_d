@@ -18,6 +18,7 @@ class snapshot {
 		snapshot(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus, const clpr_d::proc_io& pio, const std::string& wchan, const uint64_t& total_mem, const clpr_d::cpu_usage& cpu_usage_c, const clpr_d::cpu_usage& cpu_usage_p, const float& delta_cpu);
 //		~snapshot();
 
+	friend std::ostream& operator<<(std::ostream& out, boost::shared_ptr<snapshot>& in);
 	private:
 		int tty; // tty in which process is currently running
 

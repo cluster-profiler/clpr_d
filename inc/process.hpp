@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <iostream>
 
 #include <boost/shared_ptr.hpp>
 
@@ -24,6 +25,8 @@ class process {
 		~process();
 		void push_back(clpr_d::snapshot_ptr snap_ptr);
 
+		// Ostream
+		friend std::ostream& operator<<(std::ostream& out, boost::shared_ptr<process>& in);
 
 	private:
 		//// Mutable data
@@ -40,6 +43,7 @@ class process {
 
 		// Log file
 		clpr_d::p_log p_log_file;
+
 };
 
 typedef boost::shared_ptr<process> process_ptr;

@@ -279,9 +279,9 @@ class clpr_db {
 
 
 		// Send all out to stream
-		//friend std::ostream& operator<<(std::ostream &out, clpr_db& in);
+		friend std::ostream& operator<<(std::ostream &out, boost::shared_ptr<clpr_db>& in);
 		//friend std::ifstream& operator<<(std::ifstream &out, clpr_db& in);
-		friend std::ifstream& operator<<(std::ifstream &out, boost::shared_ptr<clpr_db>& in);
+		//friend std::ifstream& operator<<(std::ifstream &out, boost::shared_ptr<clpr_db>& in);
 
 /*
 		// Dump to file, ordered by max_mem

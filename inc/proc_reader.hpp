@@ -12,7 +12,8 @@
 #include "clpr_db.hpp"
 #include "proc_structures.hpp"
 
-#define CLPR_SAMPLE_RATE 30
+//#define CLPR_SAMPLE_RATE 30
+#define CLPR_SAMPLE_RATE 5
 
 namespace clpr_d {
 

@@ -1,5 +1,6 @@
 #include <pwd.h>
 #include <utility>
+#include <boost/foreach.hpp>
 
 #include "process_grp.hpp"
 
@@ -67,13 +68,13 @@ uint64_t process_grp::get_label() const{return label;}
 //// Output stream
 //std::ostream& operator<<(std::ostream &out, const process_grp& in) {
 //std::ifstream& operator<<(std::ifstream &out, boost::shared_ptr<process_grp>& in) {
-std::ifstream& operator<<(std::ifstream &out, clpr_db::lab_it& in) {
-	process_grp_ptr pgrp = *in;
+std::ostream& operator<<(std::ostream &out, boost::shared_ptr<process_grp>& in) {
 
-	BOOST_FOREACH( HASH_MAP::value_type v, pgrp->process_list) {
-		out << v.first << v.second << endl;
+	BOOST_FOREACH( HASH_MAP::value_type v, in->process_list) {
+		out << in->uid << v.second << std::endl;
 	}
 	return out;
+
 } // End of operator<<
 
 

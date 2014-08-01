@@ -149,7 +149,7 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 							read_pid_environ(env);
 
 							//// /proc/<pid>/fd
-							read_pid_fd(fd_list);
+							//read_pid_fd(fd_list);
 
 						} catch( std::exception& e) {
 							// An error occured !
@@ -163,24 +163,25 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 						// A process grp exists for trying to identify groups of processes
 						// that can be signaled together (e.g. mpi processes).
 						// The PGID is therefore of use here
-						std::string process_grp_label = get_process_grp_label(pstat,pstatus); 
+						std::string pgrp_label = get_process_grp_label(pstat,pstatus); 
 
 						//// Process groups
 						// Do we already have such process group in the database ?
-						if( !p_db->is_present(process_grp_label) ) {
+						if( !p_db->is_present(pgrp_label) ) {
 							// If not, create a new process group
 							process_grp_ptr pgrp_insert(new process_grp(pstat,pstatus));
 							p_db->insert(pgrp_insert);
 						} // End if 
 
 						// Now, get the considered process group
-						process_grp_ptr pgrp = p_db->find(process_grp_label);
+						process_grp_ptr pgrp = p_db->find(pgrp_label);
 
 						//// Processes
 						// Get the process key of the considered process
 						//std::size_t process_label = get_process_label(pstat);
 						clpr_d::process_key pkey = get_process_key(pstat);
 
+							/*
 						// Does the process exists in the considered group ?
 						//if( !pgrp->is_present(process_label) ) {
 						if( !pgrp->is_present(pkey) ) {
@@ -212,6 +213,7 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 											cpu_usage_p,
 											delta_cpu))); 
 
+						*/					
 					} // if fs::exists
 				} // End if(boost::regex_match)
 			} // End for loop over directory list
@@ -387,7 +389,9 @@ void proc_reader::read_pid_fd(std::map<int,std::string>& fd_list) {
 
 	// For all file descriptors listed in /fd
 	for(auto it = fd_vec.begin(); it != fd_vec.end(); ++it) {
-		int fd_num = std::stoi(it->leaf().generic_string());
+		p_log_file->write(CLPR_LOG_ERROR, it->leaf().generic_string());
+		//int fd_num = std::stoi(it->leaf().generic_string());
+		int fd_num = 0;
 		fd_list.insert(std::make_pair(fd_num, fs::read_symlink(*it).generic_string())); 
 	}
 
@@ -442,7 +446,8 @@ void proc_reader::read_stat(uint64_t& uptime_c) {
 	// Calculate the total uptime
 	uint64_t uptime = 0;
 	for(auto it = vstr.begin() + 1; it != vstr.end(); ++it) 
-		uptime += std::stoi(*it);
+		//std::cout << *it << std::endl;
+		//uptime += std::stoi(*it);
 
 	// Remove Guest since already contained in 
 	uptime -= std::stoi(vstr[PROC_STAT_GTIME]);	
