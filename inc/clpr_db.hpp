@@ -42,6 +42,7 @@
 #include <mutex>
 #include <algorithm>
 #include <iostream>
+#include <fstream>
 #include <iterator>
 #include <string>
 
@@ -101,7 +102,7 @@ struct process_grp_label{};
 // A container for process data, allowing multiple search/sort
 class clpr_db {
 
-
+/*
 	typedef multi_index_container<
 		boost::shared_ptr<process_grp>,
 		indexed_by<
@@ -147,10 +148,26 @@ class clpr_db {
 				> 
 		> // End of indexed_by
 	> process_grp_db; // End of multi_index_container
+*/
+
+	typedef multi_index_container<
+		boost::shared_ptr<process_grp>,
+		indexed_by<
+			hashed_unique<
+				tag<process_grp_label>,
+				BOOST_MULTI_INDEX_CONST_MEM_FUN(process_grp,std::string,get_hash_index) 
+				>,
+			ordered_unique<
+				tag<global_label>,
+				BOOST_MULTI_INDEX_CONST_MEM_FUN(process_grp,uint64_t,get_label) 
+				>
+		> // End of indexed_by
+	> process_grp_db; // End of multi_index_container
 
 	// Iterators to crawl over database
 	typedef process_grp_db::index<process_grp_label>::type::iterator ind_it;
 	typedef process_grp_db::index<global_label>::type::iterator lab_it;
+	/*
 	typedef process_grp_db::index<min_mem>::type::iterator mmin_it;
 	typedef process_grp_db::index<max_mem>::type::iterator mmax_it;
 	typedef process_grp_db::index<min_cpu>::type::iterator cmin_it;
@@ -159,7 +176,7 @@ class clpr_db {
 	typedef process_grp_db::index<max_fds>::type::iterator fmax_it;
 	typedef process_grp_db::index<min_disk>::type::iterator dmin_it;
 	typedef process_grp_db::index<max_disk>::type::iterator dmax_it;
-
+*/
 	private:
 
 		// For setting/getting process groups 
@@ -171,6 +188,7 @@ class clpr_db {
 		// Iterators for different indices
 		lab_it label_it;
 		ind_it index_it;
+		/*
 		mmin_it min_mem_it;
 		mmax_it max_mem_it;
 		cmin_it min_cpu_it;
@@ -179,7 +197,7 @@ class clpr_db {
 		fmax_it max_fds_it;
 		dmin_it min_dsk_it;
 		dmax_it max_dsk_it;
-
+*/
 		// Actual database content
 		process_grp_db db_content;
 
@@ -261,7 +279,9 @@ class clpr_db {
 
 
 		// Send all out to stream
-		friend ostream& operator<<(ostream &out, clpr_db& in);
+		//friend std::ostream& operator<<(std::ostream &out, clpr_db& in);
+		//friend std::ifstream& operator<<(std::ifstream &out, clpr_db& in);
+		friend std::ifstream& operator<<(std::ifstream &out, boost::shared_ptr<clpr_db>& in);
 
 /*
 		// Dump to file, ordered by max_mem

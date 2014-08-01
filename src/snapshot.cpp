@@ -11,10 +11,11 @@ snapshot::snapshot(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& ps
 
 	//// CPU Usage
 	// Current usage
-	clpr_d::cpu_usage cpu_usage_c;
+	/*
 	cpu_usage_c.utime = pstat.utime;
 	cpu_usage_c.stime = pstat.stime;
 	cpu_usage_c.gtime = pstat.gtime;
+	*/
 
 	pusr = fabs((float)( (cpu_usage_c.utime - cpu_usage_p.gtime) - (cpu_usage_p.utime - cpu_usage_p.gtime) ))/delta_cpu*100.0;
 	psys = fabs((float)(cpu_usage_c.stime - cpu_usage_p.stime))/delta_cpu*100.0;

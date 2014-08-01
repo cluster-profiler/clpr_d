@@ -9,6 +9,7 @@
 
 #include "pid_data.hpp"
 #include "utilities.hpp"
+#include "process_grp.hpp"
 
 namespace clpr_d{
 
@@ -38,7 +39,14 @@ std::size_t get_process_label(const clpr_d::proc_stat& pstat) {
 }		
 
 
+clpr_d::process_key get_process_key(const clpr_d::proc_stat& pstat) {
+	clpr_d::process_key pkey;
+	pkey.command = pstat.comm;
+	pkey.pid = pstat.pid;
+	pkey.starttime = pstat.starttime;
 
+	return pkey;
+}	
 
 
 

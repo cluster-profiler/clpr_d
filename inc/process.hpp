@@ -3,10 +3,12 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 #include <boost/shared_ptr.hpp>
 
 #include "snapshot.hpp"
+#include "clpr_log.hpp"
 
 namespace clpr_d {
 
@@ -14,7 +16,7 @@ class process {
 
 	public:
 		process(const std::string& cmd, 
-			const std::map<std::string, std::string& env,
+			const std::map<std::string, std::string>& env,
 			const int& pid,
 			const int& ppid,
 			const uint64_t& bdate);

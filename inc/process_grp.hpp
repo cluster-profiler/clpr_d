@@ -40,6 +40,7 @@
 #include "proc_structures.hpp"
 #include "pid_data.hpp"
 #include "process.hpp"
+#include "clpr_db.hpp"
 
 using namespace boost;
 using boost::phoenix::arg_names::arg1;
@@ -79,7 +80,8 @@ typedef struct{
 
 // Hash map for the aggregator of PIDs
 typedef unordered_map<process_key,
-			std::vector<clpr_d::process_ptr>,
+			//std::vector<clpr_d::process_ptr>,
+			clpr_d::process_ptr,
 			key_hash,
 			key_eq > HASH_MAP;
 
@@ -148,11 +150,16 @@ class process_grp {
 
 		/// bye bye
 		// ~process_grp();
-		bool is_present(const std::size_t& idx); 
-		void insert(std::size_t& idx, clpr_d::process_ptr pproc_insert); 
-		clpr_d::process_ptr find(const std::size_t& idx); 
+		// bool is_present(const std::size_t& idx); 
+		bool is_present(const process_key& pkey); 
 
-		void push_back(const std::string& host_info, const std::vector<std::string> &tokens);
+		// void insert(std::size_t& idx, clpr_d::process_ptr pproc_insert); 
+		void insert(process_key& pkey, clpr_d::process_ptr pproc_insert); 
+
+		// clpr_d::process_ptr find(const std::size_t& idx); 
+		clpr_d::process_ptr find(const process_key& pkey); 
+
+		//void push_back(const std::string& host_info, const std::vector<std::string> &tokens);
 		// Update
 		/**
 		 * Update a process_grp from input tokens and hostname
@@ -160,8 +167,9 @@ class process_grp {
 		 * @param std::vector<std::string> tokens input data
 		 */	
 //		void update(const std::string& host_info,std::vector<std::string>& tokens);
+
 		/// return the header as a std::string
-		std::string get_header() const;
+		// std::string get_header() const;
 
 		/// timestamp this thing
 		void update_time();
@@ -172,6 +180,7 @@ class process_grp {
 		//// Getters
 		std::string get_hash_index() const;
 		uint64_t get_label() const;
+		/*
 		float get_max_mem() const;
 		float get_min_mem() const;
 
@@ -183,10 +192,13 @@ class process_grp {
 		
 		float get_max_cpu() const;
 		float get_min_cpu() const;
-
+*/
 
 		/// format the stream operator		
-		friend std::ostream& operator<<(std::ostream &out, const process_grp& in);
+		// friend std::ostream& operator<<(std::ostream &out, const process_grp& in);
+		//friend std::ifstream& operator<<(std::ifstream &out, process_grp& in);
+		//friend std::ifstream& operator<<(std::ifstream &out, boost::shared_ptr<process_grp>& in);
+		friend std::ifstream& operator<<(std::ifstream &out, clpr_db::lab_it& in); 
 
 //		friend class clpr_db;
 }; // End of class process_grp

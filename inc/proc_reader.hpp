@@ -44,7 +44,7 @@ class proc_reader {
 
 		void read_pid_bdate(uint64_t& bdate); 
 
-		void read_stat(clpr_d::cpu_usage& cpu_usage_c); 
+		void read_stat(uint64_t& uptime_c); 
 		
 
 

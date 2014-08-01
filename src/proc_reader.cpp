@@ -17,6 +17,7 @@
 #include <boost/thread/thread.hpp>
 
 #include "proc_reader.hpp"
+#include "process_grp.hpp"
 #include "utilities.hpp"
 
 using namespace boost::posix_time;
@@ -43,7 +44,7 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 	std::string hostname(uname_data.sysname);
 	
 	//// Total memory, in kB
-	long unsigned int total_host_mem = 0; 
+	uint64_t total_host_mem = 0; 
 	std::ifstream file("/proc/meminfo");
 	// Get the first line, that contains the total memory
 	std::string _;
@@ -63,11 +64,13 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 	std::string msg;
 	uint64_t uptime_c;
 	uint64_t uptime_p;
+	float delta_cpu;
 
 	cpu_usage cpu_usage_c;
 	cpu_usage cpu_usage_p;
 
-	while(1) {
+	//while(1) {
+	for(int niter = 0; niter < 4; ++niter) {
 		// Discover the /proc directory
 		fs::path p("/proc");
 
@@ -75,7 +78,7 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 		if( !fs::exists(p) ) {
 			p_log_file->write(CLPR_LOG_CRITICAL,"The /proc directory does not exist ! Killing the daemon now.");	
 			break;
-		} else if (! fs::is_directory(p) {
+		} else if (! fs::is_directory(p)) {
 			p_log_file->write(CLPR_LOG_CRITICAL,"The /proc directory is not a directory ! Killing the daemon now.");	
 			break;
 		} else {
@@ -149,7 +152,8 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 							read_pid_fd(fd_list);
 
 						} catch( std::exception& e) {
-							// Logging has already been taken care of; just break from the for loop and go to next dir.
+							// An error occured !
+							// Logging has already been taken care of; just break and go to next dir.
 							continue;
 						}	
 							
@@ -174,21 +178,24 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 
 						//// Processes
 						// Get the process key of the considered process
-						std::size_t process_label = get_process_label(pstat);
+						//std::size_t process_label = get_process_label(pstat);
+						clpr_d::process_key pkey = get_process_key(pstat);
 
 						// Does the process exists in the considered group ?
-						if( !pgrp->is_present(process_label) ) {
+						//if( !pgrp->is_present(process_label) ) {
+						if( !pgrp->is_present(pkey) ) {
 							uint64_t bdate;
 							read_pid_bdate(bdate);
 							// If not, create a new process
 							process_ptr proc_insert(new process(cmd_line, env,pstat.pid,pstat.ppid,bdate));
 
-							pgrp->insert(process_label,proc_insert);
+							//pgrp->insert(process_label,proc_insert);
+							pgrp->insert(pkey,proc_insert);
 
 						} // End if	
 
 						// Now, get the considered process
-						process_ptr process = pgrp->find(process_label);
+						process_ptr process = pgrp->find(pkey);
 						
 						// Construct the previous and current cpu usages
 						cpu_usage_p = cpu_usage_c;
@@ -197,14 +204,13 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 						cpu_usage_c.gtime = pstat.gtime;
 
 						// ... and finally, add the data !
-						
-						process->push_back(new clpr_d::snapshot_ptr(pstat,
+						process->push_back(clpr_d::snapshot_ptr(new clpr_d::snapshot(pstat,
 											pstatus,
 											pio,wchan,
 											total_host_mem,
 											cpu_usage_c, 
 											cpu_usage_p,
-											delta_cpu)); 
+											delta_cpu))); 
 
 					} // if fs::exists
 				} // End if(boost::regex_match)
@@ -218,6 +224,8 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 } // End of proc_reader::read
 
 void proc_reader::read_pid_stat(clpr_d::proc_stat& pstat) {
+	std::string msg;
+	std::ifstream file;
 
 	//// Open /proc/<pid>/stat
 	std::string file_path = pid_dir_it->generic_string() + "/stat";
@@ -245,7 +253,9 @@ void proc_reader::read_pid_stat(clpr_d::proc_stat& pstat) {
 } // End of proc_reader::read_pid_stat
 
 void proc_reader::read_pid_io(clpr_d::proc_io& pio) {
-
+	std::string msg;
+	std::string _; // to ignore fields
+	std::ifstream file;
 	std::string file_path = pid_dir_it->generic_string() + "/io";
 	file.open(file_path.c_str());
 	// If we can't open the file, the process is most likely done, so just skip over it
@@ -272,6 +282,8 @@ void proc_reader::read_pid_io(clpr_d::proc_io& pio) {
 
 void proc_reader::read_pid_status(clpr_d::proc_status& pstatus) {
 
+	std::string msg;
+	std::ifstream file;
 	std::string file_path = pid_dir_it->generic_string() + "/status";
 	file.open(file_path.c_str());
 	if(!file.is_open()) {
@@ -302,6 +314,8 @@ void proc_reader::read_pid_status(clpr_d::proc_status& pstatus) {
 } // End of proc_reader::read_pid_status
 
 void proc_reader::read_pid_wchan(std::string& wchan) {
+	std::string msg;
+	std::ifstream file;
 	std::string file_path = pid_dir_it->generic_string() + "/wchan";
 	file.open(file_path.c_str());
 	if(!file.is_open()) {
@@ -322,6 +336,8 @@ void proc_reader::read_pid_wchan(std::string& wchan) {
 
 void proc_reader::read_pid_environ(std::map<std::string, std::string>& env) {
 
+	std::string msg;
+	std::ifstream file;
 	// Open the file
 	std::string file_path = pid_dir_it->generic_string() + "/environ";
 	file.open(file_path.c_str()); 
@@ -336,9 +352,11 @@ void proc_reader::read_pid_environ(std::map<std::string, std::string>& env) {
 
 	// Exploit getline with '\0' separator instead of \n
 	while(std::getline(file,env_line , '\0')) {
+
 		// Split the string VARIABLE=data at the equal sign
 		std::vector<std::string> vstr;
-		boost::split(vstr, env_line , "=");
+		boost::split(vstr, env_line , boost::is_any_of("="));
+
 		// TODO : add a check if vstr.size() > 2... Should not happen (see https://stackoverflow.com/questions/2821043/allowed-characters-in-linux-environment-variable-names)
 		// but you never know which crappy software will set an equal variable in the value of a variable ! 
 
@@ -355,6 +373,7 @@ void proc_reader::read_pid_environ(std::map<std::string, std::string>& env) {
 void proc_reader::read_pid_fd(std::map<int,std::string>& fd_list) {
 	// Get path to fd
 	std::string dir_path = pid_dir_it->generic_string() + "/fd";
+	std::string msg;
 	fs::path fd_path(dir_path);
 	if( !fs::exists(fd_path) ) {
 		msg = "Can not read " + dir_path + " ; skipping entry";
@@ -377,9 +396,10 @@ void proc_reader::read_pid_fd(std::map<int,std::string>& fd_list) {
 
 void proc_reader::read_pid_bdate(uint64_t& bdate) {
 	struct stat statbuf;
+	std::string msg;
 	std::string dir_path = pid_dir_it->generic_string();
 
-	if(stat(dir_path.c_str(), &statbuf == -1) {
+	if(stat(dir_path.c_str(), &statbuf) == -1) {
 		msg = "Can not read " + dir_path + " ; skipping entry";
 		p_log_file->write(CLPR_LOG_ERROR, msg);
 		
@@ -393,6 +413,9 @@ void proc_reader::read_pid_bdate(uint64_t& bdate) {
 
 // Get the current uptime
 void proc_reader::read_stat(uint64_t& uptime_c) {
+	std::string msg;
+	std::ifstream file;
+
 	std::string file_path = "/proc/stat";
 	
 	file.open(file_path.c_str()); 
@@ -414,7 +437,7 @@ void proc_reader::read_stat(uint64_t& uptime_c) {
 
 	// Split the line at spaces
 	std::vector<std::string> vstr;
-	boost::split(vstr, line , " ");
+	boost::split(vstr, line ,boost::is_any_of(" "));
 
 	// Calculate the total uptime
 	uint64_t uptime = 0;
@@ -422,7 +445,7 @@ void proc_reader::read_stat(uint64_t& uptime_c) {
 		uptime += std::stoi(*it);
 
 	// Remove Guest since already contained in 
-	uptime -= vstr[PROC_STAT_GUEST];	
+	uptime -= std::stoi(vstr[PROC_STAT_GTIME]);	
 
 	uptime_c = uptime;
 

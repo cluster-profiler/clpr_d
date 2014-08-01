@@ -53,6 +53,10 @@ namespace clpr_d {
 
 	/// Return the pid blob for this input line
 	pid_data get_pid_data(const std::vector<std::string> &input);
+
+
+	// Return the process key for a given process for lookup in a process group
+	process_key get_process_key(const clpr_d::proc_stat& pstat);
 }
 
 #endif

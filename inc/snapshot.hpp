@@ -15,7 +15,7 @@ class snapshot {
 
 	public:
 		//snapshot(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus, const clpr_d::proc_io& pio);
-		snapshot(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus, const clpr_d::proc_io& pio, const std::string& wchan, const uint64_t& total_mem, const clpr_d::cpu_usage& cpu_usage_p, const float& delta_cpu);
+		snapshot(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus, const clpr_d::proc_io& pio, const std::string& wchan, const uint64_t& total_mem, const clpr_d::cpu_usage& cpu_usage_c, const clpr_d::cpu_usage& cpu_usage_p, const float& delta_cpu);
 //		~snapshot();
 
 	private:

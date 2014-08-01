@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 
 	//// 6. Close the standard file descriptors	
 	//close(STDIN_FILENO);
-	// close(STDOUT_FILENO); // Leave it open for debugging purposes
+	 // close(STDOUT_FILENO); // Leave it open for debugging purposes
 	//close(STDERR_FILENO);
  
 	////////////////////////////////////
@@ -138,6 +138,16 @@ int main(int argc, char *argv[]) {
 	//// Start the reader
 	clpr_d::proc_reader reader(p_log_file);	
 	reader.read(p_clpr_db);
+
+	
+	std::ifstream db_content("/gpfs/scratch/pzt5044/db_dump.out", ios::out);
+
+	if(db_content.is_open()) {
+		db_content << p_clpr_db;
+		db_content.close();
+	}	
+
+
 
 
 	//// Worker threads

@@ -46,6 +46,33 @@ namespace clpr_d {
 		return *index_it;
 	}
 
+	// Write the stream op
+	//std::ostream& operator<<(std::ostream &out, clpr_db& in) {
+	//std::ifstream& operator<<(std::ifstream &out, clpr_db& in) {
+	std::ifstream& operator<<(std::ifstream &out, boost::shared_ptr<clpr_db>& in) {
+
+		//boost::mutex::scoped_lock lock(in.mutex_pgrp);
+		//while(in._set.size()==0){
+		//	in._ready.wait(lock);
+		//}
+		
+		
+		//in.mutex_pgrp.lock();
+
+		// Iterate over all of the process groups
+		for( in->label_it = in->db_content.get<global_label>().begin(); \
+			in->label_it != in->db_content.get<global_label>().end(); \
+			++in->label_it) {
+				out << in->label_it << endl;
+		}		
+
+		//in.mutex_pgrp.unlock();
+		//lock.unlock();
+		//in.ready.notify_all();
+		
+		return out;
+	}
+
 
 /*
 	// Update the process group indexed by pgrp_indx. If it does not exist, create it
@@ -161,25 +188,6 @@ namespace clpr_d {
 		return ret;
 	}
 
-
-	// Write the stream op
-	ostream& operator<<(ostream &out, clpr_db& in) {
-
-		//boost::mutex::scoped_lock lock(in._mutex_blobs);
-		//while(in._set.size()==0){
-		//	in._ready.wait(lock);
-		//}
-		/*
-		in._mutex_blobs.lock();
-		for (in._label_it=in._set.get<global_label>().begin(); \
-				in._label_it != in._set.get<global_label>().end(); in._label_it++)
-			out << *in._label_it << endl;
-		in._mutex_blobs.unlock();
-		//lock.unlock();
-		//in._ready.notify_all();
-		*/
-		return out;
-	}
 
 
 

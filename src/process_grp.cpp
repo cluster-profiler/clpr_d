@@ -1,3 +1,4 @@
+#include <pwd.h>
 #include <utility>
 
 #include "process_grp.hpp"
@@ -14,7 +15,7 @@ process_grp::process_grp(const clpr_d::proc_stat& pstat, const clpr_d::proc_stat
 
 	// Get uid
 	struct passwd *pwd;
-	pwd = getpwduid(pstatus.uid);
+	pwd = getpwuid(pstatus.uid);
 
 	uid = pwd->pw_name;
 
@@ -23,22 +24,57 @@ process_grp::process_grp(const clpr_d::proc_stat& pstat, const clpr_d::proc_stat
 }
 
 // TODO: Add is_present here. Might require to reorganize the HASH_MAP from process_grp
-bool process_grp::is_present(const std::size_t& idx) {
-	if (process_list.find(idx) == process_list.end()) {
+// bool process_grp::is_present(const std::size_t& idx) {
+bool process_grp::is_present(const process_key& pkey) {
+	if (process_list.find(pkey) == process_list.end()) {
 		return false;
 	}
 
 	return true;
 }
 
-void process_grp::insert(std::size_t& idx, clpr_d::process_ptr pproc_insert) {
+//void process_grp::insert(std::size_t& idx, clpr_d::process_ptr pproc_insert) {
+void process_grp::insert(process_key& pkey, clpr_d::process_ptr pproc_insert) {
 	// Some C++11
-	this->process_list.insert({idx,pproc_insert});
+	this->process_list.insert({pkey,pproc_insert});
 }
 
-clpr_d::process_ptr find(const std::size_t& idx) {
-	return *(process_list.find(idx));
+//clpr_d::process_ptr find(const std::size_t& idx) {
+clpr_d::process_ptr process_grp::find(const process_key& pkey) {
+	// Get the actual value from the returned iterator
+	return process_list.find(pkey)->second;
 }	
+
+
+
+	
+// Time setter
+void process_grp::update_time(){
+	tstamp = (uint64_t) time(NULL);
+}
+
+// Time getter
+uint64_t const& process_grp::get_time() const{
+	return tstamp;
+}
+
+
+//// Getters	
+std::string process_grp::get_hash_index() const {return hash_index;}	
+uint64_t process_grp::get_label() const{return label;}
+
+
+//// Output stream
+//std::ostream& operator<<(std::ostream &out, const process_grp& in) {
+//std::ifstream& operator<<(std::ifstream &out, boost::shared_ptr<process_grp>& in) {
+std::ifstream& operator<<(std::ifstream &out, clpr_db::lab_it& in) {
+	process_grp_ptr pgrp = *in;
+
+	BOOST_FOREACH( HASH_MAP::value_type v, pgrp->process_list) {
+		out << v.first << v.second << endl;
+	}
+	return out;
+} // End of operator<<
 
 
 /*
@@ -74,18 +110,9 @@ process_grp::~process_grp() {
 	this->p_log_file->write(CLPR_LOG_DEBUG,"Calling process_grp destructor");
 }	
 */
-	
-// Time setter
-void process_grp::update_time(){
-	tstamp = (uint64_t) time(NULL);
-}
-
-// Time getter
-uint64_t const& process_grp::get_time() const{
-	return tstamp;
-}
 
 // Get the header
+/*
 std::string process_grp::get_header() const{
 
 	std::stringstream ss;
@@ -95,10 +122,12 @@ std::string process_grp::get_header() const{
 	return ss.str();
 
 }
+*/
 
 
 // Pushing back a row of pidstat in a process_grp
 // TODO: check that the tokens are valid
+/*
 void process_grp::push_back(const std::string& host_info, const std::vector<std::string> &tokens){
 
 	//// For logging
@@ -180,10 +209,9 @@ void process_grp::push_back(const std::string& host_info, const std::vector<std:
 	update_time();
 
 }
+*/
 
-//// Getters	
-std::string process_grp::get_hash_index() const {return hash_index;}	
-uint64_t process_grp::get_label() const{return label;}
+/*
 float process_grp::get_max_mem() const{return max_mem;}
 float process_grp::get_min_mem() const{return min_mem;}
 
@@ -195,7 +223,7 @@ float process_grp::get_min_fds() const{return min_fds;}
 
 float process_grp::get_max_cpu() const{return max_cpu;}
 float process_grp::get_min_cpu() const{return min_cpu;}
-
+*/
 
 
 
