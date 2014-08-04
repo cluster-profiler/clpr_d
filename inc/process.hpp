@@ -25,6 +25,7 @@ class process {
 		~process();
 		void push_back(clpr_d::snapshot_ptr snap_ptr);
 		void dump(std::string& line_header, std::ostream& out);
+		std::vector<clpr_d::snapshot_ptr> const& get_time_series() const; 
 
 		// Ostream
 		friend std::ostream& operator<<(std::ostream& out, boost::shared_ptr<process>& in);

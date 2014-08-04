@@ -14,6 +14,13 @@ void process::push_back(clpr_d::snapshot_ptr snap_ptr) {
 process::~process() {}
 
 
+
+std::vector<clpr_d::snapshot_ptr> const& process::get_time_series() const {
+	return this->time_series;
+} // End of process::get_time_series()	
+
+
+
 void process::dump(std::string& line_header, std::ostream& out) {
 
 	std::string env_string = "[";	
@@ -24,7 +31,8 @@ void process::dump(std::string& line_header, std::ostream& out) {
 	env_string += "]";
 
 	for(auto it = (this->time_series).begin(); it != (this->time_series).end(); ++it) {
-		out << line_header << " " << this->bdate << " " << this->pid << " " << this->ppid << " " << *it << " " << this->cmd << " " << env_string << std::endl;
+//		out << line_header << " " << this->bdate << " " << this->pid << " " << this->ppid << " " << *it << " " << this->cmd << " " << env_string << std::endl;
+		out << line_header << " " << this->bdate << " " << this->pid << " " << this->ppid << " " << *it << " " << this->cmd << std::endl;
 	}
 }
 

@@ -77,8 +77,9 @@ class clpr_db {
 		// Actual database content
 		std::map<std::string, process_grp_ptr> db_content;
 
-		// When this was last written to a socket
-		uint64_t write_time;
+		// When was this last touched ? aka current time stamp
+		uint64_t tstamp;
+
 
 		// Dependency injection -- smart pointer for the log file
 		clpr_d::p_log p_log_file;
@@ -119,6 +120,9 @@ class clpr_db {
 		clpr_d::process_grp_ptr find(const std::string& pgrp_idx); 
 
 		void dump(std::ostream& out); 
+
+		uint64_t const& get_time_stamp() const;
+		void set_time_stamp(uint64_t const& tstamp);
 
 /*
 		///get the size of the map

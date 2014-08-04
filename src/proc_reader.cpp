@@ -36,7 +36,8 @@ proc_reader::~proc_reader() {
 void proc_reader::read(clpr_d::db_ptr p_db) {
 
 	//// Time stamp at which we are looking at the data
-	long unsigned int tstamp;
+	uint64_t tstamp;
+	std::ofstream db_content;
 
 	//// Hostname
 	struct utsname uname_data;
@@ -74,6 +75,9 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 
 	//while(1) {
 	for(int niter = 0; niter < 2; ++niter) {
+		// Get measure time stamp
+		tstamp = (uint64_t)time(NULL);
+
 		// Discover the /proc directory
 		fs::path p("/proc");
 
@@ -129,6 +133,7 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 							//// /proc/<pid>/cmdline
 							// if the process is not a zombie, then try to parse
 							if( strcmp(pstat.state.c_str(),"Z") != 0) {
+
 								std::string cmd_file_path = it->generic_string() + "/cmdline";
 								file.open(cmd_file_path.c_str());
 								if(!file.is_open()) {
@@ -156,7 +161,7 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 
 						} catch( std::exception& e) {
 							// An error occured !
-							// Logging has already been taken care of; just break and go to next dir.
+							// Logging has already been taken care of; just continue to next dir.
 							continue;
 						}	
 							
@@ -185,7 +190,6 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 						clpr_d::process_key pkey = get_process_key(pstat);
 
 						// Does the process exists in the considered group ?
-						//if( !pgrp->is_present(process_label) ) {
 						if( !pgrp->is_present(pkey) ) {
 							uint64_t bdate;
 							read_pid_bdate(bdate);
@@ -201,7 +205,15 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 						process_ptr process = pgrp->find(pkey);
 						
 						// Construct the previous and current cpu usages
-						cpu_usage_p = cpu_usage_c;
+						// If the process does have snapshots stored already... 
+						if( process->get_time_series().size() != 0 ) {
+							// Then retrieve the last cpu_usage data
+							cpu_usage_p = (process->get_time_series().back())->get_cpu_usage_p();
+						} else {
+							cpu_usage_p.utime = pstat.utime;
+							cpu_usage_p.stime = pstat.stime;
+							cpu_usage_p.gtime = pstat.gtime;
+						}	
 						cpu_usage_c.utime = pstat.utime;
 						cpu_usage_c.stime = pstat.stime;
 						cpu_usage_c.gtime = pstat.gtime;
@@ -215,12 +227,22 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 											total_host_mem,
 											cpu_usage_c, 
 											cpu_usage_p,
-											delta_cpu))); 
+											delta_cpu,
+											tstamp
+											))); 
 
 					} // if fs::exists
 				} // End if(boost::regex_match)
 			} // End for loop over directory list
 		} // End else if
+		
+		// Dump data to file
+		db_content.open("/gpfs/scratch/pzt5044/db_dump.out", ios::out);
+
+		if(db_content.is_open()) {
+			p_db->dump(db_content);
+			db_content.close();
+		}	
 
 		// Wait until next sampling
 		boost::this_thread::sleep(boost::posix_time::seconds(CLPR_SAMPLE_RATE));
@@ -252,7 +274,7 @@ void proc_reader::read_pid_stat(clpr_d::proc_stat& pstat) {
 		>> pstat.rsslim >> pstat.startcode >> pstat.endcode >> pstat.startstack >> pstat.kstkesp >> pstat.kstkeip \
 		>> pstat.signal >> pstat.blocked >> pstat.sigignore >> pstat.sigcatch >> pstat.wchan\
 		>> pstat.nswap >> pstat.cnswap >> pstat.exit_sig >> pstat.proc >> pstat.rt_prio\
-		>> pstat.policy >> pstat.delay >> pstat.gtime; 
+		>> pstat.policy >> pstat.delay >> pstat.gtime >> pstat.cgtime; 
 
 	file.close();
 } // End of proc_reader::read_pid_stat

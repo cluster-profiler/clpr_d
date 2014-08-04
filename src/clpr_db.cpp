@@ -1,3 +1,5 @@
+#include <ctime>
+
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/utsname.h>
@@ -16,7 +18,7 @@ namespace clpr_d {
 
 		this->db_max_entries = p_conf_file->get_db_max_entries();
 
-		update_write_time();
+		this->tstamp = time(NULL);
 
 	} // End of clpr_db constructor
 
@@ -39,6 +41,11 @@ namespace clpr_d {
 		return true;
 	} // End clpr_db::is_present	
 
+
+	void clpr_db::set_time_stamp(uint64_t const& tstamp) {
+		this->tstamp = tstamp;
+	}	
+
 	
 //	void clpr_db::insert(const clpr_d::process_grp_ptr& pgrp_ptr) {
 	void clpr_db::insert(const std::pair<std::string,process_grp_ptr>& in) {
@@ -59,7 +66,7 @@ namespace clpr_d {
 		std::string line_header(uname_data.nodename);
 
 		// Add the header
-		out << "Hostname UID STARTTIME PID PPID TTY PCPU PSYS PUSR PGST CORE# NTH MINFLT MAJFLT VSZ RSS PMEM RCHAR WCHAR SYSCR SYSCW RD_B WR_B CC_WR_B IODELAY CSWCH NVCSWCH NFD WCHAN STATE CMD ENV FDS" << std::endl; 
+		out << "Hostname UID STARTTIME PID PPID TSTAMP TTY PUSR PSYS PGST PCPU CORE# NTH MINFLT MAJFLT VSZ RSS PMEM RCHAR WCHAR SYSCR SYSCW RD_B WR_B CC_WR_B IODELAY CSWCH NVCSWCH NFD WCHAN STATE CMD ENV FDS" << std::endl; 
 
 		for(auto it = db_content.begin(); \
 			it != db_content.end(); \
@@ -100,6 +107,7 @@ namespace clpr_d {
 	}
 
 	// Stamp time
+	/*
 	void clpr_db::update_write_time() {
 
 		mutex_time.lock();
@@ -107,8 +115,10 @@ namespace clpr_d {
 		mutex_time.unlock();
 
 	}
+*/
 
 	// Read time
+	/*
 	uint64_t clpr_db::read_write_time() {
 
 		mutex_time.lock();
@@ -117,6 +127,7 @@ namespace clpr_d {
 
 		return ret;
 	}
+	*/
 
 
 

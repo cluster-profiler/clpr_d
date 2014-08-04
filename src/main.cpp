@@ -139,14 +139,6 @@ int main(int argc, char *argv[]) {
 	clpr_d::proc_reader reader(p_log_file);	
 	reader.read(p_clpr_db);
 
-	
-	std::ofstream db_content("/gpfs/scratch/pzt5044/db_dump.out", ios::out);
-
-	if(db_content.is_open()) {
-		p_clpr_db->dump(db_content);
-		db_content.close();
-	}	
-
 
 
 

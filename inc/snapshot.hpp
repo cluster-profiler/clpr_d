@@ -16,10 +16,11 @@ class snapshot {
 
 	public:
 		//snapshot(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus, const clpr_d::proc_io& pio);
-		snapshot(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus, const clpr_d::proc_io& pio, const std::map<int, std::string>& fd_list, const std::string& wchan, const uint64_t& total_mem, const clpr_d::cpu_usage& cpu_usage_c, const clpr_d::cpu_usage& cpu_usage_p, const float& delta_cpu);
+		snapshot(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus, const clpr_d::proc_io& pio, const std::map<int, std::string>& fd_list, const std::string& wchan, const uint64_t& total_mem, const clpr_d::cpu_usage& cpu_usage_c, const clpr_d::cpu_usage& cpu_usage_p, const float& delta_cpu, const uint64_t& tstamp);
 //		~snapshot();
 
 	friend std::ostream& operator<<(std::ostream& out, boost::shared_ptr<snapshot>& in);
+	cpu_usage const& get_cpu_usage_p() const; 
 
 	private:
 		int tty; // tty in which process is currently running
@@ -30,6 +31,9 @@ class snapshot {
 		float psys; // percent system
 		float pgst; // percent guest
 		float pcpu; // percent cpu
+
+		// Previous cpu_usage structure
+		cpu_usage cpu_usage_p;
 
 		//// Core usage
 		int core_num; // core number on which proc. is running
@@ -65,6 +69,10 @@ class snapshot {
 		//// WCHAN
 		std::string wchan;
 		std::string state; //state (R,Z,S,etc.)
+
+		//// Tstamp
+		uint64_t tstamp;
+
 
 
 }; // End of class snapshot
