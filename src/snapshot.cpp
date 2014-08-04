@@ -4,7 +4,7 @@
 
 namespace clpr_d {
 
-snapshot::snapshot(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus, const clpr_d::proc_io& pio, const std::string& wchan, const uint64_t& total_mem, const clpr_d::cpu_usage& cpu_usage_c, const clpr_d::cpu_usage& cpu_usage_p, const float& delta_cpu){
+snapshot::snapshot(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus, const clpr_d::proc_io& pio, const std::map<int, std::string>& fd_list, const std::string& wchan, const uint64_t& total_mem, const clpr_d::cpu_usage& cpu_usage_c, const clpr_d::cpu_usage& cpu_usage_p, const float& delta_cpu){
 
 	//// TTY
 	tty = pstat.tty;
@@ -45,7 +45,8 @@ snapshot::snapshot(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& ps
 	delay = pstat.delay;
 
 	//// FD
-	n_fd = pstatus.fdsize;
+	n_fd = fd_list.size();
+	this->fd_list.insert(fd_list.begin(),fd_list.end());
 
 	//// Context switching
 	cswch = pstatus.cswch;
@@ -61,11 +62,15 @@ snapshot::snapshot(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& ps
 
 std::ostream& operator<<(std::ostream& out, boost::shared_ptr<snapshot>& in) {
 
-	int tty_major = 0xFF00;
 	int tty_minor = 0xFF;
 
-	//out << (in->tty & tty_major) << "."\
-	
+	std::string fd_string = "[";	
+	for(auto it = (in->fd_list).begin(); it != (in->fd_list).end(); ++it) {
+		fd_string += std::to_string(it->first) + "=" + it->second + ","; 
+	}
+	fd_string.pop_back();
+	fd_string += "]";
+
 	out << (in->tty & tty_minor) << " "\
 		<< in->pusr << " "\
 		<< in->psys << " "\
@@ -90,7 +95,9 @@ std::ostream& operator<<(std::ostream& out, boost::shared_ptr<snapshot>& in) {
 		<< in->nvcswch << " "\
 		<< in->n_fd << " "\
 		<< in->wchan << " "\
-		<< in->state << " ";
+		<< in->state << " "\
+		<< fd_string << " ";
+
 
 
 	return out;

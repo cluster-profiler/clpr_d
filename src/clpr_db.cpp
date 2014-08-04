@@ -59,7 +59,7 @@ namespace clpr_d {
 		std::string line_header(uname_data.nodename);
 
 		// Add the header
-		out << "Hostname UID STARTTIME PID PPID TTY PCPU PSYS PUSR PGST CORE# NTH MINFLT MAJFLT VSZ RSS PMEM RCHAR WCHAR SYSCR SYSCW RD_B WR_B CC_WR_B IODELAY CSWCH NVCSWCH FDS WCHAN STATE CMD" << std::endl; 
+		out << "Hostname UID STARTTIME PID PPID TTY PCPU PSYS PUSR PGST CORE# NTH MINFLT MAJFLT VSZ RSS PMEM RCHAR WCHAR SYSCR SYSCW RD_B WR_B CC_WR_B IODELAY CSWCH NVCSWCH NFD WCHAN STATE CMD ENV FDS" << std::endl; 
 
 		for(auto it = db_content.begin(); \
 			it != db_content.end(); \

@@ -69,8 +69,11 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 	cpu_usage cpu_usage_c;
 	cpu_usage cpu_usage_p;
 
+	// Initialize uptime_c
+	read_stat(uptime_c);
+
 	//while(1) {
-	for(int niter = 0; niter < 4; ++niter) {
+	for(int niter = 0; niter < 2; ++niter) {
 		// Discover the /proc directory
 		fs::path p("/proc");
 
@@ -149,7 +152,7 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 							read_pid_environ(env);
 
 							//// /proc/<pid>/fd
-							//read_pid_fd(fd_list);
+							read_pid_fd(fd_list);
 
 						} catch( std::exception& e) {
 							// An error occured !
@@ -206,7 +209,9 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 						// ... and finally, add the data !
 						process->push_back(clpr_d::snapshot_ptr(new clpr_d::snapshot(pstat,
 											pstatus,
-											pio,wchan,
+											pio,
+											fd_list,
+											wchan,
 											total_host_mem,
 											cpu_usage_c, 
 											cpu_usage_p,
@@ -358,7 +363,7 @@ void proc_reader::read_pid_environ(std::map<std::string, std::string>& env) {
 		boost::split(vstr, env_line , boost::is_any_of("="));
 
 		// TODO : add a check if vstr.size() > 2... Should not happen (see https://stackoverflow.com/questions/2821043/allowed-characters-in-linux-environment-variable-names)
-		// but you never know which crappy software will set an equal variable in the value of a variable ! 
+		// but you never know which crappy software will set an equal sign in the value of a variable ! 
 
 		// KEY=VALUE
 		env.insert(std::make_pair(vstr[0],vstr[1]));		
@@ -387,10 +392,9 @@ void proc_reader::read_pid_fd(std::map<int,std::string>& fd_list) {
 
 	// For all file descriptors listed in /fd
 	for(auto it = fd_vec.begin(); it != fd_vec.end(); ++it) {
-		p_log_file->write(CLPR_LOG_ERROR, it->leaf().generic_string());
-		//int fd_num = std::stoi(it->leaf().generic_string());
-		int fd_num = 0;
+		int fd_num = std::stoi(it->leaf().generic_string());
 		fd_list.insert(std::make_pair(fd_num, fs::read_symlink(*it).generic_string())); 
+		p_log_file->write(CLPR_LOG_ERROR, it->leaf().generic_string() + " " + fs::read_symlink(*it).generic_string());
 	}
 
 } // End of proc_reader::read_pid_fd
@@ -433,22 +437,37 @@ void proc_reader::read_stat(uint64_t& uptime_c) {
 	//// Get first line of /proc/stat, e.g.
 	// TODO: Add check so that we get the correct line
 	// cpu user user-nice system idle iowait irq softirq steal guest 
-	// cpu 133473989 27287 12925885 4073999423 1927197 3535 523304 0 0
+	// cpu  133473989 27287 12925885 4073999423 1927197 3535 523304 0 0
 	std::string line;
 	std::getline(file,line);
 
+	// Remove the characters "cpu  "
+	std::string header = "cpu  ";
+	std::string line_sub = line.substr(header.size(),line.size() - header.size());
+
 	// Split the line at spaces
 	std::vector<std::string> vstr;
-	boost::split(vstr, line ,boost::is_any_of(" "));
+	boost::split(vstr, line_sub ,boost::is_any_of(" "));
 
 	// Calculate the total uptime
 	uint64_t uptime = 0;
-	for(auto it = vstr.begin() + 1; it != vstr.end(); ++it) 
-		//std::cout << *it << std::endl;
-		//uptime += std::stoi(*it);
+	for(auto it = vstr.begin(); it != vstr.end(); ++it) { 
+		try {
+			uptime += std::stoul(*it);
+		} catch(const std::invalid_argument& ia) {
+			// Invalid argument, just continue to parse;
+			// Caused by the first two elements in vstr
+			continue;
+		} catch(const std::exception& e) {
+			// Something else happened...
+			std::string msg = "Can not parse " + file_path + " correctly ! Incorrect entry was: " + *it;
+			p_log_file->write(CLPR_LOG_CRITICAL,msg);
+			throw std::runtime_error(msg);
+		}	
+	}	
 
 	// Remove Guest since already contained in 
-	uptime -= std::stoi(vstr[PROC_STAT_GTIME]);	
+	uptime -= std::stoul(vstr[PROC_STAT_GTIME]);	
 
 	uptime_c = uptime;
 
