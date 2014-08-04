@@ -158,6 +158,8 @@ class process_grp {
 		// clpr_d::process_ptr find(const std::size_t& idx); 
 		clpr_d::process_ptr find(const process_key& pkey); 
 
+		void dump(std::string& line_header, std::ostream& out);
+
 		//void push_back(const std::string& host_info, const std::vector<std::string> &tokens);
 		// Update
 		/**

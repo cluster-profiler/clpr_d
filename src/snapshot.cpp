@@ -61,7 +61,12 @@ snapshot::snapshot(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& ps
 
 std::ostream& operator<<(std::ostream& out, boost::shared_ptr<snapshot>& in) {
 
-	out << in->tty << " "\
+	int tty_major = 0xFF00;
+	int tty_minor = 0xFF;
+
+	//out << (in->tty & tty_major) << "."\
+	
+	out << (in->tty & tty_minor) << " "\
 		<< in->pusr << " "\
 		<< in->psys << " "\
 		<< in->pgst << " "\

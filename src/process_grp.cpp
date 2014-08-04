@@ -46,9 +46,6 @@ clpr_d::process_ptr process_grp::find(const process_key& pkey) {
 	return process_list.find(pkey)->second;
 }	
 
-
-
-	
 // Time setter
 void process_grp::update_time(){
 	tstamp = (uint64_t) time(NULL);
@@ -63,6 +60,17 @@ uint64_t const& process_grp::get_time() const{
 //// Getters	
 std::string process_grp::get_hash_index() const {return hash_index;}	
 uint64_t process_grp::get_label() const{return label;}
+
+void process_grp::dump(std::string& line_header, std::ostream& out) {
+
+	line_header += " ";
+	line_header += this->uid;
+
+	BOOST_FOREACH(HASH_MAP::value_type v, this->process_list) {
+		v.second->dump(line_header,out);
+	}
+} // End of process_grp::dump
+
 
 
 //// Output stream

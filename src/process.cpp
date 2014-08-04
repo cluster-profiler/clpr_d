@@ -14,6 +14,21 @@ void process::push_back(clpr_d::snapshot_ptr snap_ptr) {
 process::~process() {}
 
 
+void process::dump(std::string& line_header, std::ostream& out) {
+
+	std::string env_string = "[";	
+	for(auto it = (this->env).begin(); it != (this->env).end(); ++it) {
+		env_string += it->first + "=" + it->second + ","; 
+	}
+	env_string.pop_back();
+	env_string += "]";
+
+	for(auto it = (this->time_series).begin(); it != (this->time_series).end(); ++it) {
+		out << line_header << " " << this->bdate << " " << this->pid << " " << this->ppid << " " << *it << " " << this->cmd << " " << env_string << std::endl;
+	}
+}
+
+
 std::ostream& operator<<(std::ostream& out, boost::shared_ptr<process>& in) {
 
 	for(auto it = (in->time_series).begin(); it != (in->time_series).end(); ++it) {

@@ -170,7 +170,7 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 						if( !p_db->is_present(pgrp_label) ) {
 							// If not, create a new process group
 							process_grp_ptr pgrp_insert(new process_grp(pstat,pstatus));
-							p_db->insert(pgrp_insert);
+							p_db->insert( std::pair<std::string, process_grp_ptr>(pgrp_label, pgrp_insert));
 						} // End if 
 
 						// Now, get the considered process group
@@ -181,7 +181,6 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 						//std::size_t process_label = get_process_label(pstat);
 						clpr_d::process_key pkey = get_process_key(pstat);
 
-							/*
 						// Does the process exists in the considered group ?
 						//if( !pgrp->is_present(process_label) ) {
 						if( !pgrp->is_present(pkey) ) {
@@ -213,7 +212,6 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 											cpu_usage_p,
 											delta_cpu))); 
 
-						*/					
 					} // if fs::exists
 				} // End if(boost::regex_match)
 			} // End for loop over directory list

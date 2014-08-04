@@ -19,6 +19,7 @@ class snapshot {
 //		~snapshot();
 
 	friend std::ostream& operator<<(std::ostream& out, boost::shared_ptr<snapshot>& in);
+
 	private:
 		int tty; // tty in which process is currently running
 

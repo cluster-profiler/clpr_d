@@ -45,19 +45,9 @@
 #include <fstream>
 #include <iterator>
 #include <string>
+#include <map>
 
 //// Boost
-#include <boost/multi_index/sequenced_index.hpp>
-#include <boost/multi_index/random_access_index.hpp>
-#include <boost/multi_index/identity.hpp>
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/mem_fun.hpp>
-#include <boost/multi_index/member.hpp>
-#include <boost/multi_index/ordered_index.hpp>
-#include <boost/multi_index/hashed_index.hpp>
-#include <boost/multi_index/member.hpp>
-#include <boost/multi_index/composite_key.hpp>
-
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
 
@@ -69,114 +59,12 @@
 
 using namespace std;
 using namespace boost;
-using namespace boost::multi_index;
 
 namespace clpr_d {
-
-//// Labels for the multi index
-/// convenience label for the database
-struct global_label{};
-/// convenience label for the database
-struct index{};
-/// convenience label for the database
-struct max_mem{};
-/// convenience label for the database
-struct min_mem{};
-/// convenience label for the database
-struct max_disk{};
-/// convenience label for the database
-struct min_disk{};
-/// convenience label for the database
-struct max_fds{};
-/// convenience label for the database
-struct min_fds{};
-/// convenience label for the database
-struct max_cpu{};
-/// convenience label for the database
-struct min_cpu{};
-/// convenience label for the database
-struct process_grp_label{};
-
-
 
 // A container for process data, allowing multiple search/sort
 class clpr_db {
 
-/*
-	typedef multi_index_container<
-		boost::shared_ptr<process_grp>,
-		indexed_by<
-			hashed_unique<
-				tag<process_grp_label>,
-				BOOST_MULTI_INDEX_CONST_MEM_FUN(process_grp,std::string,get_hash_index) 
-				>,
-			ordered_unique<
-				tag<global_label>,
-				BOOST_MULTI_INDEX_CONST_MEM_FUN(process_grp,uint64_t,get_label) 
-				>,
-			ordered_non_unique<
-				tag<max_mem>,
-				BOOST_MULTI_INDEX_CONST_MEM_FUN(process_grp,float,get_max_mem) 
-				>,
-			ordered_non_unique<
-				tag<min_mem>,
-				BOOST_MULTI_INDEX_CONST_MEM_FUN(process_grp,float,get_min_mem) 
-				>,
-			ordered_non_unique<
-				tag<max_disk>,
-				BOOST_MULTI_INDEX_CONST_MEM_FUN(process_grp,float,get_max_disk) 
-				>,
-			ordered_non_unique<
-				tag<min_disk>,
-				BOOST_MULTI_INDEX_CONST_MEM_FUN(process_grp,float,get_min_disk) 
-				>,
-			ordered_non_unique<	
-				tag<max_fds>,
-				BOOST_MULTI_INDEX_CONST_MEM_FUN(process_grp,float,get_max_fds) 
-				>,
-			ordered_non_unique<
-				tag<min_fds>,
-				BOOST_MULTI_INDEX_CONST_MEM_FUN(process_grp,float,get_min_fds) 
-				>,
-			ordered_non_unique<
-				tag<max_cpu>,
-				BOOST_MULTI_INDEX_CONST_MEM_FUN(process_grp,float,get_max_cpu)
-				>,
-			ordered_non_unique<
-				tag<min_cpu>,
-				BOOST_MULTI_INDEX_CONST_MEM_FUN(process_grp,float,get_min_cpu)
-				> 
-		> // End of indexed_by
-	> process_grp_db; // End of multi_index_container
-*/
-
-	typedef multi_index_container<
-		boost::shared_ptr<process_grp>,
-		indexed_by<
-			hashed_unique<
-				tag<process_grp_label>,
-				BOOST_MULTI_INDEX_CONST_MEM_FUN(process_grp,std::string,get_hash_index) 
-				>,
-			ordered_unique<
-				tag<global_label>,
-				BOOST_MULTI_INDEX_CONST_MEM_FUN(process_grp,uint64_t,get_label) 
-				>
-		> // End of indexed_by
-	> process_grp_db; // End of multi_index_container
-
-	// Iterators to crawl over database
-	typedef process_grp_db::index<process_grp_label>::type::iterator ind_it;
-	typedef process_grp_db::index<global_label>::type::iterator lab_it;
-	/*
-	typedef process_grp_db::index<min_mem>::type::iterator mmin_it;
-	typedef process_grp_db::index<max_mem>::type::iterator mmax_it;
-	typedef process_grp_db::index<min_cpu>::type::iterator cmin_it;
-	typedef process_grp_db::index<max_cpu>::type::iterator cmax_it;
-	typedef process_grp_db::index<min_fds>::type::iterator fmin_it;
-	typedef process_grp_db::index<max_fds>::type::iterator fmax_it;
-	typedef process_grp_db::index<min_disk>::type::iterator dmin_it;
-	typedef process_grp_db::index<max_disk>::type::iterator dmax_it;
-*/
 	private:
 
 		// For setting/getting process groups 
@@ -185,21 +73,9 @@ class clpr_db {
 		boost::mutex mutex_time;
 		// Data ready condition
 		boost::condition ready;
-		// Iterators for different indices
-		lab_it label_it;
-		ind_it index_it;
-		/*
-		mmin_it min_mem_it;
-		mmax_it max_mem_it;
-		cmin_it min_cpu_it;
-		cmax_it max_cpu_it;
-		fmin_it min_fds_it;
-		fmax_it max_fds_it;
-		dmin_it min_dsk_it;
-		dmax_it max_dsk_it;
-*/
+
 		// Actual database content
-		process_grp_db db_content;
+		std::map<std::string, process_grp_ptr> db_content;
 
 		// When this was last written to a socket
 		uint64_t write_time;
@@ -237,17 +113,12 @@ class clpr_db {
 		void update(const vector<std::string>& tokens, const std::string& pgrp_idx, const std::string& host_info, uint64_t& label); 
 
 
-		/**
-		 * Take a process_grp and add in to the db
-		 * @param process_grp input 
-		 * @param string& (hashed) index
-		 */	
-//		void insert(process_grp& in, string &i);
-
-
 		bool is_present(const std::string& idx); 
-		void insert(clpr_d::process_grp_ptr pgrp_ptr); 
+//		void insert(clpr_d::process_grp_ptr pgrp_ptr); 
+		void insert(const std::pair<std::string,process_grp_ptr>& in); 
 		clpr_d::process_grp_ptr find(const std::string& pgrp_idx); 
+
+		void dump(std::ostream& out); 
 
 /*
 		///get the size of the map
@@ -271,32 +142,11 @@ class clpr_db {
 		 * @param uint64_t& label
 		 *
 		 */
-	//	process_grp get_process_grp(const vector<string>& tokens,const string &pgrp_idx, const uint64_t& label);
 
-
-
-		
 
 
 		// Send all out to stream
 		friend std::ostream& operator<<(std::ostream &out, boost::shared_ptr<clpr_db>& in);
-		//friend std::ifstream& operator<<(std::ifstream &out, clpr_db& in);
-		//friend std::ifstream& operator<<(std::ifstream &out, boost::shared_ptr<clpr_db>& in);
-
-/*
-		// Dump to file, ordered by max_mem
-		void print_by_max_mem(ofstream &file);
-
-		// Dump to file, ordered by max_cpu
-		void print_by_max_cpu(ofstream &file);
-
-		// Dump to file, ordered by max_fds
-		void print_by_max_fds(ofstream &file);
-		
-		// Dump to file, ordered by max_dsk
-		void print_by_max_dsk(ofstream &file);
-*/
-
 
 }; // End of class clpr_db
 
