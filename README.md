@@ -13,12 +13,12 @@ Installation
 
 Changelog from v0.1
 ===================
-o Shared pointers all the way.
-o Const-correctness.
-o Class names were changed.
-o FIFO listener to input data from pidstat was removed. The class proc_reader now provides the parsing capabilities of pidstat.
-o TCP server was removed. An output file is written to disk. 
-o Config class and file provide customization capabilities.
-o Log class and file provide logging capabilities.
-o Database design has been simplified.
-o Process aggregation is at the process-group level, not by user id and start time.
+* Shared pointers all the way.
+* Const-correctness.
+* Class names were changed.
+* FIFO listener to input data from pidstat was removed. The class proc_reader now provides the parsing capabilities of pidstat.
+* TCP server was removed. An output file is written to disk. 
+* Config class and file provide customization capabilities.
+* Log class and file provide logging capabilities.
+* Database design has been simplified.
+* Process aggregation is at the process-group level, not by user id and start time.
