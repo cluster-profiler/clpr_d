@@ -47,7 +47,6 @@ namespace clpr_d {
 	}	
 
 	
-//	void clpr_db::insert(const clpr_d::process_grp_ptr& pgrp_ptr) {
 	void clpr_db::insert(const std::pair<std::string,process_grp_ptr>& in) {
 		db_content.insert(in);
 	} // End clpr_db::insert

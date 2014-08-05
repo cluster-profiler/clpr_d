@@ -10,7 +10,7 @@
 
 namespace clpr_d {
 
-// The input file has been tested and approved
+// The input file has already been tested and approved
 clpr_conf::clpr_conf(const std::istream& conf_file, const clpr_d::p_log& p_log_file) {
  
 	this->p_log_file = p_log_file;
@@ -22,9 +22,7 @@ clpr_conf::clpr_conf(const std::istream& conf_file, const clpr_d::p_log& p_log_f
 
 	// Traverse pt
 	BOOST_FOREACH( ptree::value_type const& v, pt.get_child("conf") ) {
-		if( v.first == "input_pipe" ) {
-			this->input_pipe = v.second.get<std::string>("<xmlattr>.path","/opt/ci2/clprd/bin/clpr_fifo");
-		} else if ( v.first == "log" ) {
+		if ( v.first == "log" ) {
 			this->log_level = v.second.get<int>("log_level",0);
 			this->log_wait = v.second.get<int>("log_wait",121);
 
@@ -42,9 +40,6 @@ clpr_conf::clpr_conf(const std::istream& conf_file, const clpr_d::p_log& p_log_f
 	this->p_log_file->write(CLPR_LOG_INFO,msg);
 
 	msg = "Configuration values"; 	
-	this->p_log_file->write(CLPR_LOG_INFO,msg);
-
-	msg = "Input pipe: " + this->input_pipe;
 	this->p_log_file->write(CLPR_LOG_INFO,msg);
 
 	msg = "Log level: " + std::to_string(this->log_level);

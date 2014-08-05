@@ -143,15 +143,6 @@ int main(int argc, char *argv[]) {
 
 
 	//// Worker threads
-	// extra paranthesis for most vexing parse(?)
-	
-	// 1. Logger
-	// boost::thread write_log((logger(dbs)));
-	// 2. Listener
-	//boost::thread write_socket((archiver(dbs)));
-	//boost::thread manage_db((manager(dbs)));
-
-	//reader parse_input(db);
 
 	//write_log.join();
 	//write_socket.join();

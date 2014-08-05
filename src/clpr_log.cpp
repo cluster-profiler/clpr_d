@@ -48,14 +48,14 @@ clpr_log::clpr_log(const std::string& filename) {
 		std::string err = "Can not open log file";
 		throw std::runtime_error(err);
 	}	
-}
+} // End of clpr_log::clpr_log
 
 clpr_log::~clpr_log() {
 	clpr_log::write(CLPR_LOG_DEBUG, "Calling clpr_log destructor"); 
 
 	if( this->log_file.is_open()) 
 		log_file.close();
-}
+} // End of clpr_log::~clpr_log
 
 
 void clpr_log::write(const int& severity, const std::string& msg) {
@@ -63,36 +63,25 @@ void clpr_log::write(const int& severity, const std::string& msg) {
 	std::string type;
 	switch(severity) {
 		case CLPR_LOG_INFO:
-			type = "INFO ";
+			type = "INFO";
 			break;
 		case CLPR_LOG_WARN:
-			type = "WARN ";
+			type = "WARN";
 			break;
 		case CLPR_LOG_ERROR:
-			type = "ERROR ";
+			type = "ERROR";
 			break;
 		case CLPR_LOG_CRITICAL:
-			type = "CRITICAL ";
+			type = "CRITICAL";
 			break;
 		case CLPR_LOG_DEBUG:
-			type = "DEBUG ";
+			type = "DEBUG";
 			break;
 		default:
-			type = "UNKNOWN ";
+			type = "UNKNOWN";
 			break;
 	}		
 	
-	/*
-	// Get the time stamp of that log message
-  	time_facet *facet = new time_facet("%d-%b-%Y %H:%M:%S");
-    	this->log_file.imbue(locale(this->log_file.getloc(), facet));
-
-	// Log the line if the severity is not DEBUG, or if the severity is DEBUG and DEBUG is turned on
-	if( (severity != CLPR_LOG_DEBUG) || (severity == CLPR_LOG_DEBUG && this->is_debug) ) { 
-	     	this->log_file << second_clock::local_time() << " " << type << msg << std::endl; 
-	}	
-	*/
-
 	// Get time stamp
 	std::time_t rawtime;
 	std::tm* timeinfo;
@@ -100,9 +89,10 @@ void clpr_log::write(const int& severity, const std::string& msg) {
 	std::time(&rawtime);
 	timeinfo = std::localtime(&rawtime);
 	std::strftime(buffer,80,"%d %m %Y %H %M %S",timeinfo);
+
 	// Log the line if the severity is not DEBUG, or if the severity is DEBUG and DEBUG is turned on
 	if( (severity != CLPR_LOG_DEBUG) || (severity == CLPR_LOG_DEBUG && this->is_debug) ) { 
-	     	this->log_file << buffer << " " << type << msg << std::endl; 
+	     	this->log_file << buffer << " " << type << " " << msg << std::endl; 
 	}	
 
 } // End of clpr_log::write

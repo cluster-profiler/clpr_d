@@ -1,32 +1,17 @@
 <?xml version="1.0"?>
-<!--sked>
-	<version>2</version>
-	<flight>
-		<carrier>BA</carrier>
-		<number>4001</number>
-		<date>2011-07-21</date>
-	</flight>
-	<flight cancelled="true">
-		<carrier>BA</carrier>
-		<number>4002</number>
-		<date>2011-07-21</date>
-	</flight>
-</sked -->
-
 <conf>
 	<version>0.2</version>
 
-	<input_pipe path="/gpfs/work/p/pzt5044/Github/clpr_d/bin/clpr_fifo"/>
 
 	<log>
+		<!-- Log should be in /var/log/clprd --> 
 		<!-- log_path path="/gpfs/work/p/pzt5044/Github/clpr_d/bin/clpr_d.log"/ -->
 		<log_level> 1 </log_level>
 		<log_max_entries> 10 </log_max_entries>
 	</log>
 
-	<network>
-		<port>59010</port> 
-	</network>
+	<!-- Spool directory should be in /var/spool/clprd -->
+	<!-- spool_directory path="/gpfs/scratch/pzt5044/db_dump.out" -->
 
 	<db_max_entries> 32768 </db_max_entries>
 

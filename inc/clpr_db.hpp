@@ -54,7 +54,6 @@
 #include <boost/shared_ptr.hpp>
 
 //// Project 
-#include "key_defines.hpp"
 #include "process_grp.hpp"
 
 using namespace std;
