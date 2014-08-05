@@ -39,6 +39,9 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 	uint64_t tstamp;
 	std::ofstream db_content;
 
+	//// Local daemon time
+	uint64_t daemon_time = 0;
+
 	//// Hostname
 	struct utsname uname_data;
 	uname(&uname_data);
@@ -72,6 +75,7 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 
 	// Initialize uptime_c
 	read_stat(uptime_c);
+
 
 	//while(1) {
 	for(int niter = 0; niter < 2; ++niter) {
@@ -165,15 +169,12 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 							continue;
 						}	
 							
-						///////////////////////////////
-						// GET THE PROCESS GRP LABEL //
-						///////////////////////////////
+						//// Process groups
 						// A process grp exists for trying to identify groups of processes
 						// that can be signaled together (e.g. mpi processes).
 						// The PGID is therefore of use here
 						std::string pgrp_label = get_process_grp_label(pstat,pstatus); 
 
-						//// Process groups
 						// Do we already have such process group in the database ?
 						if( !p_db->is_present(pgrp_label) ) {
 							// If not, create a new process group
@@ -184,9 +185,11 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 						// Now, get the considered process group
 						process_grp_ptr pgrp = p_db->find(pgrp_label);
 
+						// Since we are performing operations on it, update its timestamp
+						pgrp->update_tstamp();
+
 						//// Processes
 						// Get the process key of the considered process
-						//std::size_t process_label = get_process_label(pstat);
 						clpr_d::process_key pkey = get_process_key(pstat);
 
 						// Does the process exists in the considered group ?
@@ -196,7 +199,7 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 							// If not, create a new process
 							process_ptr proc_insert(new process(cmd_line, env,pstat.pid,pstat.ppid,bdate));
 
-							//pgrp->insert(process_label,proc_insert);
+							// And insert the process in the process_list of the process_grp
 							pgrp->insert(pkey,proc_insert);
 
 						} // End if	
@@ -237,15 +240,33 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 		} // End else if
 		
 		// Dump data to file
-		db_content.open("/gpfs/scratch/pzt5044/db_dump.out", ios::out);
+		db_content.open(CLPR_SPOOL_PATH, ios::out);
 
 		if(db_content.is_open()) {
 			p_db->dump(db_content);
 			db_content.close();
 		}	
+		p_db->update_write_time();
+
+
+		//// Clean up the database after writing
+		// Can't clean up during the process of parsing /proc directory. Have to do it after data has been inserted 
+		// Is it time to clean the database ?
+		if( (daemon_time % CLPR_CLEAN_RATE == 0) ) {
+			
+			// Database has not been cleaned ! 
+			// Get the current time
+			uint64_t current_time = time(NULL);
+
+			// Can clean now...
+			p_db->clean(current_time);
+		}
+
 
 		// Wait until next sampling
 		boost::this_thread::sleep(boost::posix_time::seconds(CLPR_SAMPLE_RATE));
+		daemon_time += CLPR_SAMPLE_RATE;
+
 	} // End while
 
 } // End of proc_reader::read

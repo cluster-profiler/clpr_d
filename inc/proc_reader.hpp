@@ -15,6 +15,9 @@
 //#define CLPR_SAMPLE_RATE 30
 #define CLPR_SAMPLE_RATE 5
 
+// Rate at which we clean the database
+#define CLPR_CLEAN_RATE 3600
+
 namespace clpr_d {
 
 // Forward declaration of clpr_db

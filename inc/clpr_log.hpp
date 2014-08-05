@@ -41,8 +41,11 @@
 
 //// Defines
 // Path to the log file
-#define CLPR_LOG_PATH  "/gpfs/work/p/pzt5044/Github/clpr_d/log/clprd.log"
-#define CLPR_LOG_PATH_OLD  "/gpfs/work/p/pzt5044/Github/clpr_d/log/clprd.log."
+//#define CLPR_LOG_PATH  "/gpfs/work/p/pzt5044/Github/clpr_d/log/clprd.log"
+//#define CLPR_LOG_PATH_OLD  "/gpfs/work/p/pzt5044/Github/clpr_d/log/clprd.log."
+
+#define CLPR_LOG_PATH  "/var/log/clprd/clprd.log"
+#define CLPR_LOG_PATH_OLD  "/var/log/clprd/clprd.log."
 
 //// Enums
 // Logging types

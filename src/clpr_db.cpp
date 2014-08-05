@@ -46,6 +46,10 @@ namespace clpr_d {
 		this->tstamp = tstamp;
 	}	
 
+	void clpr_db::update_write_time() {
+		this->write_time = time(NULL);
+	}	
+
 	
 	void clpr_db::insert(const std::pair<std::string,process_grp_ptr>& in) {
 		db_content.insert(in);
@@ -76,17 +80,28 @@ namespace clpr_d {
 		}	
 	} // End clpr_db::dump
 
+	void clpr_db::clean(const uint64_t& current_time) {
+
+		uint64_t pgrp_time;
+
+		for(auto it = db_content.begin(); it != db_content.end(); ++it) {
+			pgrp_time = it->second->get_tstamp();
+
+			// If the current time is greater than the last time the considered process group has been touched
+			// AND
+			// If the last update to the process group was older than CLPR_PROCESS_GRP_MAX_DELTA_UPDATE 
+			if( (current_time > pgrp_time) && (abs( (current_time - pgrp_time) ) > CLPR_PROCESS_GRP_MAX_DELTA_UPDATE) ){
+				// Then erase the process group
+				db_content.erase(it);
+			} // End if
+		} // End for
+	} // End of clpr_db::clean
+
+
 
 	// Write the stream op
 	std::ostream& operator<<(std::ostream &out, boost::shared_ptr<clpr_db>& in) {
 
-		//boost::mutex::scoped_lock lock(in.mutex_pgrp);
-		//while(in._set.size()==0){
-		//	in._ready.wait(lock);
-		//}
-		
-		
-		//in.mutex_pgrp.lock();
 		struct utsname uname_data;
 		uname(&uname_data);
 		std::string hostname(uname_data.sysname);
@@ -98,50 +113,8 @@ namespace clpr_d {
 				out << it->second << endl;
 		}		
 
-		//in.mutex_pgrp.unlock();
-		//lock.unlock();
-		//in.ready.notify_all();
-		
 		return out;
 	}
-
-
-/*
-	// clean up entries over size, keeping newest by global label
-	void clpr_db::clean_by_size(){
-
-		int k=0;
-		_mutex_blobs.lock();
-		for(_label_it=_set.get<global_label>().end(); _label_it != _set.get<global_label>().begin(); _label_it--){
-
-			if (k>MAX_DB_ENTRIES)
-				_set.get<global_label>().erase(_label_it);
-
-
-			k++;
-		}
-		_mutex_blobs.unlock();
-	}
-
-
-	// clean up according to timestamps
-	void clpr_db::clean_by_time(){
-		_mutex_blobs.lock();
-		uint64_t t = read_write_time();
-		for (	_label_it=_set.get<global_label>().begin(); _label_it != _set.get<global_label>().begin(); _label_it++){
-
-
-			if ((t > _label_it->get_time()) && ((abs(t-_label_it->get_time()) / 3600) > CLPR_HOURS_BTWN_WRITES))
-				_set.get<global_label>().erase(_label_it);
-
-
-		}
-		_mutex_blobs.unlock();
-
-
-	}
-*/
-
 
 } // End of namespace clpr_d
 

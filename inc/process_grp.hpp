@@ -39,6 +39,11 @@
 #include "proc_structures.hpp"
 #include "process.hpp"
 
+
+// Total time to wait before we drop a process group that has not been touched, in seconds 
+#define CLPR_PROCESS_GRP_MAX_DELTA_UPDATE 7200 
+
+
 using namespace boost;
 using boost::phoenix::arg_names::arg1;
 
@@ -103,31 +108,26 @@ class process_grp {
 		std::string uid; // User id
 		std::string hash_index; // Corresponding index
 
-		// A global label, sort of
-		uint64_t label;
-
-
 	public:
 		process_grp(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus); 
 
 
 		bool is_present(const process_key& pkey); 
 
-		void insert(process_key& pkey, clpr_d::process_ptr pproc_insert); 
+		void insert(const process_key& pkey, const clpr_d::process_ptr& pproc_insert); 
 
 		clpr_d::process_ptr find(const process_key& pkey); 
 
 		void dump(std::string& line_header, std::ostream& out);
 
-		/// timestamp this thing
-		void update_time();
+		// Timestamp this thing
+		void update_tstamp();
 
-		/// get the time	
-		uint64_t const& get_time() const;
+		// Get the time	
+		uint64_t const& get_tstamp() const;
 
 		//// Getters
 		std::string get_hash_index() const;
-		uint64_t get_label() const;
 
 		/// Format the stream operator		
 		friend std::ostream& operator<<(std::ostream &out, boost::shared_ptr<process_grp>& in);

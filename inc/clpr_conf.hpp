@@ -7,7 +7,8 @@
 #include "clpr_log.hpp"
 
 // Path to the configuration file
-#define CLPR_CONF_PATH "/gpfs/work/p/pzt5044/Github/clpr_d/clprd.xml"
+//#define CLPR_CONF_PATH "/gpfs/work/p/pzt5044/Github/clpr_d/clprd.xml"
+#define CLPR_CONF_PATH "/opt/clprd/clprd.xml"
 #define CLPR_DEBUG_ON 1
 
 namespace clpr_d {

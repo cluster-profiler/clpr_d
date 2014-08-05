@@ -49,6 +49,9 @@
 //// Project 
 #include "process_grp.hpp"
 
+// #define CLPR_SPOOL_PATH "/gpfs/scratch/pzt5044/db_dump.out"
+#define CLPR_SPOOL_PATH "/var/spool/clprd/clpr_db.out"
+
 using namespace std;
 using namespace boost;
 
@@ -71,6 +74,9 @@ class clpr_db {
 
 		// When was this last touched ? aka current time stamp
 		uint64_t tstamp;
+
+		// When was this last written to file ?
+		uint64_t write_time;
 
 		// Dependency injection -- smart pointer for the log file
 		clpr_d::log_ptr log_file;
@@ -106,8 +112,12 @@ class clpr_db {
 		/// update write time
 		void update_write_time();
 
-		/// read write time
-		uint64_t read_write_time();
+		// Get write_time
+		uint64_t const& get_write_time() const;
+
+		// Clean up the database
+		void clean(const uint64_t& current_time);
+
 
 		// Send all out to stream
 		friend std::ostream& operator<<(std::ostream &out, boost::shared_ptr<clpr_db>& in);
