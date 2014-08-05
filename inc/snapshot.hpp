@@ -1,12 +1,15 @@
-#ifndef _SNAPSHOT_
-#define _SNAPSHOT_
+#ifndef _SNAPSHOT_HPP_
+#define _SNAPSHOT_HPP_
 
+//// STD
 #include <string>
 #include <vector>
 #include <map>
 
+//// Boost
 #include <boost/shared_ptr.hpp>
 
+//// CLPR
 #include "proc_structures.hpp"
 
 

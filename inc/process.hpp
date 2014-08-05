@@ -1,5 +1,5 @@
-#ifndef _PROCESS_
-#define _PROCESS_
+#ifndef _PROCESS_HPP_
+#define _PROCESS_HPP_
 
 #include <string>
 #include <vector>
@@ -23,7 +23,7 @@ class process {
 			const uint64_t& bdate);
 
 		~process();
-		void push_back(clpr_d::snapshot_ptr snap_ptr);
+		void push_back(const clpr_d::snapshot_ptr& snap_ptr);
 		void dump(std::string& line_header, std::ostream& out);
 		std::vector<clpr_d::snapshot_ptr> const& get_time_series() const; 
 
@@ -44,7 +44,7 @@ class process {
 
 
 		// Log file
-		clpr_d::p_log p_log_file;
+		clpr_d::log_ptr log_file;
 
 };
 

@@ -7,7 +7,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/functional/hash.hpp>
 
-#include "pid_data.hpp"
 #include "utilities.hpp"
 #include "process_grp.hpp"
 
@@ -157,55 +156,6 @@ clpr_d::process_key get_process_key(const clpr_d::proc_stat& pstat) {
 
 		return ret;
 	} // End of get_process_grp_label
-
-	// pid_data is simple data; assignment operator will work here
-	pid_data get_pid_data(const std::vector<std::string>& input){
-
-		pid_data ret;
-
-		// timestamp
-		ret.time 	= std::stof(input[TIME_POS]);
-		// percent cpu on app
-		ret.p_usr 	= std::stof(input[USER_POS]);
-		// percent cpu on system stuff
-		ret.p_sys 	= std::stof(input[SYSTEM_POS]);
-		//
-		ret.p_cpu 	= std::stof(input[PCPU_POS]);
-		// the core we are running
-		ret.cpu_num 	= std::stof(input[CORE_CPU_POS]);
-		// the page faults not requring disk
-		ret.minflt_s 	= std::stof(input[MINFLT_S_POS]);
-		// the page faults requiring disk
-		ret.majflt_s	= std::stof(input[MAJFLT_S_POS]);
-		// virtual memory size bytes
-		ret.vsz		= std::stof(input[VSZ_POS]);
-		// resident mem, non-swapped
-		ret.rss		= std::stof(input[RSS_POS]);
-		//
-		ret.p_mem	= std::stof(input[MEM_POS]);
-		// kb read disk
-		ret.kb_rd_s	= std::stof(input[KB_RD_S_POS]);
-		//
-		ret.kb_wr_s   	= std::stof(input[KB_WR_S_POS]);
-		// canceled writes
-		ret.kb_ccwr_s	= std::stof(input[KB_CCWR_S_POS]);
-		//
-		ret.iodelay	= std::stof(input[IODELAY_POS]);
-		// context switches
-		ret.cswch_s	= std::stof(input[CSWCH_S_POS]);
-		// non-voluntary
-		ret.nvcswh_s 	= std::stof(input[NVCSWCH_S_POS]);
-		// threads in my group
-		ret.threads	= std::stof(input[NTH_POS]);
-		// open file descriptors
-		ret.fds		= std::stof(input[FDS_POS]);
-
-
-		return ret;
-
-
-	}
-
 
 }
 

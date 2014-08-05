@@ -52,7 +52,7 @@ enum { CLPR_LOG_UNKNOWN = -1, CLPR_LOG_INFO = 0, CLPR_LOG_WARN = 1, CLPR_LOG_ERR
 namespace clpr_d {
 
 class clpr_conf;
-typedef boost::shared_ptr<clpr_conf> p_conf;
+typedef boost::shared_ptr<clpr_conf> conf_ptr;
 
 
 class clpr_log {
@@ -66,13 +66,13 @@ class clpr_log {
 		~clpr_log();
 
 		void write(const int& severity, const std::string& msg); 
-		void set_debug(const clpr_d::p_conf& p_conf_file);
+		void set_debug(const clpr_d::conf_ptr& conf_file);
 
 
 
 }; // End of class clpr_log
 
-typedef boost::shared_ptr<clpr_log> p_log;
+typedef boost::shared_ptr<clpr_log> log_ptr;
 
 }; // End of namespace clpr_d
 

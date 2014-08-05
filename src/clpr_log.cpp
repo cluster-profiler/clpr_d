@@ -97,8 +97,8 @@ void clpr_log::write(const int& severity, const std::string& msg) {
 
 } // End of clpr_log::write
 
-void clpr_log::set_debug(const clpr_d::p_conf& p_conf_file) {
-	if( p_conf_file->is_debug() ) {
+void clpr_log::set_debug(const clpr_d::conf_ptr& conf_file) {
+	if( conf_file->is_debug() ) {
 		this->is_debug = true;
 	} else {
 		this->is_debug = false;

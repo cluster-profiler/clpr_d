@@ -23,7 +23,7 @@ typedef boost::shared_ptr<clpr_db> db_ptr;
 
 class proc_reader {
 	public:
-		proc_reader(const clpr_d::p_log p_log_file);
+		proc_reader(const clpr_d::log_ptr log_file);
 		~proc_reader();
 
 		void read(clpr_d::db_ptr p_db);
@@ -50,7 +50,7 @@ class proc_reader {
 
 
 	private:
-		clpr_d::p_log p_log_file;
+		clpr_d::log_ptr log_file;
 		typename std::vector<boost::filesystem::path>::iterator pid_dir_it; 
 
 }; // End of class prod_reader

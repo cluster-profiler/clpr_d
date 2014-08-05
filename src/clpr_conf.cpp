@@ -11,9 +11,9 @@
 namespace clpr_d {
 
 // The input file has already been tested and approved
-clpr_conf::clpr_conf(const std::istream& conf_file, const clpr_d::p_log& p_log_file) {
+clpr_conf::clpr_conf(const std::istream& conf_file, const clpr_d::log_ptr& log_file) {
  
-	this->p_log_file = p_log_file;
+	this->log_file = log_file;
 
 	// Populate tree structure pt
 	using boost::property_tree::ptree;
@@ -37,31 +37,35 @@ clpr_conf::clpr_conf(const std::istream& conf_file, const clpr_d::p_log& p_log_f
 	std::string msg;
 
 	msg = "... success";
-	this->p_log_file->write(CLPR_LOG_INFO,msg);
+	this->log_file->write(CLPR_LOG_INFO,msg);
 
 	msg = "Configuration values"; 	
-	this->p_log_file->write(CLPR_LOG_INFO,msg);
+	this->log_file->write(CLPR_LOG_INFO,msg);
 
 	msg = "Log level: " + std::to_string(this->log_level);
-	this->p_log_file->write(CLPR_LOG_INFO,msg);
+	this->log_file->write(CLPR_LOG_INFO,msg);
 
 	msg = "Log wait: " + std::to_string(this->log_wait);
-	this->p_log_file->write(CLPR_LOG_INFO,msg);
+	this->log_file->write(CLPR_LOG_INFO,msg);
 
 	msg = "DB max entries: " + std::to_string(this->db_max_entries);
-	this->p_log_file->write(CLPR_LOG_INFO,msg);
-}
+	this->log_file->write(CLPR_LOG_INFO,msg);
+} // End of clpr_conf::clpr_conf
+
 
 clpr_conf::~clpr_conf() {
-	this->p_log_file->write(CLPR_LOG_DEBUG,"Calling clpr_conf destructor");
-}	
+	this->log_file->write(CLPR_LOG_DEBUG,"Calling clpr_conf destructor");
+} // End of clpr_conf::~clpr_conf	
+
 
 bool clpr_conf::is_debug() {
 	return ( (this->log_level == CLPR_DEBUG_ON ) ? true : false );
-}	
+} // End of clpr_conf::is_debug	
+
 
 int const& clpr_conf::get_db_max_entries() const {
 	return this->db_max_entries;
-}	
+} // End of clpr_conf::get_db_max_entries	
+
 
 } // End of namespace clpr_d

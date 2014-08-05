@@ -1,5 +1,5 @@
-#ifndef _PROC_STRUCTURES_
-#define _PROC_STRUCTURES_
+#ifndef _PROC_STRUCTURES_HPP_
+#define _PROC_STRUCTURES_HPP_
 
 #include <string>
 

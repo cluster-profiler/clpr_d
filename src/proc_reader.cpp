@@ -25,12 +25,12 @@ namespace fs = boost::filesystem;
 
 namespace clpr_d {
 
-proc_reader::proc_reader(const clpr_d::p_log p_log_file) : p_log_file(p_log_file) {
-	p_log_file->write(CLPR_LOG_DEBUG,"Calling proc_reader constructor");
+proc_reader::proc_reader(const clpr_d::log_ptr log_file) : log_file(log_file) {
+	log_file->write(CLPR_LOG_DEBUG,"Calling proc_reader constructor");
 } // End of proc_reader::proc_reader
 
 proc_reader::~proc_reader() {
-	p_log_file->write(CLPR_LOG_DEBUG,"Calling proc_reader destructor");
+	log_file->write(CLPR_LOG_DEBUG,"Calling proc_reader destructor");
 } // End of proc_reader::~proc_reader
 
 void proc_reader::read(clpr_d::db_ptr p_db) {
@@ -83,10 +83,10 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 
 		// If /proc does not exist or is not a directory, we have a bigger problem ! Better check anyway...
 		if( !fs::exists(p) ) {
-			p_log_file->write(CLPR_LOG_CRITICAL,"The /proc directory does not exist ! Killing the daemon now.");	
+			log_file->write(CLPR_LOG_CRITICAL,"The /proc directory does not exist ! Killing the daemon now.");	
 			break;
 		} else if (! fs::is_directory(p)) {
-			p_log_file->write(CLPR_LOG_CRITICAL,"The /proc directory is not a directory ! Killing the daemon now.");	
+			log_file->write(CLPR_LOG_CRITICAL,"The /proc directory is not a directory ! Killing the daemon now.");	
 			break;
 		} else {
 			//// Copy the list of files in /proc to a vector for easy iteration
@@ -138,7 +138,7 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 								file.open(cmd_file_path.c_str());
 								if(!file.is_open()) {
 									msg = "Can not open " + cmd_file_path + " ; skipping entry";
-									p_log_file->write(CLPR_LOG_ERROR, msg);
+									log_file->write(CLPR_LOG_ERROR, msg);
 
 									// Skip over this entry
 									continue;
@@ -261,7 +261,7 @@ void proc_reader::read_pid_stat(clpr_d::proc_stat& pstat) {
 	// If we can't open the file, the process is most likely done, so just skip over it
 	if(!file.is_open()) {
 		msg = "Can not open " + file_path + " ; skipping entry";
-		p_log_file->write(CLPR_LOG_ERROR, msg);
+		log_file->write(CLPR_LOG_ERROR, msg);
 
 		throw std::runtime_error(msg);
 	}	
@@ -288,7 +288,7 @@ void proc_reader::read_pid_io(clpr_d::proc_io& pio) {
 	// If we can't open the file, the process is most likely done, so just skip over it
 	if(!file.is_open()) {
 		msg = "Can not open " + file_path + " ; skipping entry";
-		p_log_file->write(CLPR_LOG_ERROR, msg);
+		log_file->write(CLPR_LOG_ERROR, msg);
 
 		throw std::runtime_error(msg);
 	}	
@@ -315,7 +315,7 @@ void proc_reader::read_pid_status(clpr_d::proc_status& pstatus) {
 	file.open(file_path.c_str());
 	if(!file.is_open()) {
 		msg = "Can not open " + file_path + " ; skipping entry";
-		p_log_file->write(CLPR_LOG_ERROR, msg);
+		log_file->write(CLPR_LOG_ERROR, msg);
 
 		throw std::runtime_error(msg);
 	}	
@@ -347,7 +347,7 @@ void proc_reader::read_pid_wchan(std::string& wchan) {
 	file.open(file_path.c_str());
 	if(!file.is_open()) {
 		msg = "Can not open " + file_path + " ; skipping entry";
-		p_log_file->write(CLPR_LOG_ERROR, msg);
+		log_file->write(CLPR_LOG_ERROR, msg);
 
 		throw std::runtime_error(msg);
 
@@ -370,7 +370,7 @@ void proc_reader::read_pid_environ(std::map<std::string, std::string>& env) {
 	file.open(file_path.c_str()); 
 	if(!file.is_open()) {
 		msg = "Can not open " + file_path + " ; skipping entry";
-		p_log_file->write(CLPR_LOG_ERROR, msg);
+		log_file->write(CLPR_LOG_ERROR, msg);
 
 		throw std::runtime_error(msg);
 	}	
@@ -404,7 +404,7 @@ void proc_reader::read_pid_fd(std::map<int,std::string>& fd_list) {
 	fs::path fd_path(dir_path);
 	if( !fs::exists(fd_path) ) {
 		msg = "Can not read " + dir_path + " ; skipping entry";
-		p_log_file->write(CLPR_LOG_ERROR, msg);
+		log_file->write(CLPR_LOG_ERROR, msg);
 		
 		throw std::runtime_error(msg);
 	}	
@@ -416,7 +416,7 @@ void proc_reader::read_pid_fd(std::map<int,std::string>& fd_list) {
 	for(auto it = fd_vec.begin(); it != fd_vec.end(); ++it) {
 		int fd_num = std::stoi(it->leaf().generic_string());
 		fd_list.insert(std::make_pair(fd_num, fs::read_symlink(*it).generic_string())); 
-		p_log_file->write(CLPR_LOG_ERROR, it->leaf().generic_string() + " " + fs::read_symlink(*it).generic_string());
+		log_file->write(CLPR_LOG_ERROR, it->leaf().generic_string() + " " + fs::read_symlink(*it).generic_string());
 	}
 
 } // End of proc_reader::read_pid_fd
@@ -429,7 +429,7 @@ void proc_reader::read_pid_bdate(uint64_t& bdate) {
 
 	if(stat(dir_path.c_str(), &statbuf) == -1) {
 		msg = "Can not read " + dir_path + " ; skipping entry";
-		p_log_file->write(CLPR_LOG_ERROR, msg);
+		log_file->write(CLPR_LOG_ERROR, msg);
 		
 		throw std::runtime_error(msg);
 	}
@@ -449,7 +449,7 @@ void proc_reader::read_stat(uint64_t& uptime_c) {
 	file.open(file_path.c_str()); 
 	if(!file.is_open()) {
 		msg = "Can not open " + file_path + " ! "; 
-		p_log_file->write(CLPR_LOG_CRITICAL, msg);
+		log_file->write(CLPR_LOG_CRITICAL, msg);
 
 		// TODO: Better exceptions -- this one is critical
 		throw std::runtime_error(msg);
@@ -483,7 +483,7 @@ void proc_reader::read_stat(uint64_t& uptime_c) {
 		} catch(const std::exception& e) {
 			// Something else happened...
 			std::string msg = "Can not parse " + file_path + " correctly ! Incorrect entry was: " + *it;
-			p_log_file->write(CLPR_LOG_CRITICAL,msg);
+			log_file->write(CLPR_LOG_CRITICAL,msg);
 			throw std::runtime_error(msg);
 		}	
 	}	

@@ -11,12 +11,12 @@ namespace clpr_d {
 
 	// Constructor
 	// Set the log file and the max number of database entries from conf_file
-	clpr_db::clpr_db(const clpr_d::p_log& p_log_file, const clpr_d::p_conf& p_conf_file){
+	clpr_db::clpr_db(const clpr_d::log_ptr& log_file, const clpr_d::conf_ptr& conf_file){
 
-		this->p_log_file = p_log_file;
-		this->p_log_file->write(CLPR_LOG_DEBUG,"Calling clpr_db constructor");
+		this->log_file = log_file;
+		this->log_file->write(CLPR_LOG_DEBUG,"Calling clpr_db constructor");
 
-		this->db_max_entries = p_conf_file->get_db_max_entries();
+		this->db_max_entries = conf_file->get_db_max_entries();
 
 		this->tstamp = time(NULL);
 
@@ -25,7 +25,7 @@ namespace clpr_d {
 
 	// Destructor
 	clpr_db::~clpr_db() {
-		this->p_log_file->write(CLPR_LOG_DEBUG,"Calling clpr_db destructor");
+		this->log_file->write(CLPR_LOG_DEBUG,"Calling clpr_db destructor");
 	} // End of clpr_db destructor	
 
 
@@ -104,30 +104,6 @@ namespace clpr_d {
 		
 		return out;
 	}
-
-	// Stamp time
-	/*
-	void clpr_db::update_write_time() {
-
-		mutex_time.lock();
-		write_time = (uint64_t) time(NULL);
-		mutex_time.unlock();
-
-	}
-*/
-
-	// Read time
-	/*
-	uint64_t clpr_db::read_write_time() {
-
-		mutex_time.lock();
-		uint64_t ret = write_time;
-		mutex_time.unlock();
-
-		return ret;
-	}
-	*/
-
 
 
 /*

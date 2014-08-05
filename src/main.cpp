@@ -31,15 +31,10 @@
 #include <boost/thread/thread.hpp>
 #include <boost/program_options.hpp>
 
-//#include "reader.hpp"
-//#include "archiver.hpp"
-//#include "manager.hpp"
-
 #include "clpr_db.hpp"
 
 #include "clpr_conf.hpp"
 #include "clpr_log.hpp"
-//#include "fifo_reader.hpp"
 #include "proc_reader.hpp"
 
 using namespace boost;
@@ -68,12 +63,12 @@ int main(int argc, char *argv[]) {
 		return EXIT_SUCCESS;
 */
 	//// 2. Set permissions
-	umask(0);
+//	umask(0);
 
 	//// 3. Open any logs
-	clpr_d::p_log p_log_file;
+	clpr_d::log_ptr log_file;
 	try {
-		p_log_file = clpr_d::p_log( new clpr_d::clpr_log(CLPR_LOG_PATH));
+		log_file = clpr_d::log_ptr( new clpr_d::clpr_log(CLPR_LOG_PATH));
 	} catch (std::exception& e) {
 		std::cout << "ERROR " << e.what() << std::endl;	
 		return EXIT_FAILURE;
@@ -98,12 +93,12 @@ int main(int argc, char *argv[]) {
 	////////////////////////////////////
 	
 	//// Check for configuration file, and parse it
-	std::ifstream conf_file(CLPR_CONF_PATH, ios::in);
+	std::ifstream conf_in_file(CLPR_CONF_PATH, ios::in);
 	std::string msg;
-	clpr_d::p_conf p_conf_file;
+	clpr_d::conf_ptr conf_file;
 
 	// Try opening the config file
-	if (conf_file.is_open()) {
+	if (conf_in_file.is_open()) {
 
 		// Found the config file; get the path, then pass it to logger
 		msg = "Found configuration file";
@@ -111,32 +106,32 @@ int main(int argc, char *argv[]) {
 		msg += clpr_conf_path;
 		msg += " !  Parsing...";
 
-		p_log_file->write(CLPR_LOG_INFO, msg);
+		log_file->write(CLPR_LOG_INFO, msg);
 
 		// Set the config object
-		p_conf_file = clpr_d::p_conf( new clpr_d::clpr_conf(conf_file,p_log_file) );
+		conf_file = clpr_d::conf_ptr( new clpr_d::clpr_conf(conf_in_file,log_file) );
 		// Now, add the config file to the log file
-		p_log_file->set_debug(p_conf_file);
+		log_file->set_debug(conf_file);
 
 		// Log the closing of the log file
 		msg = "Closing configuration file " + clpr_conf_path;
-		p_log_file->write(CLPR_LOG_INFO, msg);
+		log_file->write(CLPR_LOG_INFO, msg);
 
-		conf_file.close();
+		conf_in_file.close();
 
 	} else {
-		p_log_file->write(CLPR_LOG_ERROR,"Can not find or open configuration file");
+		log_file->write(CLPR_LOG_ERROR,"Can not find or open configuration file");
 		return EXIT_FAILURE;
 	}	
 
 	//// Start the database
 	// Main db -- shared pointer
 	clpr_d::db_ptr p_clpr_db;
-	p_clpr_db = clpr_d::db_ptr(new clpr_d::clpr_db(p_log_file, p_conf_file));
+	p_clpr_db = clpr_d::db_ptr(new clpr_d::clpr_db(log_file, conf_file));
 
 
 	//// Start the reader
-	clpr_d::proc_reader reader(p_log_file);	
+	clpr_d::proc_reader reader(log_file);	
 	reader.read(p_clpr_db);
 
 

@@ -24,9 +24,8 @@
  * Main aggregate object for a process collection
  */
 
-
-#ifndef _GRP_PROC_ 
-#define _GRP_PROC_ 
+#ifndef _PROCESS_GRP_HPP_
+#define _PROCESS_GRP_HPP_
 
 #include <string>
 #include <vector>
@@ -38,7 +37,6 @@
 
 #include "clpr_log.hpp"
 #include "proc_structures.hpp"
-#include "pid_data.hpp"
 #include "process.hpp"
 
 using namespace boost;
@@ -108,69 +106,18 @@ class process_grp {
 		// A global label, sort of
 		uint64_t label;
 
-		// Aggregator index
-	//	std::string start_time;
-	//	std::string gid;
-
-/*
-		/// Some overall data for the group
-		//
-		float max_mem;
-		//
-		float min_mem;
-		// 
-		float max_disk;
-		//
-		float min_disk;
-		//
-		float max_fds;
-		//
-		float min_fds;
-		//
-		float max_cpu;
-		//
-		float min_cpu;
-*/
-
-		// Log file
-		// clpr_d::p_log p_log_file;
 
 	public:
-		/**
-		 * Build a group of processes process_grp with a unique std::string and integer label
-		 * @param std::vector<std::string>& tokens 
-		 * @param std::string& in (what will be hash index in db)
-		 * @param uint64_t& label integer 
-		 */	
-		//process_grp(const std::vector<std::string>& tokens, const std::string& in,const uint64_t& label, const clpr_d::p_log& p_log_file);
-
 		process_grp(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus); 
 
 
-		/// bye bye
-		// ~process_grp();
-		// bool is_present(const std::size_t& idx); 
 		bool is_present(const process_key& pkey); 
 
-		// void insert(std::size_t& idx, clpr_d::process_ptr pproc_insert); 
 		void insert(process_key& pkey, clpr_d::process_ptr pproc_insert); 
 
-		// clpr_d::process_ptr find(const std::size_t& idx); 
 		clpr_d::process_ptr find(const process_key& pkey); 
 
 		void dump(std::string& line_header, std::ostream& out);
-
-		//void push_back(const std::string& host_info, const std::vector<std::string> &tokens);
-		// Update
-		/**
-		 * Update a process_grp from input tokens and hostname
-		 * @param std::string hostname
-		 * @param std::vector<std::string> tokens input data
-		 */	
-//		void update(const std::string& host_info,std::vector<std::string>& tokens);
-
-		/// return the header as a std::string
-		// std::string get_header() const;
 
 		/// timestamp this thing
 		void update_time();
@@ -181,23 +128,8 @@ class process_grp {
 		//// Getters
 		std::string get_hash_index() const;
 		uint64_t get_label() const;
-		/*
-		float get_max_mem() const;
-		float get_min_mem() const;
 
-		float get_max_disk() const;
-		float get_min_disk() const;
-
-		float get_max_fds() const;
-		float get_min_fds() const;
-		
-		float get_max_cpu() const;
-		float get_min_cpu() const;
-*/
-
-		/// format the stream operator		
-		// friend std::ostream& operator<<(std::ostream &out, const process_grp& in);
-		//friend std::ifstream& operator<<(std::ifstream &out, process_grp& in);
+		/// Format the stream operator		
 		friend std::ostream& operator<<(std::ostream &out, boost::shared_ptr<process_grp>& in);
 
 //		friend class clpr_db;

@@ -28,15 +28,8 @@
  */
 
 
-#ifndef _CLPR_DB_
-#define _CLPR_DB_
-
-#ifndef NDEBUG
-
-#define BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING
-#define BOOST_MULTI_INDEX_ENABLE_SAFE_MODE
-
-#endif
+#ifndef _CLPR_DB_HPP_
+#define _CLPR_DB_HPP_
 
 //// STD
 #include <mutex>
@@ -79,9 +72,8 @@ class clpr_db {
 		// When was this last touched ? aka current time stamp
 		uint64_t tstamp;
 
-
 		// Dependency injection -- smart pointer for the log file
-		clpr_d::p_log p_log_file;
+		clpr_d::log_ptr log_file;
 
 		// Maximum number of entries in the database for cleanup
 		int db_max_entries;
@@ -100,21 +92,9 @@ class clpr_db {
 		 * Construct the database, a collection of process_grps
 		 *
 		 */
-		clpr_db(const clpr_d::p_log& p_log_file, const clpr_d::p_conf& p_conf_file);
-
-
-		/**
-		 * Update the process group indexed by pgrp_idx. If it does not exist, create it.
-		 * @param[in] tokens a line in pid_stat in a string format
-		 * @param[in] pgrp_idx hashed index
-		 * @param[in] label
-		 *
-		 */
-		void update(const vector<std::string>& tokens, const std::string& pgrp_idx, const std::string& host_info, uint64_t& label); 
-
+		clpr_db(const clpr_d::log_ptr& log_file, const clpr_d::conf_ptr& conf_file);
 
 		bool is_present(const std::string& idx); 
-//		void insert(clpr_d::process_grp_ptr pgrp_ptr); 
 		void insert(const std::pair<std::string,process_grp_ptr>& in); 
 		clpr_d::process_grp_ptr find(const std::string& pgrp_idx); 
 
@@ -123,30 +103,11 @@ class clpr_db {
 		uint64_t const& get_time_stamp() const;
 		void set_time_stamp(uint64_t const& tstamp);
 
-/*
-		///get the size of the map
-		int size();
-
-		/// release data
-		void clean_by_time();
-
-		/// release data
-		void clean_by_size();
-
-*/
 		/// update write time
 		void update_write_time();
 
 		/// read write time
 		uint64_t read_write_time();
-		/**
-		 * Get a blob by hashed index
-		 * @param string& i index
-		 * @param uint64_t& label
-		 *
-		 */
-
-
 
 		// Send all out to stream
 		friend std::ostream& operator<<(std::ostream &out, boost::shared_ptr<clpr_db>& in);
