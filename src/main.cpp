@@ -28,6 +28,9 @@
 #include <fstream>
 #include <exception>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include <boost/thread/thread.hpp>
 #include <boost/program_options.hpp>
 
@@ -52,7 +55,6 @@ int main(int argc, char *argv[]) {
 		return EXIT_SUCCESS;
 	}	
 
-/*
 	//// 1. Fork from parent process
 	pid = fork();
 	// Can't fork - fork error
@@ -61,9 +63,8 @@ int main(int argc, char *argv[]) {
 	// Otherwise, parent exits	
 	if ( pid > 0 ) 
 		return EXIT_SUCCESS;
-*/
 	//// 2. Set permissions
-//	umask(0);
+	umask(0);
 
 	//// 3. Open any logs
 	clpr_d::log_ptr log_file;
@@ -75,18 +76,16 @@ int main(int argc, char *argv[]) {
 	}	
 	
 	//// 4. Get new session ID       
-	/*
 	sid = setsid();
 	if ( sid < 0 ) 
 		return EXIT_FAILURE;
-	*/
 	//// 5. Change to a safe working directory
 
 
 	//// 6. Close the standard file descriptors	
-	//close(STDIN_FILENO);
-	// close(STDOUT_FILENO); // Leave it open for debugging purposes
-	//close(STDERR_FILENO);
+	close(STDIN_FILENO);
+	close(STDOUT_FILENO); // Leave it open for debugging purposes
+	close(STDERR_FILENO);
  
 	////////////////////////////////////
 	/////////// Actual daemon code
@@ -134,15 +133,5 @@ int main(int argc, char *argv[]) {
 	clpr_d::proc_reader reader(log_file);	
 	reader.read(p_clpr_db);
 
-
-
-
-	//// Worker threads
-
-	//write_log.join();
-	//write_socket.join();
-	//manage_db.join();
-
-//	exit(EXIT_SUCCESS);
 	return 0;
 }
