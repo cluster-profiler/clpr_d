@@ -11,10 +11,8 @@
 namespace clpr_d {
 
 // The input file has already been tested and approved
-clpr_conf::clpr_conf(const std::istream& conf_file, const clpr_d::log_ptr& log_file) {
+clpr_conf::clpr_conf(const std::istream& conf_file) {
  
-	this->log_file = log_file;
-
 	// Populate tree structure pt
 	using boost::property_tree::ptree;
 	ptree pt;
@@ -23,16 +21,20 @@ clpr_conf::clpr_conf(const std::istream& conf_file, const clpr_d::log_ptr& log_f
 	// Traverse pt
 	BOOST_FOREACH( ptree::value_type const& v, pt.get_child("conf") ) {
 		if ( v.first == "log" ) {
-			this->log_level = v.second.get<int>("log_level",0);
-			this->log_wait = v.second.get<int>("log_wait",121);
+			this->log_level = v.second.get<int>("level",0);
+			this->log_wait = v.second.get<int>("wait",121);
+			this->log_filename = v.second.get<std::string>("file","/var/log/cliprd.log");
+			this->log_file = clpr_d::log_ptr(new clpr_d::clpr_log(this->log_filename));
 
-		} else if ( v.first == "db_max_entries" ) {
-			this->db_max_entries = pt.get<int>("conf.db_max_entries",10);
+		} else if ( v.first == "db" ) {
+			this->db_max_entries = v.second.get<int>("max_entries",10);
+			this->db_filename = v.second.get<std::string>("file", "/var/spool/clipr_db");
 		}	
 
 
 	}
 	
+
 	// Logging the config file
 	std::string msg;
 
@@ -66,6 +68,10 @@ bool clpr_conf::is_debug() {
 int const& clpr_conf::get_db_max_entries() const {
 	return this->db_max_entries;
 } // End of clpr_conf::get_db_max_entries	
+
+clpr_d::log_ptr const& clpr_conf::get_log_ptr() const {
+        return this->log_file;
+}
 
 
 } // End of namespace clpr_d

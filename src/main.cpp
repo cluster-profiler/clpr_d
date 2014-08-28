@@ -48,44 +48,48 @@ int main(int argc, char *argv[]) {
 	////////////////////////////////////
 	///////////  Start up a daemon
 	////////////////////////////////////
-	pid_t pid, sid;
+  //	pid_t pid, sid;
 
 	// If we are already a daemon, just exit
-	if( getppid() == 1 ) {
-		return EXIT_SUCCESS;
-	}	
+  //	if( getppid() == 1 ) {
+  //		return EXIT_SUCCESS;
+  //	}	
 
 	//// 1. Fork from parent process
-	pid = fork();
+  //	pid = fork();
 	// Can't fork - fork error
-	if ( pid < 0 ) 
-		return EXIT_FAILURE;
+  //	if ( pid < 0 ) 
+  //		return EXIT_FAILURE;
 	// Otherwise, parent exits	
-	if ( pid > 0 ) 
-		return EXIT_SUCCESS;
+  //	if ( pid > 0 ) 
+  //		return EXIT_SUCCESS;
 	//// 2. Set permissions
-	umask(0);
+  //	umask(0);
 
 	//// 3. Open any logs
+
+
 	clpr_d::log_ptr log_file;
+  /*
 	try {
 		log_file = clpr_d::log_ptr( new clpr_d::clpr_log(CLPR_LOG_PATH));
 	} catch (std::exception& e) {
 		std::cout << "ERROR " << e.what() << std::endl;	
 		return EXIT_FAILURE;
-	}	
+	}
+  */	
 	
 	//// 4. Get new session ID       
-	sid = setsid();
-	if ( sid < 0 ) 
-		return EXIT_FAILURE;
+  //	sid = setsid();
+  //	if ( sid < 0 ) 
+  //		return EXIT_FAILURE;
 	//// 5. Change to a safe working directory
 
 
 	//// 6. Close the standard file descriptors	
-	close(STDIN_FILENO);
-	close(STDOUT_FILENO); // Leave it open for debugging purposes
-	close(STDERR_FILENO);
+  //	close(STDIN_FILENO);
+  //	close(STDOUT_FILENO); // Leave it open for debugging purposes
+  //    close(STDERR_FILENO);
  
 	////////////////////////////////////
 	/////////// Actual daemon code
@@ -100,26 +104,34 @@ int main(int argc, char *argv[]) {
 	if (conf_in_file.is_open()) {
 
 		// Found the config file; get the path, then pass it to logger
+	  /*
 		msg = "Found configuration file";
 		std::string clpr_conf_path(CLPR_CONF_PATH, strnlen(CLPR_CONF_PATH,511)); 
 		msg += clpr_conf_path;
 		msg += " !  Parsing...";
 
 		log_file->write(CLPR_LOG_INFO, msg);
-
+	  */
 		// Set the config object
-		conf_file = clpr_d::conf_ptr( new clpr_d::clpr_conf(conf_in_file,log_file) );
+		conf_file = clpr_d::conf_ptr( new clpr_d::clpr_conf(conf_in_file) );
+		log_file = conf_file->get_log_ptr();
 		// Now, add the config file to the log file
+	  /*
 		log_file->set_debug(conf_file);
-
+	  */
 		// Log the closing of the log file
+
+	  /*
 		msg = "Closing configuration file " + clpr_conf_path;
 		log_file->write(CLPR_LOG_INFO, msg);
-
+	  */
 		conf_in_file.close();
 
 	} else {
+	        std::cerr<<"Can not find or open configuration file"<<std::endl;
+	  /*
 		log_file->write(CLPR_LOG_ERROR,"Can not find or open configuration file");
+	  */
 		return EXIT_FAILURE;
 	}	
 

@@ -50,7 +50,9 @@
 #include "process_grp.hpp"
 
 // #define CLPR_SPOOL_PATH "/gpfs/scratch/pzt5044/db_dump.out"
-#define CLPR_SPOOL_PATH "/var/spool/clprd/clpr_db.out"
+// #define CLPR_SPOOL_PATH "/var/spool/clprd/clpr_db.out"
+
+#define CLPR_SPOOL_PATH "/tmp//clpr_db.out"
 
 using namespace std;
 using namespace boost;
