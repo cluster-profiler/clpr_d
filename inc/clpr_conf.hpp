@@ -43,6 +43,7 @@ class clpr_conf {
 		// Getters
 		int const& get_db_max_entries() const; 
                 clpr_d::log_ptr const& get_log_ptr() const;
+                std::string const& get_db_filename() const;
 
 }; // End of class clpr_config
 

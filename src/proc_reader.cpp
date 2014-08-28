@@ -25,7 +25,7 @@ namespace fs = boost::filesystem;
 
 namespace clpr_d {
 
-proc_reader::proc_reader(const clpr_d::log_ptr log_file) : log_file(log_file) {
+proc_reader::proc_reader(const clpr_d::log_ptr& log_file, const std::string& db_filename) : log_file(log_file), db_filename(db_filename) {
 	log_file->write(CLPR_LOG_DEBUG,"Calling proc_reader constructor");
 } // End of proc_reader::proc_reader
 
@@ -77,8 +77,8 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 	read_stat(uptime_c);
 
 
-	//while(1) {
-	for(int niter = 0; niter < 2; ++niter) {
+	while(1) {
+	  //for(int niter = 0; niter < 2; ++niter) {
 		// Get measure time stamp
 		tstamp = (uint64_t)time(NULL);
 
@@ -240,7 +240,9 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 		} // End else if
 		
 		// Dump data to file
-		db_content.open(CLPR_SPOOL_PATH, ios::out);
+
+		sprintf(buffer,"_%ld",time(NULL));
+		db_content.open(db_filename + std::string(buffer), ios::out);
 
 		if(db_content.is_open()) {
 			p_db->dump(db_content);

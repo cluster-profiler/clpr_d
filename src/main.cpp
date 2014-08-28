@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
 
 
 	//// Start the reader
-	clpr_d::proc_reader reader(log_file);	
+	clpr_d::proc_reader reader(log_file, conf_file->get_db_filename());	
 	reader.read(p_clpr_db);
 
 	return 0;

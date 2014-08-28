@@ -73,5 +73,9 @@ clpr_d::log_ptr const& clpr_conf::get_log_ptr() const {
         return this->log_file;
 }
 
+std::string const& clpr_conf::get_db_filename() const {
+  return this->db_filename;
+}
+
 
 } // End of namespace clpr_d
