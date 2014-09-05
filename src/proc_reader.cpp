@@ -23,500 +23,539 @@
 using namespace boost::posix_time;
 namespace fs = boost::filesystem;
 
-namespace clpr_d {
+namespace clpr_d 
+{
 
-proc_reader::proc_reader(const clpr_d::log_ptr& log_file, const std::string& db_filename) : log_file(log_file), db_filename(db_filename) {
-	log_file->write(CLPR_LOG_DEBUG,"Calling proc_reader constructor");
-} // End of proc_reader::proc_reader
+  proc_reader::proc_reader(const clpr_d::log_ptr& log_file, const std::string& db_filename) : log_file(log_file), db_filename(db_filename) 
+  {
+    log_file->write(CLPR_LOG_DEBUG,"Calling proc_reader constructor");
+  } 
 
-proc_reader::~proc_reader() {
-	log_file->write(CLPR_LOG_DEBUG,"Calling proc_reader destructor");
-} // End of proc_reader::~proc_reader
+  proc_reader::~proc_reader() {
+    log_file->write(CLPR_LOG_DEBUG,"Calling proc_reader destructor");
+  }
 
-void proc_reader::read(clpr_d::db_ptr p_db) {
-
-	//// Time stamp at which we are looking at the data
-	uint64_t tstamp;
-	std::ofstream db_content;
-
-	//// Local daemon time
-	uint64_t daemon_time = 0;
-
-	//// Hostname
-	struct utsname uname_data;
-	uname(&uname_data);
-	std::string hostname(uname_data.sysname);
+  void proc_reader::read(clpr_d::db_ptr p_db) 
+  {
+    //// Time stamp at which we are looking at the data
+    uint64_t tstamp;
+    std::ofstream db_content;
+    
+    //// Local daemon time
+    uint64_t daemon_time = 0;
+    
+    //// Hostname
+    struct utsname uname_data;
+    uname(&uname_data);
+    std::string hostname(uname_data.sysname);
+    
+    //// Total memory, in kB
+    uint64_t total_host_mem = 0; 
+    std::ifstream file("/proc/meminfo");
+    // Get the first line, that contains the total memory
+    std::string _;
+    file >> _ >> total_host_mem; 
+    // Clean up
+    file.close();
+    
+    boost::regex pid_regex("/proc/([0-9]|[1-9][0-9]*)", boost::regex::extended);
+    
+    proc_stat pstat;
+    proc_status pstatus;
+    proc_io pio;
+    std::string wchan;
+    std::string cmd_line;
+    
+    std::string msg;
+    uint64_t uptime_c;
+    uint64_t uptime_p;
+    float delta_cpu;
+    
+    cpu_usage cpu_usage_c;
+    cpu_usage cpu_usage_p;
+    
+    // Initialize uptime_c
+    read_stat(uptime_c);
+    
+    //while(1) {
+    for(int niter = 0; niter < 4; ++niter) 
+      {
+	// Get measure time stamp
+	tstamp = (uint64_t)time(NULL);
 	
-	//// Total memory, in kB
-	uint64_t total_host_mem = 0; 
-	std::ifstream file("/proc/meminfo");
-	// Get the first line, that contains the total memory
-	std::string _;
-	file >> _ >> total_host_mem; 
-	// Clean up
-	file.close();
+	// Discover the /proc directory
+	fs::path p("/proc");
 	
-	boost::regex pid_regex("/proc/([0-9]|[1-9][0-9]*)", boost::regex::extended);
-
-	proc_stat pstat;
-	proc_status pstatus;
-	proc_io pio;
-	std::string wchan;
-	std::string cmd_line;
-
-
-	std::string msg;
-	uint64_t uptime_c;
-	uint64_t uptime_p;
-	float delta_cpu;
-
-	cpu_usage cpu_usage_c;
-	cpu_usage cpu_usage_p;
-
-	// Initialize uptime_c
-	read_stat(uptime_c);
-
-
-	//while(1) {
-	for(int niter = 0; niter < 4; ++niter) {
-		// Get measure time stamp
-		tstamp = (uint64_t)time(NULL);
-
-		// Discover the /proc directory
-		fs::path p("/proc");
-
-		// If /proc does not exist or is not a directory, we have a bigger problem ! Better check anyway...
-		if( !fs::exists(p) ) {
-			log_file->write(CLPR_LOG_CRITICAL,"The /proc directory does not exist ! Killing the daemon now.");	
-			break;
-		} else if (! fs::is_directory(p)) {
-			log_file->write(CLPR_LOG_CRITICAL,"The /proc directory is not a directory ! Killing the daemon now.");	
-			break;
-		} else {
-			//// Copy the list of files in /proc to a vector for easy iteration
-			std::vector<fs::path> proc_file_list;
-			std::copy(fs::directory_iterator(p), fs::directory_iterator(), std::back_inserter(proc_file_list));
-
-			// Optional sorting ?
-			// std::sort(proc_file_list.begin(),proc_file_list.end());
+	// If /proc does not exist or is not a directory, we have a bigger problem ! Better check anyway...
+	if( !fs::exists(p) ) 
+	  {
+	    log_file->write(CLPR_LOG_CRITICAL,"The /proc directory does not exist ! Killing the daemon now.");	
+	    break;
+	  } else if (! fs::is_directory(p)) 
+	  {
+	    log_file->write(CLPR_LOG_CRITICAL,"The /proc directory is not a directory ! Killing the daemon now.");	
+	    break;
+	  } else 
+	  {
+	    //// Copy the list of files in /proc to a vector for easy iteration
+	    std::vector<fs::path> proc_file_list;
+	    std::copy(fs::directory_iterator(p), fs::directory_iterator(), std::back_inserter(proc_file_list));
+	    
+	    // Optional sorting ?
+	    // std::sort(proc_file_list.begin(),proc_file_list.end());
+	    
+	    //// Get the current uptime
+	    uptime_p = uptime_c;
+	    read_stat(uptime_c);
+	    
+	    delta_cpu = (float)(uptime_c - uptime_p);
+	    
+	    //// Iterate over all the files in /proc; pick only the directories named after pids
+	    for(auto it = proc_file_list.begin(); it != proc_file_list.end(); ++it) 
+	      {
+		///////////////////////////////
+		// PARSE THE /PROC DIRECTORY //
+		///////////////////////////////
+		//// Only /proc/<pid> stuff is used
+		if(boost::regex_match(it->generic_string(),pid_regex) ) 
+		  {
+		    //// Check that the directory still exists
+		    if(fs::exists(*it)) 
+		      {
+			pid_dir_it = it;
 			
-			//// Get the current uptime
-			uptime_p = uptime_c;
-			read_stat(uptime_c);
+			// FD and environment. Destroyed at end of if scope
+			std::map<int,std::string> fd_list;
+			std::map<std::string, std::string> env;
+			
+			try 
+			  {
+			    //// /proc/<pid>/stat
+			    read_pid_stat(pstat);
+			    
+			    //// /proc/<pid>/io
+			    read_pid_io(pio);
+			    
+			    //// /proc/<pid>/status
+			    read_pid_status(pstatus);
+			    
+			    //// /proc/<pid>/wchan
+			    read_pid_wchan(wchan);
+			    
+			    //// /proc/<pid>/cmdline
+			    // if the process is not a zombie, then try to parse
+			    if( strcmp(pstat.state.c_str(),"Z") != 0) 
+			      {
+				
+				std::string cmd_file_path = it->generic_string() + "/cmdline";
+				file.open(cmd_file_path.c_str());
+				if(!file.is_open()) 
+				  {
+				    msg = "Can not open " + cmd_file_path + " ; skipping entry";
+				    log_file->write(CLPR_LOG_ERROR, msg);
+				    
+				    // Skip over this entry
+				    continue;
+				  }	
+				
+				std::getline(file,cmd_line);
+				// Replace null character with spaces
+				std::replace(cmd_line.begin(),cmd_line.end(),'\0',' ');
+				file.close();
+			      } else 
+			      {
+				// Otherwise we shall be content with the simple command name w/o arguments
+				cmd_line = pstat.comm;
+			      }	
+			    
+			    //// /proc/<pid>/environ
+			    read_pid_environ(env);
+			    
+			    //// /proc/<pid>/fd
+			    read_pid_fd(fd_list);
+			    
+			  } catch( std::exception& e) 
+			  {
+			    // An error occured !
+			    // Logging has already been taken care of; just continue to next dir.
+			    continue;
+			  }	
+			
+			//// Process groups
+			// A process grp exists for trying to identify groups of processes
+			// that can be signaled together (e.g. mpi processes).
+			// The PGID is therefore of use here
+			std::string pgrp_label = get_process_grp_label(pstat,pstatus); 
+			
+			// Do we already have such process group in the database ?
+			if( !p_db->is_present(pgrp_label) ) 
+			  {
+			    // If not, create a new process group
+			    process_grp_ptr pgrp_insert(new process_grp(pstat,pstatus));
+			    p_db->insert( std::pair<std::string, process_grp_ptr>(pgrp_label, pgrp_insert));
+			  } // End if 
+			
+			// Now, get the considered process group
+			process_grp_ptr pgrp = p_db->find(pgrp_label);
+			
+			// Since we are performing operations on it, update its timestamp
+			pgrp->update_tstamp();
+			
+			//// Processes
+			// Get the process key of the considered process
+			clpr_d::process_key pkey = get_process_key(pstat);
 
-			delta_cpu = (float)(uptime_c - uptime_p);
+			// Does the process exists in the considered group ?
+			if( !pgrp->is_present(pkey) ) 
+			  {
+			    uint64_t bdate;
+			    read_pid_bdate(bdate);
+			    // If not, create a new process
+			    process_ptr proc_insert(new process(cmd_line, env,pstat.pid,pstat.ppid,bdate));
+			    
+			    // And insert the process in the process_list of the process_grp
+			    pgrp->insert(pkey,proc_insert);
+			  } 
 
-			//// Iterate over all the files in /proc; pick only the directories named after pids
-			for(auto it = proc_file_list.begin(); it != proc_file_list.end(); ++it) {
-				///////////////////////////////
-				// PARSE THE /PROC DIRECTORY //
-				///////////////////////////////
-				//// Only /proc/<pid> stuff is used
-				if(boost::regex_match(it->generic_string(),pid_regex) ) {
-					//// Check that the directory still exists
-					if(fs::exists(*it)) {
-						pid_dir_it = it;
-
-						// FD and environment. Destroyed at end of if scope
-						std::map<int,std::string> fd_list;
-						std::map<std::string, std::string> env;
-					
-						try {
-							//// /proc/<pid>/stat
-							read_pid_stat(pstat);
-
-							//// /proc/<pid>/io
-							read_pid_io(pio);
-
-							//// /proc/<pid>/status
-							read_pid_status(pstatus);
-
-							//// /proc/<pid>/wchan
-							read_pid_wchan(wchan);
-
-							//// /proc/<pid>/cmdline
-							// if the process is not a zombie, then try to parse
-							if( strcmp(pstat.state.c_str(),"Z") != 0) {
-
-								std::string cmd_file_path = it->generic_string() + "/cmdline";
-								file.open(cmd_file_path.c_str());
-								if(!file.is_open()) {
-									msg = "Can not open " + cmd_file_path + " ; skipping entry";
-									log_file->write(CLPR_LOG_ERROR, msg);
-
-									// Skip over this entry
-									continue;
-								}	
-
-								std::getline(file,cmd_line);
-								// Replace null character with spaces
-								std::replace(cmd_line.begin(),cmd_line.end(),'\0',' ');
-								file.close();
-							} else {
-								// Otherwise we shall be content with the simple command name w/o arguments
-								cmd_line = pstat.comm;
-							}	
-
-							//// /proc/<pid>/environ
-							read_pid_environ(env);
-
-							//// /proc/<pid>/fd
-							read_pid_fd(fd_list);
-
-						} catch( std::exception& e) {
-							// An error occured !
-							// Logging has already been taken care of; just continue to next dir.
-							continue;
-						}	
-							
-						//// Process groups
-						// A process grp exists for trying to identify groups of processes
-						// that can be signaled together (e.g. mpi processes).
-						// The PGID is therefore of use here
-						std::string pgrp_label = get_process_grp_label(pstat,pstatus); 
-
-						// Do we already have such process group in the database ?
-						if( !p_db->is_present(pgrp_label) ) {
-							// If not, create a new process group
-							process_grp_ptr pgrp_insert(new process_grp(pstat,pstatus));
-							p_db->insert( std::pair<std::string, process_grp_ptr>(pgrp_label, pgrp_insert));
-						} // End if 
-
-						// Now, get the considered process group
-						process_grp_ptr pgrp = p_db->find(pgrp_label);
-
-						// Since we are performing operations on it, update its timestamp
-						pgrp->update_tstamp();
-
-						//// Processes
-						// Get the process key of the considered process
-						clpr_d::process_key pkey = get_process_key(pstat);
-
-						// Does the process exists in the considered group ?
-						if( !pgrp->is_present(pkey) ) {
-							uint64_t bdate;
-							read_pid_bdate(bdate);
-							// If not, create a new process
-							process_ptr proc_insert(new process(cmd_line, env,pstat.pid,pstat.ppid,bdate));
-
-							// And insert the process in the process_list of the process_grp
-							pgrp->insert(pkey,proc_insert);
-
-						} // End if	
-
-						// Now, get the considered process
-						process_ptr process = pgrp->find(pkey);
-						
-						// Construct the previous and current cpu usages
-						// If the process does have snapshots stored already... 
-						if( process->get_time_series().size() != 0 ) {
-							// Then retrieve the last cpu_usage data
-							cpu_usage_p = (process->get_time_series().back())->get_cpu_usage_p();
-						} else {
-							cpu_usage_p.utime = pstat.utime;
-							cpu_usage_p.stime = pstat.stime;
-							cpu_usage_p.gtime = pstat.gtime;
-						}	
-						cpu_usage_c.utime = pstat.utime;
-						cpu_usage_c.stime = pstat.stime;
-						cpu_usage_c.gtime = pstat.gtime;
-
-						// ... and finally, add the data !
-						process->push_back(clpr_d::snapshot_ptr(new clpr_d::snapshot(pstat,
-											pstatus,
-											pio,
-											fd_list,
-											wchan,
-											total_host_mem,
-											cpu_usage_c, 
-											cpu_usage_p,
-											delta_cpu,
-											tstamp
-											))); 
-
-					} // if fs::exists
-				} // End if(boost::regex_match)
-			} // End for loop over directory list
-		} // End else if
+			// Now, get the considered process
+			process_ptr process = pgrp->find(pkey);
+			
+			// Construct the previous and current cpu usages
+			// If the process does have snapshots stored already... 
+			if( process->get_time_series().size() != 0 ) 
+			  {
+			    // Then retrieve the last cpu_usage data
+			    cpu_usage_p = (process->get_time_series().back())->get_cpu_usage_p();
+			  } else 
+			  {
+			    cpu_usage_p.utime = pstat.utime;
+			    cpu_usage_p.stime = pstat.stime;
+			    cpu_usage_p.gtime = pstat.gtime;
+			  }	
+			cpu_usage_c.utime = pstat.utime;
+			cpu_usage_c.stime = pstat.stime;
+			cpu_usage_c.gtime = pstat.gtime;
+			
+			// ... and finally, add the data !
+			process->push_back(clpr_d::snapshot_ptr(new clpr_d::snapshot(pstat,
+										     pstatus,
+										     pio,
+										     fd_list,
+										     wchan,
+										     total_host_mem,
+										     cpu_usage_c, 
+										     cpu_usage_p,
+										     delta_cpu,
+										     tstamp
+										     ))); 
+			
+		      } // if fs::exists
+		  } // End if(boost::regex_match)
+	      } // End for loop over directory list
+	  } // End else if
 		
-		// Dump data to file
+	// Dump data to file
+	
+	sprintf(buffer,"_%ld",time(NULL));
+	db_content.open(db_filename + std::string(buffer), ios::out);
+	
+	if(db_content.is_open()) 
+	  {
+	    p_db->dump(db_content);
+	    db_content.close();
+	  }	
+	p_db->update_write_time();
+	
+	
+	//// Clean up the database after writing
+	// Can't clean up during the process of parsing /proc directory. Have to do it after data has been inserted 
+	// Is it time to clean the database ?
+	if( (daemon_time % CLPR_CLEAN_RATE == 0) ) 
+	  {
+	    
+	    // Database has not been cleaned ! 
+	    // Get the current time
+	    uint64_t current_time = time(NULL);
+	    
+	    // Can clean now...
+	    p_db->clean(current_time);
+	  }
 
-		sprintf(buffer,"_%ld",time(NULL));
-		db_content.open(db_filename + std::string(buffer), ios::out);
+	// Wait until next sampling
+	boost::this_thread::sleep(boost::posix_time::seconds(CLPR_SAMPLE_RATE));
+	daemon_time += CLPR_SAMPLE_RATE;
+	
+      } // End while
+    
+  } // End of proc_reader::read
 
-		if(db_content.is_open()) {
-			p_db->dump(db_content);
-			db_content.close();
-		}	
-		p_db->update_write_time();
+  void proc_reader::read_pid_stat(clpr_d::proc_stat& pstat) 
+  {
+    std::string msg;
+    std::ifstream file;
+    
+    //// Open /proc/<pid>/stat
+    std::string file_path = pid_dir_it->generic_string() + "/stat";
+    file.open(file_path.c_str());
+    
+    // If we can't open the file, the process is most likely done, so just skip over it
+    if(!file.is_open()) 
+      {
+	msg = "Can not open " + file_path + " ; skipping entry";
+	log_file->write(CLPR_LOG_ERROR, msg);
+	
+	throw std::runtime_error(msg);
+      }	
+    
+    // Parse stat
+    file >> pstat.pid  >> pstat.comm >> pstat.state >> pstat.ppid >> pstat.pgid >> pstat.sid>> pstat.tty \
+	 >> pstat.tpgid >> pstat.flags >> pstat.minflt >> pstat.cminflt >> pstat.majflt >> pstat.cmajflt \
+	 >> pstat.utime >> pstat.stime >> pstat.cutime >> pstat.cstime >> pstat.priority >> pstat.nice \
+	 >> pstat.n_th >> pstat.itrealvalue >> pstat.starttime >> pstat.vsz >> pstat.rss \
+	 >> pstat.rsslim >> pstat.startcode >> pstat.endcode >> pstat.startstack >> pstat.kstkesp >> pstat.kstkeip \
+	 >> pstat.signal >> pstat.blocked >> pstat.sigignore >> pstat.sigcatch >> pstat.wchan \
+	 >> pstat.nswap >> pstat.cnswap >> pstat.exit_sig >> pstat.proc >> pstat.rt_prio \
+	 >> pstat.policy >> pstat.delay >> pstat.gtime >> pstat.cgtime; 
+    
+    file.close();
+  } // End of proc_reader::read_pid_stat
+  
+  void proc_reader::read_pid_io(clpr_d::proc_io& pio) 
+  {
+    std::string msg;
+    std::string _; // to ignore fields
+    std::ifstream file;
+    std::string file_path = pid_dir_it->generic_string() + "/io";
+    file.open(file_path.c_str());
+    // If we can't open the file, the process is most likely done, so just skip over it
+    if(!file.is_open()) 
+      {
+	msg = "Can not open " + file_path + " ; skipping entry";
+	log_file->write(CLPR_LOG_ERROR, msg);
 
-
-		//// Clean up the database after writing
-		// Can't clean up during the process of parsing /proc directory. Have to do it after data has been inserted 
-		// Is it time to clean the database ?
-		if( (daemon_time % CLPR_CLEAN_RATE == 0) ) {
-			
-			// Database has not been cleaned ! 
-			// Get the current time
-			uint64_t current_time = time(NULL);
-
-			// Can clean now...
-			p_db->clean(current_time);
-		}
-
-
-		// Wait until next sampling
-		boost::this_thread::sleep(boost::posix_time::seconds(CLPR_SAMPLE_RATE));
-		daemon_time += CLPR_SAMPLE_RATE;
-
-	} // End while
-
-} // End of proc_reader::read
-
-void proc_reader::read_pid_stat(clpr_d::proc_stat& pstat) {
-	std::string msg;
-	std::ifstream file;
-
-	//// Open /proc/<pid>/stat
-	std::string file_path = pid_dir_it->generic_string() + "/stat";
-	file.open(file_path.c_str());
-
-	// If we can't open the file, the process is most likely done, so just skip over it
-	if(!file.is_open()) {
-		msg = "Can not open " + file_path + " ; skipping entry";
-		log_file->write(CLPR_LOG_ERROR, msg);
-
-		throw std::runtime_error(msg);
-	}	
-
-	// Parse stat
-	file >> pstat.pid  >> pstat.comm >> pstat.state >> pstat.ppid >> pstat.pgid >> pstat.sid>> pstat.tty \
-		>> pstat.tpgid >> pstat.flags >> pstat.minflt >> pstat.cminflt >> pstat.majflt >> pstat.cmajflt \
-		>> pstat.utime >> pstat.stime >> pstat.cutime >> pstat.cstime >> pstat.priority >> pstat.nice \
-		>> pstat.n_th >> pstat.itrealvalue >> pstat.starttime >> pstat.vsz >> pstat.rss \
-		>> pstat.rsslim >> pstat.startcode >> pstat.endcode >> pstat.startstack >> pstat.kstkesp >> pstat.kstkeip \
-		>> pstat.signal >> pstat.blocked >> pstat.sigignore >> pstat.sigcatch >> pstat.wchan\
-		>> pstat.nswap >> pstat.cnswap >> pstat.exit_sig >> pstat.proc >> pstat.rt_prio\
-		>> pstat.policy >> pstat.delay >> pstat.gtime >> pstat.cgtime; 
-
-	file.close();
-} // End of proc_reader::read_pid_stat
-
-void proc_reader::read_pid_io(clpr_d::proc_io& pio) {
-	std::string msg;
-	std::string _; // to ignore fields
-	std::ifstream file;
-	std::string file_path = pid_dir_it->generic_string() + "/io";
-	file.open(file_path.c_str());
-	// If we can't open the file, the process is most likely done, so just skip over it
-	if(!file.is_open()) {
-		msg = "Can not open " + file_path + " ; skipping entry";
-		log_file->write(CLPR_LOG_ERROR, msg);
-
-		throw std::runtime_error(msg);
-	}	
-
-	// Parse io otherwise
-	file >> _ >> pio.rchar;
-	file >> _ >> pio.wchar;
-	file >> _ >> pio.syscr;
-	file >> _ >> pio.syscw;
-	file >> _ >> pio.read_bytes;
-	file >> _ >> pio.write_bytes;
-	file >> _ >> pio.cancelled_write_bytes;
-
-	file.close();
-
-} // End of proc_reader::read_pid_io
+	throw std::runtime_error(msg);
+      }	
+    
+    // Parse io otherwise
+    file >> _ >> pio.rchar;
+    file >> _ >> pio.wchar;
+    file >> _ >> pio.syscr;
+    file >> _ >> pio.syscw;
+    file >> _ >> pio.read_bytes;
+    file >> _ >> pio.write_bytes;
+    file >> _ >> pio.cancelled_write_bytes;
+    
+    file.close();
+    
+  } // End of proc_reader::read_pid_io
 
 
-void proc_reader::read_pid_status(clpr_d::proc_status& pstatus) {
+  void proc_reader::read_pid_status(clpr_d::proc_status& pstatus) 
+  {
+    std::string msg;
+    std::ifstream file;
+    std::string file_path = pid_dir_it->generic_string() + "/status";
+    file.open(file_path.c_str());
+    if(!file.is_open()) 
+      {
+	msg = "Can not open " + file_path + " ; skipping entry";
+	log_file->write(CLPR_LOG_ERROR, msg);
+	
+	throw std::runtime_error(msg);
+      }	
+    // Parse
+    std::string line;
+    while(std::getline(file,line)) 
+      {
+	std::istringstream iss(line);
+	std::string lhs;
+	
+	iss >> lhs;	
+	
+	if(lhs.compare("voluntary_ctxt_switches:") == 0) 
+	  {
+	    iss >> pstatus.cswch;
+	  } else if(lhs.compare("nonvoluntary_ctxt_switches:") == 0) 
+	  {
+	    iss >> pstatus.nvcswch;
+	  } else if(lhs.compare("FDSize:") == 0) 
+	  {
+	    iss >> pstatus.fdsize;
+	  } else if(lhs.compare("Uid:") == 0 ) 
+	  {
+	    iss >> pstatus.uid;
+	  }	
+      }	
+    file.close();
+  } // End of proc_reader::read_pid_status
 
-	std::string msg;
-	std::ifstream file;
-	std::string file_path = pid_dir_it->generic_string() + "/status";
-	file.open(file_path.c_str());
-	if(!file.is_open()) {
-		msg = "Can not open " + file_path + " ; skipping entry";
-		log_file->write(CLPR_LOG_ERROR, msg);
-
-		throw std::runtime_error(msg);
-	}	
-	// Parse
-	std::string line;
-	while(std::getline(file,line)) {
-		std::istringstream iss(line);
-		std::string lhs;
-
-		iss >> lhs;	
-
-		if(lhs.compare("voluntary_ctxt_switches:") == 0) {
-			iss >> pstatus.cswch;
-		} else if(lhs.compare("nonvoluntary_ctxt_switches:") == 0) {
-			iss >> pstatus.nvcswch;
-		} else if(lhs.compare("FDSize:") == 0) {
-			iss >> pstatus.fdsize;
-		} else if(lhs.compare("Uid:") == 0 ) {
-			iss >> pstatus.uid;
-		}	
-	}	
-	file.close();
-} // End of proc_reader::read_pid_status
-
-void proc_reader::read_pid_wchan(std::string& wchan) {
-	std::string msg;
-	std::ifstream file;
-	std::string file_path = pid_dir_it->generic_string() + "/wchan";
-	file.open(file_path.c_str());
-	if(!file.is_open()) {
-		msg = "Can not open " + file_path + " ; skipping entry";
-		log_file->write(CLPR_LOG_ERROR, msg);
-
-		throw std::runtime_error(msg);
-
-	}	
-	// Parse
-	file >> wchan;
-
-	file.close();
-
-} // End of proc_reader::read_pid_wchan
+  void proc_reader::read_pid_wchan(std::string& wchan) 
+  {
+    std::string msg;
+    std::ifstream file;
+    std::string file_path = pid_dir_it->generic_string() + "/wchan";
+    file.open(file_path.c_str());
+    if(!file.is_open()) 
+      {
+	msg = "Can not open " + file_path + " ; skipping entry";
+	log_file->write(CLPR_LOG_ERROR, msg);
+	
+	throw std::runtime_error(msg);
+	
+      }	
+    // Parse
+    file >> wchan;
+    
+    file.close();
+    
+  } // End of proc_reader::read_pid_wchan
  
-//void proc_reader::read_pid_cmdline(std::string& cmd, const clpr_d::proc_stat& pstat);
+  //void proc_reader::read_pid_cmdline(std::string& cmd, const clpr_d::proc_stat& pstat);
 
-void proc_reader::read_pid_environ(std::map<std::string, std::string>& env) {
-
-	std::string msg;
-	std::ifstream file;
-	// Open the file
-	std::string file_path = pid_dir_it->generic_string() + "/environ";
-	file.open(file_path.c_str()); 
-	if(!file.is_open()) {
-		msg = "Can not open " + file_path + " ; skipping entry";
-		log_file->write(CLPR_LOG_ERROR, msg);
-
-		throw std::runtime_error(msg);
-	}	
-
-	std::string env_line;
-
-	// Exploit getline with '\0' separator instead of \n
-	while(std::getline(file,env_line , '\0')) {
-
-		// Split the string VARIABLE=data at the equal sign
-		std::vector<std::string> vstr;
-		boost::split(vstr, env_line , boost::is_any_of("="));
-
-		// TODO : add a check if vstr.size() > 2... Should not happen (see https://stackoverflow.com/questions/2821043/allowed-characters-in-linux-environment-variable-names)
-		// but you never know which crappy software will set an equal sign in the value of a variable ! 
-
-		// KEY=VALUE
-		env.insert(std::make_pair(vstr[0],vstr[1]));		
-
-	}
-	file.close();
-
-
-} // End of proc_reader::read_pid_environ
-
-
-void proc_reader::read_pid_fd(std::map<int,std::string>& fd_list) {
-	// Get path to fd
-	std::string dir_path = pid_dir_it->generic_string() + "/fd";
-	std::string msg;
-	fs::path fd_path(dir_path);
-	if( !fs::exists(fd_path) ) {
-		msg = "Can not read " + dir_path + " ; skipping entry";
-		log_file->write(CLPR_LOG_ERROR, msg);
-		
-		throw std::runtime_error(msg);
-	}	
-
-	std::vector<fs::path> fd_vec;
-	std::copy(fs::directory_iterator(fd_path), fs::directory_iterator(), std::back_inserter(fd_vec));
-
-	// For all file descriptors listed in /fd
-	for(auto it = fd_vec.begin(); it != fd_vec.end(); ++it) {
-		int fd_num = std::stoi(it->leaf().generic_string());
-		fd_list.insert(std::make_pair(fd_num, fs::read_symlink(*it).generic_string())); 
-		log_file->write(CLPR_LOG_ERROR, it->leaf().generic_string() + " " + fs::read_symlink(*it).generic_string());
-	}
-
-} // End of proc_reader::read_pid_fd
-
-
-void proc_reader::read_pid_bdate(uint64_t& bdate) {
-	struct stat statbuf;
-	std::string msg;
-	std::string dir_path = pid_dir_it->generic_string();
-
-	if(stat(dir_path.c_str(), &statbuf) == -1) {
-		msg = "Can not read " + dir_path + " ; skipping entry";
-		log_file->write(CLPR_LOG_ERROR, msg);
-		
-		throw std::runtime_error(msg);
-	}
-
-	// TODO: might want to check that cast
-	bdate = (uint64_t)statbuf.st_ctime;
-} // End of proc_reader::read_pid_bdate
-
-
-// Get the current uptime
-void proc_reader::read_stat(uint64_t& uptime_c) {
-	std::string msg;
-	std::ifstream file;
-
-	std::string file_path = "/proc/stat";
+  void proc_reader::read_pid_environ(std::map<std::string, std::string>& env) 
+  {
+    std::string msg;
+    std::ifstream file;
+    // Open the file
+    std::string file_path = pid_dir_it->generic_string() + "/environ";
+    file.open(file_path.c_str()); 
+    if(!file.is_open()) 
+      {
+	msg = "Can not open " + file_path + " ; skipping entry";
+	log_file->write(CLPR_LOG_ERROR, msg);
 	
-	file.open(file_path.c_str()); 
-	if(!file.is_open()) {
-		msg = "Can not open " + file_path + " ! "; 
-		log_file->write(CLPR_LOG_CRITICAL, msg);
-
-		// TODO: Better exceptions -- this one is critical
-		throw std::runtime_error(msg);
-	}	
-
-	
-	//// Get first line of /proc/stat, e.g.
-	// TODO: Add check so that we get the correct line
-	// cpu user user-nice system idle iowait irq softirq steal guest 
-	// cpu  133473989 27287 12925885 4073999423 1927197 3535 523304 0 0
-	std::string line;
-	std::getline(file,line);
-
-	// Remove the characters "cpu  "
-	std::string header = "cpu  ";
-	std::string line_sub = line.substr(header.size(),line.size() - header.size());
-
-	// Split the line at spaces
+	throw std::runtime_error(msg);
+      }	
+    
+    std::string env_line;
+    
+    // Exploit getline with '\0' separator instead of \n
+    while(std::getline(file,env_line , '\0')) 
+      {
+	// Split the string VARIABLE=data at the equal sign
 	std::vector<std::string> vstr;
-	boost::split(vstr, line_sub ,boost::is_any_of(" "));
+	boost::split(vstr, env_line , boost::is_any_of("="));
+	
+	// TODO : add a check if vstr.size() > 2... Should not happen (see https://stackoverflow.com/questions/2821043/allowed-characters-in-linux-environment-variable-names)
+	// but you never know which crappy software will set an equal sign in the value of a variable ! 
+	
+	// KEY=VALUE
+	env.insert(std::make_pair(vstr[0],vstr[1]));		
 
-	// Calculate the total uptime
-	uint64_t uptime = 0;
-	for(auto it = vstr.begin(); it != vstr.end(); ++it) { 
-		try {
-			uptime += std::stoul(*it);
-		} catch(const std::invalid_argument& ia) {
-			// Invalid argument, just continue to parse;
-			// Caused by the first two elements in vstr
-			continue;
-		} catch(const std::exception& e) {
-			// Something else happened...
-			std::string msg = "Can not parse " + file_path + " correctly ! Incorrect entry was: " + *it;
-			log_file->write(CLPR_LOG_CRITICAL,msg);
-			throw std::runtime_error(msg);
-		}	
-	}	
+      }
+    file.close();
 
-	// Remove Guest since already contained in 
-	uptime -= std::stoul(vstr[PROC_STAT_GTIME]);	
-
-	uptime_c = uptime;
-
-} // End of proc_reader::read_stat
+    
+  } // End of proc_reader::read_pid_environ
 
 
+  void proc_reader::read_pid_fd(std::map<int,std::string>& fd_list) 
+  {
+    // Get path to fd
+    std::string dir_path = pid_dir_it->generic_string() + "/fd";
+    std::string msg;
+    fs::path fd_path(dir_path);
+    if( !fs::exists(fd_path) ) 
+      {
+	msg = "Can not read " + dir_path + " ; skipping entry";
+	log_file->write(CLPR_LOG_ERROR, msg);
+	
+	throw std::runtime_error(msg);
+      }	
+    
+    std::vector<fs::path> fd_vec;
+    std::copy(fs::directory_iterator(fd_path), fs::directory_iterator(), std::back_inserter(fd_vec));
+    
+    // For all file descriptors listed in /fd
+    for(auto it = fd_vec.begin(); it != fd_vec.end(); ++it) {
+      int fd_num = std::stoi(it->leaf().generic_string());
+      fd_list.insert(std::make_pair(fd_num, fs::read_symlink(*it).generic_string())); 
+      log_file->write(CLPR_LOG_ERROR, it->leaf().generic_string() + " " + fs::read_symlink(*it).generic_string());
+    }
+    
+  } // End of proc_reader::read_pid_fd
+
+
+  void proc_reader::read_pid_bdate(uint64_t& bdate) 
+  {
+    struct stat statbuf;
+    std::string msg;
+    std::string dir_path = pid_dir_it->generic_string();
+    
+    if(stat(dir_path.c_str(), &statbuf) == -1) 
+      {
+	msg = "Can not read " + dir_path + " ; skipping entry";
+	log_file->write(CLPR_LOG_ERROR, msg);
+	
+	throw std::runtime_error(msg);
+      }
+
+    // TODO: might want to check that cast
+    bdate = (uint64_t)statbuf.st_ctime;
+  } // End of proc_reader::read_pid_bdate
+
+
+  // Get the current uptime
+  void proc_reader::read_stat(uint64_t& uptime_c) 
+  {
+    std::string msg;
+    std::ifstream file;
+
+    std::string file_path = "/proc/stat";
+    
+    file.open(file_path.c_str()); 
+    if(!file.is_open()) 
+      {
+	msg = "Can not open " + file_path + " ! "; 
+	log_file->write(CLPR_LOG_CRITICAL, msg);
+	
+	// TODO: Better exceptions -- this one is critical
+	throw std::runtime_error(msg);
+      }	
+    
+    
+    //// Get first line of /proc/stat, e.g.
+    // TODO: Add check so that we get the correct line
+    // cpu user user-nice system idle iowait irq softirq steal guest 
+    // cpu  133473989 27287 12925885 4073999423 1927197 3535 523304 0 0
+    std::string line;
+    std::getline(file,line);
+    
+    // Remove the characters "cpu  "
+    std::string header = "cpu  ";
+    std::string line_sub = line.substr(header.size(),line.size() - header.size());
+    
+    // Split the line at spaces
+    std::vector<std::string> vstr;
+    boost::split(vstr, line_sub ,boost::is_any_of(" "));
+    
+    // Calculate the total uptime
+    uint64_t uptime = 0;
+    for(auto it = vstr.begin(); it != vstr.end(); ++it) 
+      { 
+	try 
+	  {
+	    uptime += std::stoul(*it);
+	  } catch(const std::invalid_argument& ia) 
+	  {
+	    // Invalid argument, just continue to parse;
+	    // Caused by the first two elements in vstr
+	    continue;
+	  } catch(const std::exception& e) 
+	  {
+	    // Something else happened...
+	    std::string msg = "Can not parse " + file_path + " correctly ! Incorrect entry was: " + *it;
+	    log_file->write(CLPR_LOG_CRITICAL,msg);
+	    throw std::runtime_error(msg);
+	  }	
+      }	
+    
+    // Remove Guest since already contained in 
+    uptime -= std::stoul(vstr[PROC_STAT_GTIME]);	
+    
+    uptime_c = uptime;
+    
+  } // End of proc_reader::read_stat
+  
+  
 } // End of namespace clpr_d

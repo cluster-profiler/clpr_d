@@ -32,20 +32,21 @@
 #include "proc_reader.hpp"
 #include "proc_structures.hpp"
 
-namespace clpr_d {
-	/// Check if a file exists
-	bool file_exists(const std::string& filename);
-	/// Whoami
-	string get_uid(const vector<string>& input);
-	/// When did I start
-	string get_start_time(vector<string>& input);
-
-	/// Return the unique index for db push/pop
-	std::string get_process_grp_label(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus); 
-	std::size_t get_process_label(const clpr_d::proc_stat& pstat);
-
-	// Return the process key for a given process for lookup in a process group
-	process_key get_process_key(const clpr_d::proc_stat& pstat);
+namespace clpr_d 
+{
+  /// Check if a file exists
+  bool file_exists(const std::string& filename);
+  /// Whoami
+  string get_uid(const vector<string>& input);
+  /// When did I start
+  string get_start_time(vector<string>& input);
+  
+  /// Return the unique index for db push/pop
+  std::string get_process_grp_label(const clpr_d::proc_stat& pstat, const clpr_d::proc_status& pstatus); 
+  std::size_t get_process_label(const clpr_d::proc_stat& pstat);
+  
+  // Return the process key for a given process for lookup in a process group
+  process_key get_process_key(const clpr_d::proc_stat& pstat);
 }
 
 #endif

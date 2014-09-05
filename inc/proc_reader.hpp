@@ -18,50 +18,37 @@
 // Rate at which we clean the database
 #define CLPR_CLEAN_RATE 3600
 
-namespace clpr_d {
+namespace clpr_d 
+{
 
-// Forward declaration of clpr_db
-class clpr_db;
-typedef boost::shared_ptr<clpr_db> db_ptr;
+  // Forward declaration of clpr_db
+  class clpr_db;
+  typedef boost::shared_ptr<clpr_db> db_ptr;
 
-class proc_reader {
-	public:
-                proc_reader(const clpr_d::log_ptr& log_file, const std::string& db_filename);
-		~proc_reader();
-
-		void read(clpr_d::db_ptr p_db);
-
-		// Read content of /proc/<pid>
-		void read_pid_stat(clpr_d::proc_stat& pstat);
-
-		void read_pid_io(clpr_d::proc_io& pio);
-
-		void read_pid_status(clpr_d::proc_status& pstatus);
-
-		void read_pid_wchan(std::string& wchan);
-
-//		void read_pid_cmdline(std::string& cmd, const clpr_d::proc_stat& pstat);
-
-		void read_pid_environ(std::map<std::string, std::string>& env);
-
-		void read_pid_fd(std::map<int,std::string>& fd_list);
-
-		void read_pid_bdate(uint64_t& bdate); 
-
-		void read_stat(uint64_t& uptime_c); 
-		
-
-
-	private:
-		clpr_d::log_ptr log_file;
-                std::string db_filename;
-		typename std::vector<boost::filesystem::path>::iterator pid_dir_it; 
-                char buffer[1024];
-
-}; // End of class prod_reader
-
-
-
+  class proc_reader 
+  {
+  public:
+    proc_reader(const clpr_d::log_ptr& log_file, const std::string& db_filename);
+    ~proc_reader();
+    
+    void read(clpr_d::db_ptr p_db);
+    
+    // Read content of /proc/<pid>
+    void read_pid_stat(clpr_d::proc_stat& pstat);
+    void read_pid_io(clpr_d::proc_io& pio);
+    void read_pid_status(clpr_d::proc_status& pstatus);
+    void read_pid_wchan(std::string& wchan);
+    //		void read_pid_cmdline(std::string& cmd, const clpr_d::proc_stat& pstat);
+    void read_pid_environ(std::map<std::string, std::string>& env);
+    void read_pid_fd(std::map<int,std::string>& fd_list);
+    void read_pid_bdate(uint64_t& bdate); 
+    void read_stat(uint64_t& uptime_c); 
+  private:
+    clpr_d::log_ptr log_file;
+    std::string db_filename;
+    typename std::vector<boost::filesystem::path>::iterator pid_dir_it; 
+    char buffer[1024];
+  }; // End of class prod_reader
 } // End of namespace clpr_d
 
 #endif

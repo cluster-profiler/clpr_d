@@ -57,78 +57,67 @@
 using namespace std;
 using namespace boost;
 
-namespace clpr_d {
+namespace clpr_d 
+{
 
-// A container for process data, allowing multiple search/sort
-class clpr_db {
+  // A container for process data, allowing multiple search/sort
+  class clpr_db 
+  {
+  private:
+    
+    // For setting/getting process groups 
+    boost::mutex mutex_pgrp;
+    // For setting/getting time
+    boost::mutex mutex_time;
+    // Data ready condition
+    boost::condition ready;
+    
+    // Actual database content
+    std::map<std::string, process_grp_ptr> db_content;
+    
+    // When was this last touched ? aka current time stamp
+    uint64_t tstamp;
+    
+    // When was this last written to file ?
+    uint64_t write_time;
 
-	private:
+    // Dependency injection -- smart pointer for the log file
+    clpr_d::log_ptr log_file;
+    
+    // Maximum number of entries in the database for cleanup
+    int db_max_entries;
+    
+    
+  public:
+    ~clpr_db();
+    clpr_db(const clpr_d::log_ptr& log_file, const clpr_d::conf_ptr& conf_file);
 
-		// For setting/getting process groups 
-		boost::mutex mutex_pgrp;
-		// For setting/getting time
-		boost::mutex mutex_time;
-		// Data ready condition
-		boost::condition ready;
+    bool is_present(const std::string& idx); 
+    void insert(const std::pair<std::string,process_grp_ptr>& in); 
+    clpr_d::process_grp_ptr find(const std::string& pgrp_idx); 
+    
+    void dump(std::ostream& out); 
+    
+    uint64_t const& get_time_stamp() const;
+    void set_time_stamp(uint64_t const& tstamp);
+    
+    // update write time
+    void update_write_time();
+    
+    // Get write_time
+    uint64_t const& get_write_time() const;
+    
+    // Clean up the database
+    void clean(const uint64_t& current_time);
+    
+    // Send all out to stream
+    friend std::ostream& operator<<(std::ostream &out, boost::shared_ptr<clpr_db>& in);
+    
+  }; // End of class clpr_db
 
-		// Actual database content
-		std::map<std::string, process_grp_ptr> db_content;
-
-		// When was this last touched ? aka current time stamp
-		uint64_t tstamp;
-
-		// When was this last written to file ?
-		uint64_t write_time;
-
-		// Dependency injection -- smart pointer for the log file
-		clpr_d::log_ptr log_file;
-
-		// Maximum number of entries in the database for cleanup
-		int db_max_entries;
-
-
-	public:
-
-		/** 
-		 * Destructor of the database
-		 *
-		 */
-		~clpr_db();
-
-
-		/**
-		 * Construct the database, a collection of process_grps
-		 *
-		 */
-		clpr_db(const clpr_d::log_ptr& log_file, const clpr_d::conf_ptr& conf_file);
-
-		bool is_present(const std::string& idx); 
-		void insert(const std::pair<std::string,process_grp_ptr>& in); 
-		clpr_d::process_grp_ptr find(const std::string& pgrp_idx); 
-
-		void dump(std::ostream& out); 
-
-		uint64_t const& get_time_stamp() const;
-		void set_time_stamp(uint64_t const& tstamp);
-
-		/// update write time
-		void update_write_time();
-
-		// Get write_time
-		uint64_t const& get_write_time() const;
-
-		// Clean up the database
-		void clean(const uint64_t& current_time);
-
-
-		// Send all out to stream
-		friend std::ostream& operator<<(std::ostream &out, boost::shared_ptr<clpr_db>& in);
-
-}; // End of class clpr_db
-
-// Typedef for shared pointer
-typedef boost::shared_ptr<clpr_db> db_ptr;
-
+  // Typedef for shared pointer
+  typedef boost::shared_ptr<clpr_db> db_ptr;
+  
 }; // End of namespace clpr_d
 
 #endif

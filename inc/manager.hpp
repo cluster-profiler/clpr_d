@@ -31,23 +31,20 @@
 #include "clpr_db.hpp"
 #include <boost/thread/thread.hpp>
 
-namespace clpr_d{
-
-	/// manager class; check and tidy db
-	class manager{
-		
-		private:
-
-			db_pointer db_;
-		public :
-			manager(db_pointer& db);
-			~manager(){};
-
-			void operator()();
-
-
-		
-	};
+namespace clpr_d
+{
+  
+  // manager class; check and tidy db
+  class manager
+  {  
+  private:
+    db_pointer db_;
+  public :
+    manager(db_pointer& db);
+    ~manager(){};
+    
+    void operator()();
+  };
 };
 
 #endif

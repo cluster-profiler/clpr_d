@@ -54,30 +54,27 @@
 enum { CLPR_LOG_UNKNOWN = -1, CLPR_LOG_INFO = 0, CLPR_LOG_WARN = 1, CLPR_LOG_ERROR = 2, CLPR_LOG_CRITICAL = 3, CLPR_LOG_DEBUG = 4 };
 
 //// Class
-namespace clpr_d {
+namespace clpr_d 
+{
 
-class clpr_conf;
-typedef boost::shared_ptr<clpr_conf> conf_ptr;
+  class clpr_conf;
+  typedef boost::shared_ptr<clpr_conf> conf_ptr;
+  
+  class clpr_log 
+  {
+  private:
+    std::ofstream log_file;
+    bool is_debug;
+  public:
+    clpr_log(const std::string& path);
+    ~clpr_log();
 
+    void write(const int& severity, const std::string& msg); 
+    void set_debug(const clpr_d::conf_ptr& conf_file);
 
-class clpr_log {
+  }; // End of class clpr_log
 
-	private:
-		std::ofstream log_file;
-		bool is_debug;
-
-	public:
-		clpr_log(const std::string& path);
-		~clpr_log();
-
-		void write(const int& severity, const std::string& msg); 
-		void set_debug(const clpr_d::conf_ptr& conf_file);
-
-
-
-}; // End of class clpr_log
-
-typedef boost::shared_ptr<clpr_log> log_ptr;
+  typedef boost::shared_ptr<clpr_log> log_ptr;
 
 }; // End of namespace clpr_d
 
