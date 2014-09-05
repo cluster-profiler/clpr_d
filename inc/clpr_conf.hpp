@@ -9,7 +9,7 @@
 // Path to the configuration file
 //#define CLPR_CONF_PATH "/gpfs/work/p/pzt5044/Github/clpr_d/clprd.xml"
 //#define CLPR_CONF_PATH "/opt/clprd/clprd.xml"
-#define CLPR_CONF_PATH "/home/igor/Projects/Clpr/clprd.xml"
+#define CLPR_CONF_PATH "/gpfs/home/ivy1/Projects/Clpr/clpr_d/clprd.xml"
 
 
 #define CLPR_DEBUG_ON 1

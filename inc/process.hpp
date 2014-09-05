@@ -24,7 +24,7 @@ class process {
 
 		~process();
 		void push_back(const clpr_d::snapshot_ptr& snap_ptr);
-		void dump(std::string& line_header, std::ostream& out);
+                void dump(std::string& line_header, std::ostream& out, int pgid, std::string hostname);
 		std::vector<clpr_d::snapshot_ptr> const& get_time_series() const; 
 
 		// Ostream

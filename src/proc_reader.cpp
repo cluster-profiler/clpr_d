@@ -77,8 +77,8 @@ void proc_reader::read(clpr_d::db_ptr p_db) {
 	read_stat(uptime_c);
 
 
-	while(1) {
-	  //for(int niter = 0; niter < 2; ++niter) {
+	//while(1) {
+	for(int niter = 0; niter < 4; ++niter) {
 		// Get measure time stamp
 		tstamp = (uint64_t)time(NULL);
 

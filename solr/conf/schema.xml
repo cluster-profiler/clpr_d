@@ -4,10 +4,38 @@
   <fields>
     <field name="_version_" type="long" indexed="true" stored="true"/>
     <field name="_root_" type="string" indexed="true" stored="false"/>
-    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
-    <field name="a" type="int" indexed="true" stored="true" required="true" multiValued="false" />
-    <field name="b" type="double" indexed="true" stored="true" required="true" multiValued="false" />
-    <field name="c" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+
+    <field name="hostname" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="uid" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="starttime" type="long" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="pid" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="ppid" type="int" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="tstamp" type="long" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="tty" type="int" indexed="true" stored="true" required="true" multiValued="false" /> 
+    <field name="pusr" type="float" indexed="true" stored="true" required="true" multiValued="false" /> 
+    <field name="psys" type="float" indexed="true" stored="true" required="true" multiValued="false" /> 
+    <field name="pgst" type="float" indexed="true" stored="true" required="true" multiValued="false" /> 
+    <field name="pcpu" type="float" indexed="true" stored="true" required="true" multiValued="false" /> 
+    <field name="coren" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="nth" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="minflt" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="majflt" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="vsz" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="rss" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="pmem" type="float" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="rchar" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="wchar" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="syscr" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="syscw" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="rd_b" type="int" indexed="true" stored="true" required="true" multiValued="false" />        
+    <field name="cc_wr_b" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="iodelay" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="cswch" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="nvcswch" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="nfd" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="wchan" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="state" type="string" indexed="true" stored="true" required="true" multiValued="false" />    
+    <field name="cmd" type="string" indexed="true" stored="true" required="true" multiValued="false" />    
   </fields>
   <types>
     <fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
@@ -16,8 +44,5 @@
     <fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" positionIncrementGap="0"/>
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
   </types>
-
-
-   <uniqueKey>id</uniqueKey>
-
+  <uniqueKey>id</uniqueKey>
 </schema>

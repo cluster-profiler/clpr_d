@@ -63,12 +63,14 @@ uint64_t const& process_grp::get_tstamp() const {
 std::string process_grp::get_hash_index() const {return hash_index;}	
 
 void process_grp::dump(std::string& line_header, std::ostream& out) {
-
+        std::string hostname = line_header;
 	line_header += " ";
 	line_header += this->uid;
 
+	// out<<this->pgid<<"*****"<<std::endl;
+
 	BOOST_FOREACH(HASH_MAP::value_type v, this->process_list) {
-		v.second->dump(line_header,out);
+	  v.second->dump(line_header,out,this->pgid, hostname);
 	}
 } // End of process_grp::dump
 
@@ -78,7 +80,8 @@ void process_grp::dump(std::string& line_header, std::ostream& out) {
 std::ostream& operator<<(std::ostream &out, boost::shared_ptr<process_grp>& in) {
 
 	BOOST_FOREACH( HASH_MAP::value_type v, in->process_list) {
-		out << in->uid << v.second << std::endl;
+	  out << in->uid << v.second << std::endl;
+	  //	out << in->uid << " " << in->pgid << v.second << std::endl;
 	}
 	return out;
 

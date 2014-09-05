@@ -44,6 +44,30 @@ using namespace boost;
 namespace po = boost::program_options;
 
 int main(int argc, char *argv[]) {
+  po::options_description desc("Allowed options");
+  desc.add_options()
+    ("help", "produce help message")
+    ("conf,c", po::value<std::string>(), "configuration file (required)")
+    ;
+
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+  po::notify(vm);    
+
+  if (vm.count("help")) {
+    cout << desc << "\n";
+    return 1;
+  }
+
+  if (vm.count("conf")) {
+    std::cout << "Configuration file: " 
+	 << vm["conf"].as<std::string>() << ".\n";
+  } else {
+    cout << "Configuration file was not set.\n\n";
+    cout << desc << "\n";
+    return 1;
+  }
+
 
 	////////////////////////////////////
 	///////////  Start up a daemon
@@ -96,7 +120,7 @@ int main(int argc, char *argv[]) {
 	////////////////////////////////////
 	
 	//// Check for configuration file, and parse it
-	std::ifstream conf_in_file(CLPR_CONF_PATH, ios::in);
+	std::ifstream conf_in_file(vm["conf"].as<std::string>(), ios::in);
 	std::string msg;
 	clpr_d::conf_ptr conf_file;
 
