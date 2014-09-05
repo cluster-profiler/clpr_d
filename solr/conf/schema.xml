@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<schema name="test1" version="1.5">
+  <fields>
+    <field name="_version_" type="long" indexed="true" stored="true"/>
+    <field name="_root_" type="string" indexed="true" stored="false"/>
+    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="a" type="int" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="b" type="double" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="c" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+  </fields>
+  <types>
+    <fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="float" class="solr.TrieFloatField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+  </types>
+
+
+   <uniqueKey>id</uniqueKey>
+
+</schema>
