@@ -5,11 +5,13 @@
     <field name="_version_" type="long" indexed="true" stored="true"/>
     <field name="_root_" type="string" indexed="true" stored="false"/>
 
+    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
     <field name="hostname" type="string" indexed="true" stored="true" required="true" multiValued="false" />
     <field name="uid" type="string" indexed="true" stored="true" required="true" multiValued="false" />
     <field name="starttime" type="long" indexed="true" stored="true" required="true" multiValued="false" />
     <field name="pid" type="int" indexed="true" stored="true" required="true" multiValued="false" />    
     <field name="ppid" type="int" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="pgid" type="int" indexed="true" stored="true" required="true" multiValued="false" />
     <field name="tstamp" type="long" indexed="true" stored="true" required="true" multiValued="false" />
     <field name="tty" type="int" indexed="true" stored="true" required="true" multiValued="false" /> 
     <field name="pusr" type="float" indexed="true" stored="true" required="true" multiValued="false" /> 

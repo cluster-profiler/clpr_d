@@ -31,7 +31,7 @@ namespace clpr_d
 	ptime tstamp = from_time_t(mktime(info_time));
 	
 	// Create command based on the timestamp
-	std::string cmd = "mv " + filename + " " + CLPR_LOG_PATH_OLD + to_iso_string(tstamp);
+	std::string cmd = "mv " + filename + " " + filename + "_" + to_iso_string(tstamp);
 	
 	// Execute command
 	int ret = std::system(cmd.c_str());

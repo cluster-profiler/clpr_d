@@ -9,7 +9,7 @@
 // Path to the configuration file
 //#define CLPR_CONF_PATH "/gpfs/work/p/pzt5044/Github/clpr_d/clprd.xml"
 //#define CLPR_CONF_PATH "/opt/clprd/clprd.xml"
-#define CLPR_CONF_PATH "/gpfs/home/ivy1/Projects/Clpr/clpr_d/clprd.xml"
+// #define CLPR_CONF_PATH "/gpfs/home/ivy1/Projects/Clpr/clpr_d/clprd.xml"
 
 #define CLPR_DEBUG_ON 1
 
@@ -32,6 +32,7 @@ namespace clpr_d
     
     int db_max_entries;
     std::string db_filename;
+    std::string db_dir;
     
   public:
     // Construct this object from the config file
@@ -44,11 +45,12 @@ namespace clpr_d
     int const& get_db_max_entries() const; 
     clpr_d::log_ptr const& get_log_ptr() const;
     std::string const& get_db_filename() const;
+    std::string const& get_db_dir() const;
     
-  }; // End of class clpr_config
+  }; 
 
   typedef boost::shared_ptr<clpr_conf> conf_ptr;
 
-}; // End of namespace clprd_d
+}; 
 
 #endif

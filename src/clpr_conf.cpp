@@ -31,7 +31,8 @@ namespace clpr_d
 	  } else if ( v.first == "db" ) 
 	  {
 	    this->db_max_entries = v.second.get<int>("max_entries",10);
-	    this->db_filename = v.second.get<std::string>("file", "/var/spool/clipr_db");
+	    this->db_filename = v.second.get<std::string>("file", "/var/spool/clipr_db_tmp/db");
+	    this->db_dir = v.second.get<std::string>("dir", "/var/spool/clipr_db");
 	  }	
       }
 
@@ -52,23 +53,23 @@ namespace clpr_d
     
     msg = "DB max entries: " + std::to_string(this->db_max_entries);
     this->log_file->write(CLPR_LOG_INFO,msg);
-  } // End of clpr_conf::clpr_conf
+  } 
 
 
   clpr_conf::~clpr_conf() 
   {
     this->log_file->write(CLPR_LOG_DEBUG,"Calling clpr_conf destructor");
-  } // End of clpr_conf::~clpr_conf	
+  }
 
   bool clpr_conf::is_debug() 
   {
     return ( (this->log_level == CLPR_DEBUG_ON ) ? true : false );
-  } // End of clpr_conf::is_debug	
+  }
 
   int const& clpr_conf::get_db_max_entries() const 
   {
     return this->db_max_entries;
-  } // End of clpr_conf::get_db_max_entries	
+  }
 
   clpr_d::log_ptr const& clpr_conf::get_log_ptr() const 
   {
@@ -79,5 +80,14 @@ namespace clpr_d
   {
     return this->db_filename;
   }
+
+
+  std::string const& clpr_conf::get_db_dir() const 
+  {
+    return this->db_dir;
+  }
+
+
+
   
-} // End of namespace clpr_d
+} 

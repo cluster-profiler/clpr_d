@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
   p_clpr_db = clpr_d::db_ptr(new clpr_d::clpr_db(log_file, conf_file));
   
   //// Start the reader
-  clpr_d::proc_reader reader(log_file, conf_file->get_db_filename());	
+  clpr_d::proc_reader reader(log_file, conf_file->get_db_filename(), conf_file->get_db_dir());	
   reader.read(p_clpr_db);
   
   return 0;

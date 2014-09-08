@@ -1,17 +1,18 @@
 <?xml version="1.0"?>
 <conf>
-	<version>0.3</version>
-
+  <version>0.3</version>
+  
 	<log>
-		<level>1</level>
-		<max_entries>10</max_entries>
-		<file>/tmp/Clpr/logs/clprd.log</file>
+	  <level>1</level>
+	  <max_entries>10</max_entries>
+	  <file>/tmp/Clpr/logs/clprd.log</file>
 	</log>
-
+	
 	<db>
 	  <max_entries>32768</max_entries>
-	  <file>/tmp/Clpr/output/db</file>
+	  <file>/tmp/Clpr/output_tmp/db</file>
+	  <dir>/tmp/Clpr/output</dir>
 	</db>
-
+	
 </conf>
 

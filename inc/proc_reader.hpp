@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <cstdlib>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/filesystem.hpp>
@@ -28,7 +29,7 @@ namespace clpr_d
   class proc_reader 
   {
   public:
-    proc_reader(const clpr_d::log_ptr& log_file, const std::string& db_filename);
+    proc_reader(const clpr_d::log_ptr& log_file, const std::string& db_filename, const std::string& db_dir);
     ~proc_reader();
     
     void read(clpr_d::db_ptr p_db);
@@ -46,8 +47,10 @@ namespace clpr_d
   private:
     clpr_d::log_ptr log_file;
     std::string db_filename;
+    std::string db_dir;
     typename std::vector<boost::filesystem::path>::iterator pid_dir_it; 
     char buffer[1024];
+    char buffer1[2048];
   }; // End of class prod_reader
 } // End of namespace clpr_d
 
