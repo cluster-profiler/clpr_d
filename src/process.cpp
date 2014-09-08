@@ -33,7 +33,7 @@ namespace clpr_d
     for(auto it = (this->time_series).begin(); it != (this->time_series).end(); ++it) 
       {
 	//		out << line_header << " " << this->bdate << " " << this->pid << " " << this->ppid << " " << *it << " " << this->cmd << " " << env_string << std::endl;
-	out << this->pid << "_" << this->bdate << "_" << hostname << " " << line_header << " " << this->bdate << " " << this->pid << " " << this->ppid << " " << pgid << " " << *it << " " << this->cmd << std::endl;
+	out << this->pid << "_" << this->bdate << "_" << hostname << "#" << line_header << "#" << this->bdate << "#" << this->pid << "#" << this->ppid << "#" << pgid << "#" << *it << "#" << this->cmd << std::endl;
       }
   }
 

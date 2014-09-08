@@ -70,7 +70,7 @@ namespace clpr_d
   void process_grp::dump(std::string& line_header, std::ostream& out) 
   {
     std::string hostname = line_header;
-    line_header += " ";
+    line_header += "#";
     line_header += this->uid;
     
     // out<<this->pgid<<"*****"<<std::endl;

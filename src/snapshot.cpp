@@ -109,32 +109,32 @@ namespace clpr_d
 	<< in->state << " "				\
 	<< fd_string << " ";
 #endif
-    out <<  in->tstamp << " "			\
-	<< (in->tty & tty_minor) << " "		\
-	<< in->pusr << " "			\
-	<< in->psys << " "			\
-	<< in->pgst << " "			\
-	<< in->pcpu << " "			\
-	<< in->core_num << " "			\
-	<< in->n_th << " "			\
-	<< in->minflt << " "			\
-	<< in->majflt << " "			\
-	<< in->vsz << " "			\
-	<< in->rss << " "			\
-	<< in->pmem << " "			\
-	<< in->rchar << " "			\
-	<< in->wchar << " "			\
-	<< in->syscr << " "			\
-	<< in->syscw << " "			\
-	<< in->read_bytes << " "		\
-	<< in->write_bytes << " "			\
-	<< in->cancelled_write_bytes << " "		\
-	<< in->delay << " "				\
-	<< in->cswch << " "				\
-	<< in->nvcswch << " "				\
-	<< in->n_fd << " "				\
-	<< in->wchan << " "				\
-	<< in->state << " ";
+    out <<  in->tstamp << "#"			\
+	<< (in->tty & tty_minor) << "#"		\
+	<< in->pusr << "#"			\
+	<< in->psys << "#"			\
+	<< in->pgst << "#"			\
+	<< in->pcpu << "#"			\
+	<< in->core_num << "#"			\
+	<< in->n_th << "#"			\
+	<< in->minflt << "#"			\
+	<< in->majflt << "#"			\
+	<< in->vsz << "#"			\
+	<< in->rss << "#"			\
+	<< in->pmem << "#"			\
+	<< in->rchar << "#"			\
+	<< in->wchar << "#"			\
+	<< in->syscr << "#"			\
+	<< in->syscw << "#"			\
+	<< in->read_bytes << "#"		\
+	<< in->write_bytes << "#"			\
+	<< in->cancelled_write_bytes << "#"		\
+	<< in->delay << "#"				\
+	<< in->cswch << "#"				\
+	<< in->nvcswch << "#"				\
+	<< in->n_fd << "#"				\
+	<< in->wchan << "#"				\
+	<< in->state << "#";
     return out;
   } // End of operator<<
 } // End of namespace clpr_d 
