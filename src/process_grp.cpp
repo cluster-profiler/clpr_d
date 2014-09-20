@@ -3,6 +3,9 @@
 #include <boost/foreach.hpp>
 
 #include "process_grp.hpp"
+#include "clpr_conf.hpp"
+
+extern clpr_d::conf_ptr conf_file;
 
 namespace clpr_d 
 {
@@ -70,7 +73,7 @@ namespace clpr_d
   void process_grp::dump(std::string& line_header, std::ostream& out) 
   {
     std::string hostname = line_header;
-    line_header += "#";
+    line_header += conf_file->get_db_field_separator();
     line_header += this->uid;
     
     // out<<this->pgid<<"*****"<<std::endl;

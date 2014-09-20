@@ -22,7 +22,7 @@
 # in this case called 'agent'
 
 A2.sources = SD
-A2.channels = memoryChannel
+A2.channels = fileChannel
 A2.sinks = avroSink
 
 # For each one of the sources, the type is defined
@@ -30,24 +30,28 @@ A2.sources.SD.type = spooldir
 A2.sources.SD.spoolDir = /tmp/Clpr/output
 A2.sources.SD.deletePolicy = immediate
 # A2.sources.SD.fileHeader = true
-A2.batch-size = 1000
+# A2.batch-size = 1000
 
 # The channel can be defined as follows.
-A2.sources.SD.channels = memoryChannel
+A2.sources.SD.channels = fileChannel
 
 # Each sink's type must be defined
 A2.sinks.avroSink.type = avro
 A2.sinks.avroSink.hostname = cldraen.rcc.psu.edu
 A2.sinks.avroSink.port = 10002
-A2.sinks.avroSink.batch-size = 1000
+#A2.sinks.avroSink.batch-size = 1000
+A2.sinks.avroSink.compression-type = deflate
+A2.sinks.avroSink.compression-level = 9
 
 #Specify the channel the sink should use
-A2.sinks.avroSink.channel = memoryChannel
+A2.sinks.avroSink.channel = fileChannel
 
 # Each channel's type is defined.
-A2.channels.memoryChannel.type = memory
-A2.channels.memoryChannel.capacity = 2000
-A2.channels.memoryChannel.transactionCapacity = 1000
+A2.channels.fileChannel.type = memory
+# A2.channels.fileChannel.capacity = 2000
+# A2.channels.fileChannel.transactionCapacity = 1000
+A2.channels.fileChannel.checkpointDir = /tmp/Clpr/checkpoint
+A2.channels.fileChannel.dataDirs = /tmp/Clpr/data
 
 # Other config values specific to each type of channel(sink or source)
 # can be defined as well

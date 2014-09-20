@@ -1,4 +1,7 @@
 #include "process.hpp"
+#include "clpr_conf.hpp"
+
+extern clpr_d::conf_ptr conf_file;
 
 namespace clpr_d 
 {
@@ -33,7 +36,10 @@ namespace clpr_d
     for(auto it = (this->time_series).begin(); it != (this->time_series).end(); ++it) 
       {
 	//		out << line_header << " " << this->bdate << " " << this->pid << " " << this->ppid << " " << *it << " " << this->cmd << " " << env_string << std::endl;
-	out << this->pid << "_" << this->bdate << "_" << hostname << "#" << line_header << "#" << this->bdate << "#" << this->pid << "#" << this->ppid << "#" << pgid << "#" << *it << this->cmd << std::endl;
+	out << this->pid << "_" << this->bdate << "_" << hostname << conf_file->get_db_field_separator() << 
+	  line_header << conf_file->get_db_field_separator() << this->bdate << conf_file->get_db_field_separator() << 
+	  this->pid << conf_file->get_db_field_separator() << this->ppid << conf_file->get_db_field_separator() << 
+	  pgid << conf_file->get_db_field_separator() << *it << this->cmd << std::endl;
       }
   }
 

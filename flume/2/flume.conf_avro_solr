@@ -21,34 +21,31 @@
 # Sources, channels and sinks are defined per agent, 
 # in this case called 'agent'
 
-A2.sources = SD
-A2.channels = memoryChannel
-A2.sinks = avroSink
+A1.sources = avroSource
+A1.channels = fileChannel
+A1.sinks = solrSink
 
-# For each one of the sources, the type is defined
-A2.sources.SD.type = spooldir
-A2.sources.SD.spoolDir = /tmp/Clpr/output
-A2.sources.SD.deletePolicy = immediate
-# A2.sources.SD.fileHeader = true
-A2.batch-size = 1000
+A1.sources.avroSource.type = avro
+A1.sources.avroSource.bind = cldraen.rcc.psu.edu
+A1.sources.avroSource.port = 10002
+A1.sources.avroSource.threads = 8
+A1.sources.avroSource.compression-type = deflate
 
 # The channel can be defined as follows.
-A2.sources.SD.channels = memoryChannel
+A1.sources.avroSource.channels = fileChannel
 
 # Each sink's type must be defined
-A2.sinks.avroSink.type = avro
-A2.sinks.avroSink.hostname = cldraen.rcc.psu.edu
-A2.sinks.avroSink.port = 10002
-A2.sinks.avroSink.batch-size = 1000
+A1.sinks.solrSink.type = org.apache.flume.sink.solr.morphline.MorphlineSolrSink
+A1.sinks.solrSink.morphlineFile = /gpfs/home/ivy1/Projects/Clpr/clpr_d/flume/2/morphline.conf
+#A1.sinks.solrSink.handlerClass = org.apache.flume.sink.solr.morphline.MorphlineHandlerImpl
+A1.sinks.solrSink.batchSize = 2000000
 
 #Specify the channel the sink should use
-A2.sinks.avroSink.channel = memoryChannel
+A1.sinks.solrSink.channel = fileChannel
 
 # Each channel's type is defined.
-A2.channels.memoryChannel.type = memory
-A2.channels.memoryChannel.capacity = 2000
-A2.channels.memoryChannel.transactionCapacity = 1000
-
-# Other config values specific to each type of channel(sink or source)
-# can be defined as well
-# In this case, it specifies the capacity of the memory channel
+A1.channels.fileChannel.type = file
+A1.channels.fileChannel.capacity = 2000000
+A1.channels.fileChannel.transactionCapacity = 2000000
+A1.channels.fileChannel.checkpointDir = /tmp/Clpr/checkpoint
+A1.channels.fileChannel.dataDirs = /tmp/Clpr/data

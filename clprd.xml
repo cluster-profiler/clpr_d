@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <conf>
   <version>0.3</version>
-  
 	<log>
 	  <level>1</level>
 	  <max_entries>10</max_entries>
@@ -12,7 +11,8 @@
 	  <max_entries>32768</max_entries>
 	  <file>/tmp/Clpr/output_tmp/db</file>
 	  <dir>/tmp/Clpr/output</dir>
+	  <field_separator>?</field_separator>
+	  <sample_rate>5</sample_rate>
 	</db>
-	
 </conf>
 

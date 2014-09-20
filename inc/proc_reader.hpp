@@ -14,7 +14,7 @@
 #include "proc_structures.hpp"
 
 //#define CLPR_SAMPLE_RATE 30
-#define CLPR_SAMPLE_RATE 5
+//#define CLPR_SAMPLE_RATE 5
 
 // Rate at which we clean the database
 #define CLPR_CLEAN_RATE 3600
@@ -29,7 +29,7 @@ namespace clpr_d
   class proc_reader 
   {
   public:
-    proc_reader(const clpr_d::log_ptr& log_file, const std::string& db_filename, const std::string& db_dir);
+    proc_reader(const clpr_d::log_ptr& log_file, const clpr_d::conf_ptr& conf_file);
     ~proc_reader();
     
     void read(clpr_d::db_ptr p_db);
@@ -46,8 +46,11 @@ namespace clpr_d
     void read_stat(uint64_t& uptime_c); 
   private:
     clpr_d::log_ptr log_file;
-    std::string db_filename;
-    std::string db_dir;
+    /*
+      std::string db_filename;
+      std::string db_dir;
+    */
+    clpr_d::conf_ptr conf_file;
     typename std::vector<boost::filesystem::path>::iterator pid_dir_it; 
     char buffer[1024];
     char buffer1[2048];

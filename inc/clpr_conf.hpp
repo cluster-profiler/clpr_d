@@ -33,6 +33,8 @@ namespace clpr_d
     int db_max_entries;
     std::string db_filename;
     std::string db_dir;
+    std::string db_field_separator;
+    int db_sample_rate;
     
   public:
     // Construct this object from the config file
@@ -42,11 +44,12 @@ namespace clpr_d
     bool is_debug();	
     
     // Getters
-    int const& get_db_max_entries() const; 
+    int get_db_max_entries() const; 
     clpr_d::log_ptr const& get_log_ptr() const;
     std::string const& get_db_filename() const;
     std::string const& get_db_dir() const;
-    
+    std::string const& get_db_field_separator() const;
+    int get_db_sample_rate() const;
   }; 
 
   typedef boost::shared_ptr<clpr_conf> conf_ptr;

@@ -33,6 +33,8 @@ namespace clpr_d
 	    this->db_max_entries = v.second.get<int>("max_entries",10);
 	    this->db_filename = v.second.get<std::string>("file", "/var/spool/clipr_db_tmp/db");
 	    this->db_dir = v.second.get<std::string>("dir", "/var/spool/clipr_db");
+	    this->db_field_separator = v.second.get<std::string>("field_separator",",");
+	    this->db_sample_rate = v.second.get<int>("sample_rate",15);
 	  }	
       }
 
@@ -66,7 +68,7 @@ namespace clpr_d
     return ( (this->log_level == CLPR_DEBUG_ON ) ? true : false );
   }
 
-  int const& clpr_conf::get_db_max_entries() const 
+  int clpr_conf::get_db_max_entries() const 
   {
     return this->db_max_entries;
   }
@@ -87,7 +89,15 @@ namespace clpr_d
     return this->db_dir;
   }
 
+  std::string const& clpr_conf::get_db_field_separator() const 
+  {
+    return this->db_field_separator;
+  }
 
+  int clpr_conf::get_db_sample_rate() const 
+  {
+    return this->db_sample_rate;
+  }
 
   
 } 

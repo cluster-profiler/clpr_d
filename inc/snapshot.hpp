@@ -12,7 +12,6 @@
 //// CLPR
 #include "proc_structures.hpp"
 
-
 namespace clpr_d 
 {
 
@@ -77,6 +76,8 @@ namespace clpr_d
     
     //// Tstamp
     uint64_t tstamp;
+
+
   }; // End of class snapshot
 
   typedef boost::shared_ptr<snapshot> snapshot_ptr;

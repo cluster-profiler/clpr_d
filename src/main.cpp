@@ -43,6 +43,8 @@
 using namespace boost;
 namespace po = boost::program_options;
 
+clpr_d::conf_ptr conf_file;
+
 int main(int argc, char *argv[]) 
 {
   po::options_description desc("Allowed options");
@@ -125,7 +127,6 @@ int main(int argc, char *argv[])
   //// Check for configuration file, and parse it
   std::ifstream conf_in_file(vm["conf"].as<std::string>(), ios::in);
   std::string msg;
-  clpr_d::conf_ptr conf_file;
   
   // Try opening the config file
   if (conf_in_file.is_open()) 
@@ -169,7 +170,9 @@ int main(int argc, char *argv[])
   p_clpr_db = clpr_d::db_ptr(new clpr_d::clpr_db(log_file, conf_file));
   
   //// Start the reader
-  clpr_d::proc_reader reader(log_file, conf_file->get_db_filename(), conf_file->get_db_dir());	
+  // clpr_d::proc_reader reader(log_file, conf_file->get_db_filename(), conf_file->get_db_dir());	
+  clpr_d::proc_reader reader(log_file, conf_file);	
+
   reader.read(p_clpr_db);
   
   return 0;

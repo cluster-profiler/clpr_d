@@ -28,6 +28,7 @@ A1.sinks = solrSink
 A1.sources.avroSource.type = avro
 A1.sources.avroSource.bind = cldraen.rcc.psu.edu
 A1.sources.avroSource.port = 10002
+A1.sources.avroSource.threads = 8
 
 # The channel can be defined as follows.
 A1.sources.avroSource.channels = memoryChannel
@@ -36,7 +37,7 @@ A1.sources.avroSource.channels = memoryChannel
 A1.sinks.solrSink.type = org.apache.flume.sink.solr.morphline.MorphlineSolrSink
 A1.sinks.solrSink.morphlineFile = /gpfs/home/ivy1/Projects/Clpr/clpr_d/flume/morphline.conf
 # A1.sinks.solrSink.handlerClass = org.apache.flume.sink.solr.morphline.MorphlineHandlerImpl
-A1.sinks.solrSink.batchSize = 50
+A1.sinks.solrSink.batchSize = 50000
 
 #Specify the channel the sink should use
 A1.sinks.solrSink.channel = memoryChannel
@@ -47,5 +48,5 @@ A1.channels.memoryChannel.type = memory
 # Other config values specific to each type of channel(sink or source)
 # can be defined as well
 # In this case, it specifies the capacity of the memory channel
-A1.channels.memoryChannel.capacity = 1000
-A1.channels.memoryChannel.transactionCapacity = 100
+A1.channels.memoryChannel.capacity = 1000000
+A1.channels.memoryChannel.transactionCapacity = 1000000

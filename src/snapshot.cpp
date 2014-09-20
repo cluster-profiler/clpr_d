@@ -1,6 +1,9 @@
 #include <cmath>
 
 #include "snapshot.hpp"
+#include "clpr_conf.hpp"
+
+extern clpr_d::conf_ptr conf_file;
 
 namespace clpr_d 
 {
@@ -109,32 +112,32 @@ namespace clpr_d
 	<< in->state << " "				\
 	<< fd_string << " ";
 #endif
-    out <<  in->tstamp << "#"			\
-	<< (in->tty & tty_minor) << "#"		\
-	<< in->pusr << "#"			\
-	<< in->psys << "#"			\
-	<< in->pgst << "#"			\
-	<< in->pcpu << "#"			\
-	<< in->core_num << "#"			\
-	<< in->n_th << "#"			\
-	<< in->minflt << "#"			\
-	<< in->majflt << "#"			\
-	<< in->vsz << "#"			\
-	<< in->rss << "#"			\
-	<< in->pmem << "#"			\
-	<< in->rchar << "#"			\
-	<< in->wchar << "#"			\
-	<< in->syscr << "#"			\
-	<< in->syscw << "#"			\
-	<< in->read_bytes << "#"		\
-	<< in->write_bytes << "#"			\
-	<< in->cancelled_write_bytes << "#"		\
-	<< in->delay << "#"				\
-	<< in->cswch << "#"				\
-	<< in->nvcswch << "#"				\
-	<< in->n_fd << "#"				\
-	<< in->wchan << "#"				\
-	<< in->state << "#";
+    out <<  in->tstamp << conf_file->get_db_field_separator()	\
+	<< (in->tty & tty_minor) << conf_file->get_db_field_separator()		\
+	<< in->pusr << conf_file->get_db_field_separator()			\
+	<< in->psys << conf_file->get_db_field_separator()			\
+	<< in->pgst << conf_file->get_db_field_separator()			\
+	<< in->pcpu << conf_file->get_db_field_separator()			\
+	<< in->core_num << conf_file->get_db_field_separator()			\
+	<< in->n_th << conf_file->get_db_field_separator()			\
+	<< in->minflt << conf_file->get_db_field_separator()			\
+	<< in->majflt << conf_file->get_db_field_separator()			\
+	<< in->vsz << conf_file->get_db_field_separator()			\
+	<< in->rss << conf_file->get_db_field_separator()			\
+	<< in->pmem << conf_file->get_db_field_separator()			\
+	<< in->rchar << conf_file->get_db_field_separator()			\
+	<< in->wchar << conf_file->get_db_field_separator()			\
+	<< in->syscr << conf_file->get_db_field_separator()			\
+	<< in->syscw << conf_file->get_db_field_separator()			\
+	<< in->read_bytes << conf_file->get_db_field_separator()		\
+	<< in->write_bytes << conf_file->get_db_field_separator()			\
+	<< in->cancelled_write_bytes << conf_file->get_db_field_separator()		\
+	<< in->delay << conf_file->get_db_field_separator()				\
+	<< in->cswch << conf_file->get_db_field_separator()				\
+	<< in->nvcswch << conf_file->get_db_field_separator()				\
+	<< in->n_fd << conf_file->get_db_field_separator()				\
+	<< in->wchan << conf_file->get_db_field_separator()				\
+	<< in->state << conf_file->get_db_field_separator();
     return out;
   } // End of operator<<
 } // End of namespace clpr_d 

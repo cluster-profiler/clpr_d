@@ -1,0 +1,1 @@
+0-59/2 * * * * /gpfs/home/ivy1/Projects/Clpr/clpr_d/flume/2/sort.sh > /tmp/Clpr/logs/sort.log 2>&1

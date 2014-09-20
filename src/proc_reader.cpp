@@ -26,7 +26,8 @@ namespace fs = boost::filesystem;
 namespace clpr_d 
 {
 
-  proc_reader::proc_reader(const clpr_d::log_ptr& log_file, const std::string& db_filename, const std::string& db_dir) : log_file(log_file), db_filename(db_filename), db_dir(db_dir) 
+  //  proc_reader::proc_reader(const clpr_d::log_ptr& log_file, const std::string& db_filename, const std::string& db_dir) : log_file(log_file), db_filename(db_filename), db_dir(db_dir) 
+  proc_reader::proc_reader(const clpr_d::log_ptr& log_file, const clpr_d::conf_ptr& conf_file): log_file(log_file), conf_file(conf_file)
   {
     log_file->write(CLPR_LOG_DEBUG,"Calling proc_reader constructor");
   } 
@@ -256,15 +257,22 @@ namespace clpr_d
 		
 	// Dump data to file
 	
-	sprintf(buffer,"%s_%ld", db_filename.c_str(), time(NULL));
+	sprintf(buffer,"%s_%ld", conf_file->get_db_filename().c_str(), time(NULL));
 	db_content.open(std::string(buffer), ios::out);
 	
 	if(db_content.is_open()) 
 	  {
 	    p_db->dump(db_content);
 	    db_content.close();
-	    sprintf(buffer1,"mv %s %s/", buffer, db_dir.c_str());
+	    /*
+	    sprintf(buffer1,"mv -f %s/db* /tmp/Clpr/output_old/", conf_file.get_db_dir.c_str());
 	    std::system(buffer1);
+
+	    sprintf(buffer1,"rm -f /tmp/Clpr/output_old/*", conf_file.get_db_dir.c_str());
+	    std::system(buffer1);
+	    sprintf(buffer1,"mv %s %s/", buffer, conf_file.get_db_dir.c_str());
+	    std::system(buffer1);
+	    */
 	  }	
 	p_db->update_write_time();
 	
@@ -284,8 +292,8 @@ namespace clpr_d
 	  }
 
 	// Wait until next sampling
-	boost::this_thread::sleep(boost::posix_time::seconds(CLPR_SAMPLE_RATE));
-	daemon_time += CLPR_SAMPLE_RATE;
+	boost::this_thread::sleep(boost::posix_time::seconds(conf_file->get_db_sample_rate()));
+	daemon_time += conf_file->get_db_sample_rate();
 	
       } // End while
     
