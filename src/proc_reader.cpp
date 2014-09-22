@@ -173,7 +173,7 @@ namespace clpr_d
 			    read_pid_environ(env);
 			    
 			    //// /proc/<pid>/fd
-			    read_pid_fd(fd_list);
+			    //// read_pid_fd(fd_list);
 			    
 			  } catch( std::exception& e) 
 			  {
@@ -450,7 +450,14 @@ namespace clpr_d
 	// but you never know which crappy software will set an equal sign in the value of a variable ! 
 	
 	// KEY=VALUE
-	env.insert(std::make_pair(vstr[0],vstr[1]));		
+	if(vstr.size()==2)
+	  env.insert(std::make_pair(vstr[0],vstr[1]));
+	else
+	  {
+	    std::cout<<vstr.size()<<std::endl;
+	    std::cout<<env_line<<std::endl;
+	    std::cout<<"------"<<std::endl;
+	  }
 
       }
     file.close();
@@ -463,6 +470,7 @@ namespace clpr_d
   {
     // Get path to fd
     std::string dir_path = pid_dir_it->generic_string() + "/fd";
+    std::cout<<dir_path<<std::endl;
     std::string msg;
     fs::path fd_path(dir_path);
     if( !fs::exists(fd_path) ) 
@@ -474,7 +482,8 @@ namespace clpr_d
       }	
     
     std::vector<fs::path> fd_vec;
-    std::copy(fs::directory_iterator(fd_path), fs::directory_iterator(), std::back_inserter(fd_vec));
+    if(is_directory(fd_path))
+       std::copy(fs::directory_iterator(fd_path), fs::directory_iterator(), std::back_inserter(fd_vec));
     
     // For all file descriptors listed in /fd
     for(auto it = fd_vec.begin(); it != fd_vec.end(); ++it) {
