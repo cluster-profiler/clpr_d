@@ -454,9 +454,11 @@ namespace clpr_d
 	  env.insert(std::make_pair(vstr[0],vstr[1]));
 	else
 	  {
+	    /*
 	    std::cout<<vstr.size()<<std::endl;
 	    std::cout<<env_line<<std::endl;
 	    std::cout<<"------"<<std::endl;
+	    */
 	  }
 
       }
